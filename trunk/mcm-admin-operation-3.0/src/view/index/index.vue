@@ -1,0 +1,31 @@
+<template>
+	<div class="page-layer">
+		<article class="err">
+			<img src="../../images/Group-err1.png" />
+			<h3>点什么点，你见过凌晨三四点钟的深圳吗？<br> 我每周见好久次....为了开发买菜么</h3>
+		</article>
+	</div>
+</template>
+<script>
+</script>
+<style>
+	@import "../../common/less/config.less";
+	.page-layer{
+		height: 90%;
+	}
+	.err {
+		vertical-align: middle;
+		text-align: center;
+		font-size:20px;
+		color: #000;
+		background: #fff;
+		margin-top: 20px;
+		height: 100%;
+	}
+	
+	img {
+		width: 20%;
+		margin-top: 100px;
+		margin-bottom: 20px;
+	}
+</style>

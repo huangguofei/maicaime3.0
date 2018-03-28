@@ -1,0 +1,163 @@
+<!-- 限时特价 -->
+<template>
+	<div class="page-layer footer-page prompt-page">
+		<header>
+			<p class="title">
+					<i><img src="../../images/home_shuaihuo_time.png"></i>
+					距离开放时间
+			</p>
+			<p class="time">
+				<span class="t-1">{{time.h | firstval}}</span>
+				<span class="t-1">{{time.h | lastVal}}</span>
+				<span class="t-2">:</span>
+				<span class="t-1">{{time.m | firstval}}</span>
+				<span class="t-1">{{time.m | lastVal}}</span>
+				<span class="t-2">:</span>
+				<span class="t-1">{{time.s | firstval}}</span>
+				<span class="t-1">{{time.s | lastVal}}</span>
+				<span class="rule">活动规则</span>
+			</p>
+		</header>
+		<div class="con">
+			<category-nar :categoryData="categoryData" class="nar" :styles="{background:'#FAFAFA',border:'1px solid #e5e5e5'}"></category-nar>
+			<prompt-prod ></prompt-prod>
+		</div>
+		
+	</div>
+</template>
+<script>
+	import categoryNar from "components/often/category-nar"
+	import promptProd from "components/index/prompt-prod"
+	export default{
+		data() {
+			return{
+				categoryData : [],
+				prodData : [],
+				time : {
+					h : 0,
+					m : 0,
+					s : 0,
+				}
+			}
+		},
+		filters : {
+			firstval : function(value) {
+				return value < 10 ? 0 : value.toString().substring(0,1)
+			},
+			lastVal : function(value) {
+				return value < 10 ? value : value.toString().substring(1,2)
+			}
+		},
+		created() {
+			this.countDown();
+			this.categoryData =[
+							{"categoryId":"1","merchantTypeId":500,"merchantTypeText":"总部运营","merchantId":"","userId":"","categoryName":"蔬菜213","parentCategoryId":"1","categoryStatusId":-666,"categoryStatusText":"","orderIndex":0,"timeCreated":"2017-10-13 16:55:06","timeUpdated":"","parentCategoryName":""},
+							{"categoryId":"9ffd891f34a746a1b097b177459fc850","merchantTypeId":500,"merchantTypeText":"总部运营","merchantId":"","userId":"","categoryName":"肉类","parentCategoryId":"9ffd891f34a746a1b097b177459fc850","categoryStatusId":0,"categoryStatusText":"禁用","orderIndex":1,"timeCreated":"2017-09-20 15:34:58","timeUpdated":"","parentCategoryName":""}]
+			
+		},
+		components : {
+			categoryNar,
+			promptProd
+		},
+		methods : {
+			countDown() {
+				function _time(date) {
+					let time = new Date().getTime();
+					let times = time - (new Date(date).getTime());
+					let l1 = (times % (24*3600*1000)),
+						hours = Math.floor(l1 / (3600 * 1000));
+					let l2 = (l1 % (3600*1000)),
+						minute = Math.floor(l2 / (60 * 1000));
+					let l3 = (l2 % (60 * 1000)),
+						second = Math.round(l3 / 1000);
+					return {h : hours, m : minute, s : second};
+				}
+				var time = this.time = _time("2017/10/27 10:21");
+				
+				var downTime = window.setInterval(function() {
+					if(time.s == 0 && time.m == 0 && time.h == 0) {
+						window.clearInterval(downTime);
+						return;
+					}
+					time.s == 0 ? (
+							time.s = 59,
+							time.m --
+						) : (
+							time.s-- 
+						)
+					if(time.m == 0 && time.s == 0 && time.h != 0) {
+						time.h --;
+						time.s = 59;
+						time.m = 59;
+					}
+
+				}, 1000);
+			}
+		}
+	}
+</script>
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.prompt-page{
+		header{
+			.pxrem(height, 160);
+			background: #FFF;
+			text-align: center;
+			.title{
+				.prem(20, -4);
+				padding:@prem;
+				i{
+					display: inline-block;
+					position: relative;
+					@h:31;
+					.pxrem(width, @h);
+					.pxrem(height, @h);
+					.pxrem(top, -2);
+					img{
+						width: 100%;
+					}
+				}
+			}
+			.time{
+				position: relative;
+				.pxrem(margin-top, -16);
+				.t-1{
+					display: inline-block;
+					background: #222;
+					.pxrem(font-size, 32);
+					.prem(1,5);
+					padding:@prem;
+					color:#FFF;
+					.pxrem(border-radius,5);
+				}
+				.t-2{
+					.pxrem(font-size, 46);
+				}
+				.rule{
+					position: absolute;
+					.pxrem(right, 20);
+					.pxrem(top, 15);
+					color:#666;
+					&:after{
+						content : "";
+						position: relative;
+						display: inline-block;
+						.pxrem(width, 30);
+						.pxrem(height, 30);
+						.pxrem(top, 2);
+						.pxrem(margin-left, 2);
+						background: url(../../images/home_shuaihuo_rule.png) no-repeat;
+						background-size: 100% auto;
+
+					}
+				}
+			}
+		}
+		.con{
+			.pxrem(margin-top, 20);
+			.nar{
+				background:#FAFAFA;
+			}
+		}
+	}
+</style>

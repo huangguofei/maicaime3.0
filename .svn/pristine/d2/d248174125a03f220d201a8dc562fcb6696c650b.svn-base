@@ -1,0 +1,91 @@
+<!-- 登录 -->
+<template>
+	<div class="page-layers">
+		<article class="login">
+			<header>
+				<!-- <img src="../../images/Rectangle 18@2x.png" /> -->
+			</header>
+			<article>
+				<section class="from-item">
+					<!--<img src="../../images/login_phone.png" />-->
+					<input type="tel" name="phone" id="phone" ref="mob" v-model="userName" autocomplete maxlength="11" placeholder="请输入手机号码" />
+				</section>
+				<section class="from-item">
+					<!--<img src="../../images/login_secret.png" />-->
+					<input type="password" name="psw" id="psw" ref="psw" v-model="password" placeholder="请输入密码" />
+				</section>
+				<section class="from-item">
+					<input type="button" id="loginBtn" @click="login" value="登录" />
+				</section>
+				<section class="from-item">
+					<router-link class="register" to="/register/">注册</router-link>
+					<router-link class="findpsw" to="/findpsw/">忘记密码</router-link>
+				</section>
+			</article>
+			<select-shop v-if="isSelectShop" :shop-list="shopList"></select-shop>
+		</article>
+	</div>
+</template>
+<script>
+	import loginApi from "actionurl/login/login"
+	import selectShop from "components/login/select-shop"
+	import MD5 from "../../../static/md5.js"
+	export default {
+		data() {
+			return {
+				userName: "13333333338",
+				password: "123456",
+				loginData: null,
+				isSelectShop: false,
+				shopList:[]
+			}
+		},
+		methods: {
+			login() {
+				if(!this.userName) {
+					cJs.message("手机号不能为空！");
+					this.$refs.mob.focus();
+					return false;
+				}
+				if(!this.password) {
+					cJs.message("密码不能为空！");
+					this.$refs.psw.focus();
+					return false;
+				}
+				if(!cJs.checkMobile(this.userName)) {
+					return false;
+				}
+				loginApi.login(this, {
+					"userName": this.userName,
+					"password": MD5(this.password)
+				});
+			}
+		},
+		components: {
+			selectShop
+		}
+	}
+</script>
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.login {
+		article {
+			margin: 1rem .5rem;
+		}
+		header {
+			.pxrem(height, 460);
+			/*background: url(../../images/login-header.png);*/
+			background-size: cover;
+			img {
+				width: 100%;
+				height: auto;
+			}
+		}
+		.register {
+			float: left;
+		}
+		.findpsw {
+			float: right;
+		}
+	}
+</style>

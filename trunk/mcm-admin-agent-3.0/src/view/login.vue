@@ -1,0 +1,344 @@
+<!-- 登录 -->
+<template>
+	<div class="login" @keyup.enter="submitForm('ruleForm')">
+		<div class="login-content">
+			<i class="account-icon"></i>
+			<div class="logo-wrap">
+			</div>
+			<h2>买菜么服务站运营系统</h2>
+			<el-form :model="ruleForm" :rules="rules" ref="ruleForm" v-if="isShowFindPsw">
+				<el-form-item prop="userName">
+					<el-input type="text" v-model="ruleForm.userName" auto-complete="off" :maxlength="11" placeholder="用户名">
+						<template slot="prepend">
+							<img src="../images/login_account@1x.png" />
+						</template>
+					</el-input>
+				</el-form-item>
+				<el-form-item prop="password">
+					<el-input type="password" v-model="ruleForm.password" auto-complete="off" placeholder="密码">
+						<template slot="prepend">
+							<img src="../images/login_secret@1x.png" />
+						</template>
+					</el-input>
+				</el-form-item>
+				<el-form-item>
+					<el-button type="primary" @click="submitForm('ruleForm')" v-loading.body="loading">登 录</el-button>
+				</el-form-item>
+				<p class="forget">忘记密码？点
+					<a href="javascript:;" @click="showFindPsw">这里</a>找回密码</p>
+			</el-form>
+			<!-----------------------------------------------华丽分界线（找回密码）-------------------------------------------------------------->
+			<el-form :model="forgetFrom" :rules="rules" ref="forgetFrom" v-else>
+				<el-form-item prop="userName">
+					<el-input type="text" v-model="forgetFrom.userName" auto-complete="off" :maxlength="11" placeholder="手机号">
+						<template slot="prepend">
+							<img src="../images/login_account@1x.png" />
+						</template>
+					</el-input>
+				</el-form-item>
+				<el-form-item prop="code">
+					<el-input type="text" placeholder="验证码"  v-model="forgetFrom.code" :maxlength="6" auto-complete="off">
+						<template slot="prepend">
+							<img src="../images/code.png" style="width: 20px;" />
+						</template>
+						<el-button slot="append" @click="sendCode">{{codeStr}}</el-button>
+					</el-input>
+				</el-form-item>
+				<el-form-item prop="password">
+					<el-input type="password" v-model="forgetFrom.password" auto-complete="off" placeholder="新密码">
+						<template slot="prepend">
+							<img src="../images/login_secret@1x.png" />
+						</template>
+					</el-input>
+				</el-form-item>
+				<el-form-item>
+					<el-button type="primary" @click="findPsw" v-loading.body="loading">确认找回</el-button>
+				</el-form-item>
+				<!--<p class="back-login" @click="gobacks">返回登录</p>-->
+				<a href="javascrpt:;" class="back-login" @click="gobacks">返回登录</a>
+			</el-form>
+		</div>
+
+		<select-station :info="dialogData" @select="select"></select-station>
+	</div>
+</template>
+<script>
+	const timeNum = 60;
+	import https from "../axios/https"
+	import MD5 from "../../static/md5.js"
+	import selectStation from "components/login/selectStation"
+	import reqServer from "action/login/login"
+	export default {
+		data() {
+			return {
+				ruleForm: {
+					userName: "",
+					password: ""
+				},
+				forgetFrom: {
+					userName: "",
+					password: "",
+					code: ""
+				},
+				rules: {
+					password: [{
+						required: true,
+						message: '请输入密码',
+						trigger: 'blur'
+					}, ],
+					userName: [{
+						required: true,
+						message: '请输入手机号',
+						trigger: 'blur'
+					}, ],
+					code: [{
+						required: true,
+						message: '请输入验证码',
+						trigger: 'blur'
+					}, ],
+				},
+				loading: false,
+				dialogData: {
+					isShow: false
+				},
+				merchantId: "",
+				codeStr: "获取验证码",
+				numTime: "",
+				timer: null,
+				isShowFindPsw: true,
+			}
+		},
+		created() {},
+		components: {
+			selectStation
+		},
+		methods: {
+			submitForm(formName) {
+				var _that = this;
+				this.$refs[formName].validate((valid) => {
+					if(valid) {
+						var params = {
+							userName: _that.ruleForm.userName,
+							password: MD5(_that.ruleForm.password)
+						}
+						if(this.merchantId)
+							params.merchantId = this.merchantId;
+						reqServer.login(this, params); //						_that.loading = true;
+						//						https.commAjax({
+						//							method: "post",
+						//							url: "/user/login",
+						//							params: params,
+						//							success: function(response) {
+						//								_that.loading = false;
+						//								_that.saveCookie(response);
+						//								if(response.merchantBOList.length > 1) {
+						//									_that.verifyDialog(response);
+						//								} else {
+						//									_that.$router.push({
+						//										name: "index.index"
+						//									});
+						//								}
+						//							},
+						//							error: function() {
+						//								_that.loading = false;
+						//							}
+						//						});
+					} else {
+						return false;
+					}
+				});
+			},
+			verifyDialog(data) {
+				this.dialogData.list = data.merchantBOList;
+				this.dialogData.isShow = true;
+			},
+			select(val) {
+				this.merchantId = val;
+				this.submitForm('ruleForm');
+			},
+			saveCookie(data) {
+				var userInfo = {
+					realName: data.realName,
+					mobile: data.mobile,
+					token: data.token,
+				}
+				cJs.setCookie("MCM_AGENT_USER_INFO", JSON.stringify(userInfo));
+			},
+			sendCode() {
+				if(!this.forgetFrom.userName) {
+					this.$message.error("请输入手机号");
+					return;
+				}
+				var _that = this;
+				if(!this.timer) {
+					reqServer.sendCode(this, function(data) {
+						console.log("4");
+						if(data.countDown < 60) {
+							if(data.countDown > 0) {
+								_that.numTime = data.countDown;
+							} else {
+								_that.numTime = timeNum;
+							}
+							_that.$message.error(data.msg);
+							_that.timer = setInterval(() => {
+								if(_that.numTime > 0) {
+									_that.numTime--;
+									_that.codeStr = _that.numTime + "s后获取";
+								} else {
+									clearInterval(_that.timer);
+									_that.timer = null;
+									_that.numTime = timeNum;
+									_that.codeStr = "重新获取";
+								}
+							}, 1000);
+						} else {
+							_that.$message.error(data.msg);
+						}
+					});
+				}
+			},
+			showFindPsw() {
+				this.isShowFindPsw = false;
+			},
+			gobacks() {
+					this.isShowFindPsw = true;
+			},
+			findPsw() {
+				if(!this.forgetFrom.userName) {
+					this.$message.error("请输入手机号");
+					return;
+				}
+				if(!this.forgetFrom.code) {
+					this.$message.error("请输入验证码");
+					return;
+				}
+				if(!this.forgetFrom.password) {
+					this.$message.error("请输入新密码");
+					return;
+				}
+				this.forgetFrom.password = MD5(this.forgetFrom.password);
+				reqServer.findPsw(this);
+			}
+		}
+	}
+</script>
+<style lang="less">
+	@import "../common/less/config.less";
+	.forget {
+		color: #222;
+		font-size: 16px;
+	}
+	
+	.back-login {
+		display: block;
+		margin-top: -20px;
+		text-align: left;
+		cursor: pointer;
+		color: #fff;
+	}
+	/*重新el样式*/
+	
+	.el-input-group__append {
+		position: absolute;
+		right: 1px;
+		top: 0px;
+		width: 100px;
+		height: 100%;
+		background: #f5f7fa;
+		border: 0;
+		.el-button {
+			height: 100%;
+			line-height: 100%;
+			margin: 0;
+		}
+	}
+	
+	.login {
+		width: 100%;
+		height: 100%;
+		background: url(../images/ouryue-back.jpg) no-repeat;
+		background-size: cover;
+		.login-content {
+			position: absolute;
+			left: 50%;
+			top: 50%;
+			margin-left: -230px;
+			margin-top: -240px;
+			width: 360px;
+			height: 380px;
+			background: rgba(255, 255, 255, 0.6);
+			border-radius: 20px;
+			padding: 50px;
+			text-align: center;
+			.account-icon {
+				position: absolute;
+				right: 0;
+				top: 0;
+				width: 90px;
+				height: 90px;
+				display: inline-block;
+				border-top-right-radius: 26px;
+				border-bottom-left-radius: 150px;
+			}
+		}
+		.logo-wrap {
+			width: 100%;
+			text-align: center;
+			img {
+				width: 100px;
+				height: 100px;
+			}
+		}
+		h2 {
+			color: rgba(255, 255, 255, 0.9);
+			height: 60px;
+			line-height: 60px;
+			font-weight: normal;
+			font-size: 26px;
+		}
+		.el-form-item {
+			margin-bottom: 30px;
+		}
+		.el-form-item__content {
+			.el-input__inner {
+				float: left;
+				width: 300px;
+			}
+			.el-input-group--prepend {
+				border: 2px solid rgba(255, 255, 255, 0.3);
+				border-radius: 8px;
+				margin-bottom: 6px;
+			}
+			.el-input-group__prepend {
+				background: rgba(255, 255, 255, 0);
+				border: 0;
+				position: relative;
+				img {
+					width: 18px;
+					margin-top: 3px;
+				}
+			}
+			.el-input-group__prepend:before {
+				position: absolute;
+				content: " ";
+				height: 30px;
+				top: 10px;
+				right: 0;
+				border-right: 2px solid rgba(255, 255, 255, 0.3);
+			}
+			.el-input__inner {
+				height: 50px;
+				background: rgba(255, 255, 255, 0);
+				border: 0px solid rgba(255, 255, 255, 0.7);
+				font-size: 18px;
+			}
+			.el-button--primary {
+				width: 100%;
+				border-radius: 8px;
+				height: 50px;
+				font-size: 24px;
+				color: rgba(255, 255, 255, 0.7);
+			}
+		}
+	}
+</style>

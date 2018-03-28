@@ -1,0 +1,360 @@
+<!-- 添加食材 -->
+<template>
+<div class="page-layer add-food-page">
+	<div class="f-content">
+		<section>
+			<div class="f-item">
+				<header>
+					食材基本信息
+				</header>
+				<div class="form-wrap">
+					<div class="form-item">
+						<label>食材名称:</label>
+						<input type="text" placeholder="输入食材名称" class="f-ctrl" v-model="form.skuName"  />
+						<!-- <div class="search-wrap" v-if="searchShow">
+							<div class="con">
+								<p class="item" @click="selectSearchItem(p)" v-for="p in searchProds">
+									<span class="p-img">
+										<img src="http://maicaim3.oss-cn-shenzhen.aliyuncs.com/product/12b6ca7d741044dc9c4367a56782a83a.png">
+									</span>
+									<span class="p-name">肉肉肉肉肉肉肉肉肉肉</span>
+								</p>
+								
+							</div>
+						</div> -->
+					</div>
+					<div class="form-item">
+						<label>销量单位:</label>
+						<input type="text" placeholder="输入销量单位" class="f-ctrl" v-model="form.skuUnit"/>
+					</div>
+				</div>
+			</div>
+			<div class="f-item">
+				<header>
+					选择食材分类
+				</header>
+				<div class="form-wrap">
+					<div class="form-item f-l">
+						<select  class="f-ctrl" @change="categoryUpdate($event)" v-model="parentKey">
+							<option value="">--请选择--</option>
+							<option v-for="(c, key) in categoryData" :value="key">{{c.categoryName}}</option>
+						</select>
+					</div>
+					<div class="form-item f-l f-r">
+						<select  class="f-ctrl" v-model="form.categoryId">
+							<option value="">--请选择--</option>
+							<option v-for="s in subCategoryData" :value="s.categoryId">{{s.categoryName}}</option>
+						</select>
+					</div>
+				</div>
+			</div>
+			<div class="f-item">
+				<header>
+					商品报价
+				</header>
+				<div class="form-wrap">
+					<div class="form-item">
+						<label>商品价格:</label>
+						<input type="number" placeholder="输入商品价格" class="f-ctrl" v-model="form.skuPrice" />
+					</div>
+				</div>
+			</div>
+			<div class="f-item">
+				<header>
+					上传食材图片
+				</header>
+				<div class="form-wrap">
+					<div class="show-img" v-show="form.skuImage">
+						<img :src="form.skuImage">
+					</div>
+					<div class="upload-image" @click="croppaShow()">
+						<div class="f-img">
+							<span>+</span>
+							<p>添加照片</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+		<footer v-show="footerShow">
+			<div class="con">
+					<button class="btn-confim" @click="submitForm()">确定添加</button>
+			</div>
+		</footer>
+		
+	</div>
+	<croppa-layer 
+		 @uploadSuccess="uploadSuccess" ref="croppa">
+	</croppa-layer>
+</div>
+</template>
+<script>
+	import FOODACTION from "actionurl/food/food"
+	import croppaLayer from "components/common/croppa-layer"
+	import { mapGetters } from 'vuex'
+	export default{
+		data() {
+			return {
+				categoryData : [],
+				subCategoryData : [],
+				parentKey : "",
+				form : {
+					skuName : "",
+					skuUnit : "",
+					categoryId : "",
+					skuImage : "",
+					skuPrice : ""
+				},
+				croppa : false,
+				searchShow : false,
+				searchProds: [],
+				footerShow : true
+			}
+		},
+		computed : {
+			...mapGetters({
+				categoryList : "getCategoryList"
+			})
+		},
+		components : {
+			croppaLayer
+		},
+		created() {
+			if(this.categoryList.length > 0) {
+				this.categoryData = this.categoryList;
+			} else {
+				FOODACTION.getCategoryList(this);
+			}
+		},
+		mounted() {
+			var _that = this;
+			_that.clientHeight = document.body.clientHeight;
+			cJs.monitorWindowResize(() => {
+				if(_that.clientHeight > document.body.clientHeight) {
+					_that.footerShow = false;
+				} else {
+					_that.footerShow = true;
+				}
+			});
+		},
+		methods : {
+			categoryUpdate(event) {
+				event.stopPropagation();
+				var key = this.parentKey;
+				if(key >= 0) {
+					if(!this.categoryData[key]) return false;
+					this.subCategoryData = this.categoryData[key].subCategoryList;
+				}	
+			},
+			uploadSuccess(data) {
+				this.form.skuImage = data;
+			},
+			submitForm() {
+				var form = this.form, error = "";
+				if(form.skuName == "") {
+					error = "请输入食材名称";
+				} else if(form.skuUnit == "") {
+					error = "请输入销售单位";
+				} else if(form.categoryId == "") {
+					error = "请选择食材分类";
+				} else if(form.skuImage == "") {
+					error = "请上传食材图片";
+				} else if(!cJs.checkPrice(form.skuPrice) && form.skuPrice != "") {
+					cJs.message("输入正确金额！");
+					return false;
+				}
+				if(error != "") {
+					cJs.message(error);
+					return false;
+				} else {
+					FOODACTION.saveProductInfo(this);
+				}
+			},
+			croppaShow() {
+				this.$refs.croppa.show = true;
+			},
+			uploadSuccess(url) {
+				this.form.skuImage = url;
+			},
+			selectSearchItem(item) {
+				this.searchShow = false;
+				var form = this.form;
+				this.categoryData.forEach((item, index)=>{
+					if(item.categoryId == "f3bcc7a93ada4a2bbb472c522daefe87") {
+						this.parentKey = index;
+						this.subCategoryData = item.subCategoryList;
+					}
+				});
+				setTimeout(function() {
+						form.skuName = item.skuName;
+						form.skuUnit = item.skuUnit;
+						form.categoryId = item.categoryId;
+						form.skuImage = item.skuImage;
+						form.skuPrice = item.skuPrice;
+				},0);
+			},
+			seachProd(event) {
+				var val = event.target.value;
+				if(val) {
+					var params = {"query": val};
+					FOODACTION.searchProdInfo(this, params);
+				}
+			}
+		}
+	}
+</script>
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.add-food-page{
+		.f-content{
+			.prem(20);
+			padding:@prem;
+			section{
+				background: #FFF;
+				.prem(20);
+				padding:@prem;
+			}
+			.f-item{
+				border-bottom:1px dashed #E9E9E9;
+				header{
+					.pxrem(font-size,32);
+					.pxrem(height,80);
+					.pxrem(line-height,80);
+				}
+				.form-wrap{
+					.form-item{
+						width:100%;
+						.pxrem(height, 80);
+						.pxrem(line-height, 80);
+						border:1px solid #D7D7D7;
+						.pxrem(border-radius, 5);
+						.pxrem(margin-bottom, 20);
+						.pxrem(text-indent, 20);
+						.pxrem(font-size, 28);
+						position: relative;
+					}
+					.f-ctrl{
+						.pxrem(width, 480);
+						.pxrem(height, 60);
+						.pxrem(font-size, 28);
+						border:0;
+					}
+					.f-l{
+						float:left;
+						width:46%;
+						.f-ctrl{
+							.pxrem(width, 240);
+						}
+					}
+					.f-r{
+						float:right;
+					}
+					.show-img{
+						float:left;
+						.pxrem(width, 140);
+						.pxrem(height, 140);
+						.pxrem(margin-right, 20);
+						.pxrem(border-radius, 8);
+						text-align: center;
+						.pxrem(text-indent, -4);
+						border:1px solid #E5E5E5;
+						display: table-cell;
+						vertical-align: middle;
+						img{
+							max-width: 100%;
+							max-height: 100%;
+							vertical-align:middle;
+						}
+					}
+					
+				}
+				.form-wrap:after{
+					.clearFloat;
+				}
+				
+			}
+			.f-item:last-child{
+				border:0;
+			}
+			footer{
+				position: absolute;
+				.pxrem(bottom, 20);
+				width:100%;
+				left:0;
+				.con{
+					.prem(-4,20);
+					padding:@prem;
+				}
+				.btn-confim{
+					background: @m-c;
+					width:100%;
+					.pxrem(height, 80);
+					.pxrem(line-height, 80);
+					color:#FFF;
+					border:0;
+					.pxrem(border-radius,8);
+					.pxrem(font-size, 32);
+				}
+			}
+			.upload-image{
+				.pxrem(width, 140);
+				.pxrem(height, 140);
+				float:left;
+				.f-img{
+					width:100%;
+					height:100%;
+					.pxrem(border-radius, 8);
+					text-align: center;
+					.pxrem(text-indent, -4);
+					border:1px solid #E5E5E5;
+					position: relative;
+					span{
+						display: inline-block;
+						text-align: center;
+						.pxrem(width, 140);
+						.pxrem(font-size,70);
+					}
+					p{
+						.pxrem(font-size,24);
+						.pxrem(margin-top,-20);
+					}
+				}
+			}
+		}
+		.search-wrap{
+			position: absolute;
+			width:100%;
+			left:0;
+			.pxrem(top, 80);
+			border:1px solid #e9e9e9;
+			z-index:99999;
+			.con{
+				.prem(20);
+				padding:@prem;
+				background: #FFF;
+				box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
+				.item{
+					position: relative;
+					.p-img{
+						display: inline-block;
+						.pxrem(width,50);
+						.pxrem(height,50);
+						overflow: hidden;
+						text-align: center;
+						border-radius:50%;
+						text-indent: 0;
+						img{
+							width:100%;
+							height:100%;
+						}
+					}
+					.p-name{
+						position: absolute;
+						.pxrem(margin-top, -20);
+						.pxrem(margin-left, 0);
+					}
+				}
+			}
+		}
+	}
+</style>

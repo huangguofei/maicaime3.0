@@ -1,0 +1,161 @@
+<template>
+	<article class="page-layer user-staffManagement">
+		<err msg="员工管理"></err>
+		<!--<ul class="staff-list padding">
+			<li>
+				<router-link to="/staffManagementApplyDetails/">
+					<h3 class="pull-left">老刘（老板）</h3>
+					<p class="pull-right">158736273848<img src="../../images/home_jifen_arrow.png" /></p>
+				</router-link>
+			</li>
+		</ul>
+		<article class="apply-list padding">
+			<h3>申请列表</h3>
+			<section class="list-item padding">
+				<section class="item-header">
+					<h3>老刘 15637283992</h3>
+					<p>申请理由：卧式尼打野</p>
+				</section>
+				<section class="item-footer">
+					<p class="pull-left">申请时间：2017-08-26 17:4</p>
+					<a href="javascript:;" class="refuse-btn pull-right">拒绝</a>
+					<a href="javascript:;" class="agree-btn pull-right">同意</a>
+				</section>
+			</section>
+		</article>
+		<footer @click="isPage=true">
+			邀请员工
+		</footer>
+		<invitePage v-show="isPage" @offpage="offpage"></invitePage>-->
+	</article>
+</template>
+
+<script>
+	import invitePage from "../../components/user/invite-page"
+	import err from "components/common/err"
+	export default {
+		data() {
+			return {
+				isPage: false
+			}
+		},
+		components: {
+			invitePage,
+			err
+		},
+		created() {
+
+		},
+		methods: {
+			offpage:function(){
+				this.isPage=false;
+			}
+		}
+	}
+</script>
+
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.user-staffManagement {
+		h3 {
+			.pxrem(font-size, 32);
+			color: #000;
+		}
+		.staff-list {
+			background: #fff;
+			padding-top: 0;
+			padding-bottom: 0;
+			li {
+				border-bottom: 1px solid #eee;
+				.pxrem(margin-left, 5);
+				a {
+					.clearfix();
+					display: block;
+					.pxrem(height, 100);
+					.pxrem(line-height, 100);
+					img {
+						.pxrem(width, 15);
+						.pxrem(margin-left, 5);
+					}
+				}
+				p {
+					.pxrem(font-size, 30);
+					color: #666;
+					display: table-cell;
+					vertical-align: middle;
+				}
+			}
+		}
+		.apply-list {
+			.list-item {
+				background: #fff;
+				.pxrem(margin-top, 20);
+				.pxrem(margin-bottom, 20);
+				.pxrem(border-radius, 16);
+				.item-header {
+					position: relative;
+					border-bottom: 1px dashed #D7D7D7;
+					.pxrem(padding-bottom, 10);
+					.common() {
+						content: "";
+						display: inline-block;
+						.pxrem(width, 20);
+						.pxrem(height, 20);
+						.pxrem(border-radius, 10);
+						position: absolute;
+						background: @m-back;
+						/*background: #000;*/
+						.pxrem(bottom, -15);
+					}
+					&:before {
+						.common();
+						.pxrem(left, -35);
+					}
+					&:after {
+						.common();
+						.pxrem(right, -35);
+					}
+					p {
+						.pxrem(font-size, 28);
+						color: #666;
+						.pxrem(line-height, 48);
+					}
+				}
+				.item-footer {
+					.pxrem(padding-top, 10);
+					.clearfix();
+					p {
+						.pxrem(font-size, 24);
+						color: #666;
+						.pxrem(line-height, 48);
+					}
+					a {
+						.pxrem(width, 100);
+						.pxrem(height, 48);
+						.pxrem(line-height, 48);
+						.pxrem(border-radius, 8);
+						text-align: center;
+					}
+					.refuse-btn {
+						background: #fafafa;
+						border: 1px solid #E9E9E9;
+						color: #000;
+					}
+					.agree-btn {
+						margin-right: .1rem;
+						background: #1EC551;
+						color: #fff;
+					}
+				}
+			}
+		}
+		footer {
+			background: #1EC551;
+			color: #fff;
+			.pxrem(font-size, 36);
+			text-align: center;
+			.pxrem(height, 100);
+			.pxrem(line-height, 100);
+		}
+	}
+</style>

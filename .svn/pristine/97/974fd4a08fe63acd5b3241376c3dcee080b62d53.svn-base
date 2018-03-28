@@ -1,0 +1,29 @@
+/**
+ * hgf 2017年12月11日
+ * 订单
+ */
+import { orderAPI } from "../../api/order"
+export default {
+	/*获取订单列表*/
+	getOrderList(vm) {
+		for(var i in vm.queryParams) {
+			if(!vm.queryParams[i])
+				delete vm.queryParams[i];
+		}
+		orderAPI.orderListAPI(vm.queryParams, (result) => {
+			vm.tableData = result.resultList;
+			vm.queryParams.pageNum = result.currentPage;
+			vm.queryParams.pages = result.totalPage;
+			vm.queryParams.total = result.totalCount;
+		});
+	},
+	/*获取订单详情*/
+	getOrderDetails(vm) {
+		orderAPI.orderDetailsAPI({
+			orderId: vm.orderId
+		}, (result) => {
+			vm.orderData = result;
+			
+		});
+	}
+}

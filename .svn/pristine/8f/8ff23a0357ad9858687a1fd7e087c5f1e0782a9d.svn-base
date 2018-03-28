@@ -1,0 +1,14 @@
+/**
+* author pzh 
+* day    2017-9-14
+* 商品分类业务
+*/
+import productAPI from "../../api/product"
+export default{
+	/*获取商品分类列表*/
+	getCategoryList(){
+		productAPI.categoryListAPI((result) => {
+			console.log(result);
+		});
+	}
+}

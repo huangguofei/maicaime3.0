@@ -1,0 +1,25 @@
+<!-- 食材为空 -->
+<template>
+	<div class="goods-not-data">
+		<i><img src="../../images/market-good-icon.png"></i>
+		<slot></slot>
+	</div>
+</template>
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.goods-not-data{
+			text-align: center;
+			position: relative;
+			top:50%;
+			.pxrem(margin-top,-240);
+			img{
+				.pxrem(width,248);
+				.pxrem(height,240);
+			}
+			p{
+				.pxrem(margin-top,20);
+				.pxrem(font-size,32);
+				color: @d-b-c;
+			}
+		}
+</style>

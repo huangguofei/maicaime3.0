@@ -1,0 +1,284 @@
+<!-- 活动列表 -->
+<template>
+	<page-layer :narData="narData" class="">
+		<coupon></coupon>
+		<div class="edit-body pull-left">
+			<div class="edit-content">
+				<div class="item back-color">
+					<h3 class="title padding">优惠活动信息</h3>
+					<el-form ref="form" :model="form" :rules="rules" label-width="100px" class="demo-ruleForm padding">
+						<el-form-item label="活动名称" prop="name">
+							<el-input v-model="form.name" placeholder="最多支持10个汉字" maxlength="10"></el-input>
+						</el-form-item>
+						<el-form-item label="发行总量" prop="num">
+							<el-col :span="5">
+								<el-input v-model="form.num"></el-input>
+							</el-col>
+							<span class="unit">张</span>
+						</el-form-item>
+						<el-form-item label="优惠形式" prop="discount">
+							<el-col :span="5">
+								<el-radio-group v-model="form.discount">
+									<el-radio class="radio" label="1">折扣</el-radio>
+									<el-radio class="radio" label="2">指定金额</el-radio>
+								</el-radio-group>
+							</el-col>
+							<el-col :span="5">
+								<el-form-item label="面值" label-width="80px">
+									<el-input v-model="form.num"></el-input>
+								</el-form-item>
+							</el-col>
+						</el-form-item>
+						<el-form-item label="使用门槛" prop="discount">
+							<el-col :span="4">
+								<el-radio-group v-model="form.discount">
+									<el-radio class="radio" label="1">不限制</el-radio>
+									<el-radio class="radio" label="2">满</el-radio>
+								</el-radio-group>
+							</el-col>
+							<el-col :span="5">
+								<el-form-item label=" " label-width="90px">
+									<el-input v-model="form.num"></el-input>
+									<span class="form-mark">可使用</span>
+								</el-form-item>
+							</el-col>
+						</el-form-item>
+						<el-form-item label="品类范围" prop="discount">
+							<el-col :span="4">
+								<el-radio-group v-model="form.discount">
+									<el-radio class="radio" label="1">不限</el-radio>
+									<el-radio class="radio" label="2">指定品类</el-radio>
+								</el-radio-group>
+							</el-col>
+							<el-col :span="5" class="kind">
+								<span class="item">肉类<a href="javascript:;"><img src="../../../images/off.png"/></a></span>
+								<span class="add-item">+添加</span>
+							</el-col>
+						</el-form-item>
+					</el-form>
+				</div>
+				<div class="item back-color">
+					<h3 class="title padding">优惠券基本规则</h3>
+					<el-form ref="form" :model="form" :rules="rules" label-width="100px" class="demo-ruleForm padding">
+						<el-form-item label="每人限领" prop="select">
+							<el-select v-model="form.select" placeholder="请选择">
+								<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
+								</el-option>
+							</el-select>
+						</el-form-item>
+						<el-form-item label="有效时间" prop="select">
+							<el-radio-group v-model="form.select">
+								<div class="block">
+									<el-radio :label="3">固定日期</el-radio>
+								</div>
+								<el-form-item style="margin-bottom: 10px;">
+									<el-col :span="11">
+										<el-form-item prop="endTime">
+											<el-date-picker v-model="form.startTime" type="datetime" placeholder="选择开始日期时间"></el-date-picker>
+										</el-form-item>
+									</el-col>
+									<el-col class="line" :span="2" style="text-indent:0.5rem;">至</el-col>
+									<el-col :span="11">
+										<el-form-item prop="endTime">
+											<el-date-picker v-model="form.endTime" type="datetime" placeholder="选择结束日期时间"></el-date-picker>
+										</el-form-item>
+									</el-col>
+								</el-form-item>
+								<div class="block">
+									<el-radio :label="6">领到券次日开始N天内有效</el-radio>
+								</div>
+								<div class="block">
+									<el-radio :label="9">领到券当日开始N天内有效</el-radio>
+								</div>
+							</el-radio-group>
+						</el-form-item>
+						<el-form-item label="到期提醒" prop="select">
+							<el-radio class="radio" v-model="form.discount" label="1">到期前四天提醒</el-radio>
+						</el-form-item>
+						<el-form-item label="使用说明">
+							<el-input type="textarea" v-model="form.desc"></el-input>
+						</el-form-item>
+					</el-form>
+
+				</div>
+			</div>
+			<div class="btn">
+				<el-button>取消</el-button>
+				<el-button type="primary">保存</el-button>
+			</div>
+		</div>
+	</page-layer>
+</template>
+<script>
+	import pageLayer from "components/common/page-layer"
+	import coupon from "components/marketing/coupon/coupon"
+	export default {
+		data() {
+			return {
+				narData: [{
+					name: "优惠券",
+					router: "marketing.coupon.index"
+				}, {
+					name: "发起优惠券",
+					router: "marketing.coupon.new"
+				}],
+				isShowPage: false,
+				form: {
+					name: "",
+					num: "",
+					endTime: "",
+					price: "",
+					select: "",
+					discount: "",
+					desc: ""
+				},
+				rules: {
+					name: [{
+							required: true,
+							message: '请输入活动名称',
+							trigger: 'blur'
+						},
+						{
+							min: 1,
+							max: 10,
+							message: '长度在 1 到 10个字符',
+							trigger: 'blur'
+						}
+					],
+					num: [{
+						required: true,
+						message: '请输入发行数量',
+						trigger: 'blur'
+					}],
+					discount: [{
+						required: true,
+						message: '请选择折扣形式',
+						trigger: 'change'
+					}],
+					select: [{
+						required: true,
+						message: '请选择',
+						trigger: 'change'
+					}]
+				},
+				options: [{
+					label: "1",
+					value: "yi"
+				}, {
+					label: "1",
+					value: "yi"
+				}]
+			}
+		},
+		components: {
+			pageLayer,
+			coupon
+		},
+		methods: {
+			couponDetails: function() {
+				this.isShowPage = true;
+			},
+			handleChange: function() {
+
+			}
+		}
+	}
+</script>
+<style lang="less" scoped>
+	@import "../../../common/less/config.less";
+	.line {
+		text-align: center;
+	}
+	
+	.block {
+		margin-bottom: 10px;
+	}
+	
+	.unit {
+		position: relative;
+		left: -30px;
+		font-size: 16px;
+		color: #737373;
+	}
+	
+	.form-mark {
+		position: relative;
+		top: -35px;
+		right: -100px;
+	}
+	
+	.edit-body {
+		width: calc(~"100% - 700px");
+		margin-left: 20px;
+		.edit-content {
+			border: 1px solid #DFDFDF;
+			.item {
+				h3 {
+					font-size: 18px;
+					height: 48px;
+					background: #F4F4F4;
+					box-sizing: border-box;
+				}
+				.price {
+					position: relative;
+					top: -35px;
+					right: -180px;
+				}
+				.add-group {
+					padding-bottom: 20px;
+					text-align: center;
+					a {
+						display: inline-block;
+						margin-left: -6%;
+						width: 220px;
+						border: 1px solid @color-main;
+						line-height: 36px;
+						height: 36px;
+						color: @color-main;
+					}
+				}
+			}
+			.kind {
+				.clearfix();
+				span {
+					float: left;
+					width: 70px;
+					height: 28px;
+					line-height: 28px;
+					text-align: center;
+					font-size: 14px;
+					margin-right: 10px;
+				}
+				.item {
+					color: #343434;
+					border: 1px solid #DFDFDF;
+					position: relative;
+					a {
+						position: absolute;
+						width: 20px;
+						height: 20px;
+						right: -10px;
+						top: -10px;
+						background: #FABC05;
+						border: 1px solid #F98A0C;
+						border-radius: 10px;
+						text-align: center;
+						img {
+							width: 50%;
+							margin-bottom: 20%;
+						}
+					}
+				}
+				.add-item {
+					color: #2CBB59;
+					border: 1px dashed #2CBB59;
+					background: #F0FFF8;
+				}
+			}
+		}
+		.btn {
+			margin-top: 20px;
+			text-align: center;
+		}
+	}
+</style>

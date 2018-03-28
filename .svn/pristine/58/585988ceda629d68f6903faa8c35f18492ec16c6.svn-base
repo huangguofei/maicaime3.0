@@ -1,0 +1,171 @@
+<template>
+	<article class="order-list">
+		<header class="padding" @click="orderDateils">
+			<div class="pull-left">
+				<img src="../../images/list_order_store.png" />
+				<span>{{shopName}}</span>
+			</div>
+			<span class="order-status pull-right">{{orderStatusStr}}</span>
+		</header>
+		<section class="shop-list padding" @click="orderDateils">
+			<div class="shop-item">
+				<section class="item-left pull-left">
+					<p class="commodity-name"><i></i><span>{{commodityName}}</span></p>
+					<p class="price-num"><span>单价:¥{{price}}</span><span>数量:{{num}}</span></p>
+				</section>
+				<section class="item-right pull-right">
+					<b>¥{{totalPrices}}</b>
+				</section>
+			</div>
+			<div class="shop-item">
+				<section class="item-left pull-left">
+					<p class="commodity-name"><i></i><span>{{commodityName}}</span></p>
+					<p class="price-num"><span>单价:¥{{price}}</span><span>数量:{{num}}</span></p>
+				</section>
+				<section class="item-right pull-right">
+					<b>¥{{totalPrices}}</b>
+				</section>
+			</div>
+			<p class="remark" v-show="isRemark">(还有3件食材)</p>
+		</section>
+		<footer class="padding">
+			<p class="pull-left">实付：<span>¥{{realityPay}}</span>
+			</p>
+			<input type="button" :value="btnStr" class="order-btn pull-right" :class="{'order-btns':isRemark}" />
+			<span class='pull-right'>可获得15积分</span>
+		</footer>
+	</article>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+				orderList: [],
+				shopName: '诚信商行批发部',
+				orderStatusStr: '待收货',
+				commodityName: '清远三只小鸡2kg/只',
+				price: '2000.00',
+				num: '200',
+				totalPrices: '229.00',
+				realityPay: '399.00',
+				isRemark: true,
+				btnStr: '确认付款'
+			}
+		},
+		props: ['orderData'],
+		created() {
+
+		},
+		methods: {
+			orderDateils() {
+				//				alert("---")
+				//				 this.$emit('select', "item")
+				this.$router.push({
+					path: '222'
+				})
+			}
+		}
+	}
+</script>
+
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.order-list {
+		.pxrem(margin-top, 20);
+		header {
+			background: #fff;
+			.rem(50);
+			.pxrem(font-size, 32);
+			.pxrem(height, 64);
+			.pxrem(line-height, 64);
+			img {
+				/*.pxrem(width,50);*/
+				width: @rem;
+				border-radius: @rem/2;
+				vertical-align: middle;
+			}
+			.order-status {
+				.pxrem(font-size, 28);
+				color: #FF5B60;
+			}
+		}
+		.shop-list {
+			.shop-item {
+				.pxrem(margin-bottom, 26);
+				overflow: auto;
+				.item-left {
+					.commodity-name {
+						color: #151009;
+						.pxrem(height, 40);
+						.pxrem(line-height, 40);
+						.pxrem(font-size, 28);
+						.pxrem(margin-bottom, 5);
+						i {
+							background: #FFA356;
+							display: inline-block;
+							.pxrem(width, 12);
+							.pxrem(height, 12);
+							.pxrem(border-radius, 6);
+							.pxrem(margin-right, 6);
+						}
+					}
+					.price-num {
+						.pxrem(height, 33);
+						.pxrem(line-height, 33);
+						color: #999999;
+						.pxrem(font-size, 24);
+						.pxrem(padding-left, 22);
+						span:first-child {
+							margin-right: 0.3rem;
+						}
+					}
+				}
+				.item-right {
+					.pxrem(height, 74);
+					.pxrem(line-height, 74);
+					b {
+						color: #343534;
+						.pxrem(font-size, 28);
+					}
+				}
+			}
+			.remark {
+				color: #343534;
+				text-align: center;
+				.pxrem(font-size, 24);
+			}
+		}
+		footer {
+			.pxrem(height, 64);
+			.pxrem(line-height, 64);
+			background: #fff;
+			.pxrem(font-size, 28);
+			p {
+				color: #000;
+				span {
+					color: #FC414E;
+				}
+			}
+			input {
+				.pxrem(width, 150);
+				.pxrem(height, 58);
+				.pxrem(margin-left, 12);
+				text-align: center;
+				border: 1px solid #1EC551;
+				.pxrem(font-size, 28);
+			}
+			.order-btn {
+				background: #1EC551;
+				color: #fff;
+			}
+			.order-btns {
+				background: #fff;
+				color: #1EC551;
+			}
+			span {
+				color: #222;
+			}
+		}
+	}
+</style>

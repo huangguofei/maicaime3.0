@@ -1,0 +1,190 @@
+<!-- 配送信息 -->
+<template>
+	<div class="delivery-info">
+		<div class="d-item d-1">
+			<div class="address-info">
+				<p class="contact">
+					<span class="name">{{addressInfo.userName}}</span>
+					<span class="tel">{{addressInfo.mobile}}</span>
+				</p>
+				<p class="address">地址：{{addressInfo.address}}{{addressInfo.addressDetailed}}</p>
+			</div>
+		</div>
+		<div class="d-item d-2" @click="setDevTime">
+			<span class="title">配送时间</span>
+			<span class="value active" v-if="timeVal.text">
+				{{timeVal.text}}
+			</span>
+			<span class="value" v-else>请选择</span>
+		</div>
+		<div class="d-item d-3">
+			<span class="title">发票信息</span>
+			<span class="value">不开发票</span>
+		</div>
+		<dialog-layer ref="dialogTime" @confirm="confirmTime">
+			<div class="dev-times">
+				<span class="t-item" :class="{active : k==selectIndex}" v-for="(t, k) in devTimes" @click="selectDevTime(k)">{{returnTimeStr(t)}}</span>
+			</div>
+		</dialog-layer>
+
+	</div>
+</template>
+<script>
+	import ordersAction from "actionurl/often/orders"
+	import dialogLayer from "components/common/dialog-layer"
+	export default {
+		data() {
+			return {
+				devTimes: [],
+				selectIndex: -1
+			}
+		},
+		props: ["addressInfo", "timeVal"],
+		components: {
+			dialogLayer
+		},
+		created() {
+			/*写入之前选中的配送时间段*/
+			if(!this.timeVal.text) {
+				var timeData = sessionStorage.getItem("deliveryTime");
+				if(timeData) {
+					timeData = JSON.parse(timeData);
+					this.timeVal.text = timeData.txt;
+					this.selectIndex = timeData.index;
+					this.timeVal.sTime = timeData.deliveryStartTimeSection;
+					this.timeVal.eTime = timeData.deliveryEndTimeSection;
+					this.timeVal.sType = timeData.startTimeType;
+					this.timeVal.eType = timeData.endTimeType;
+				}
+			}
+		},
+		mounted() {
+			ordersAction.getDevTime(this);
+		},
+		methods: {
+			setDevTime() {
+				this.$refs.dialogTime.show = true;
+			},
+			selectDevTime(index) {
+				this.selectIndex = index;
+			},
+			returnTimeStr(item) {
+				var sTime = item.deliveryStartTimeSection,
+					eTime = item.deliveryEndTimeSection,
+					sType = item.startTimeType,
+					eType = item.endTimeType,
+					timeStr = "";
+				var sn = parseInt(sTime),
+					en = parseInt(eTime);
+				if(sType == 0) {
+					timeStr += "今";
+				} else {
+					timeStr += "明";
+				}
+				timeStr += sTime;
+				if(eType == 0) {
+					timeStr += "-今";
+				} else {
+					timeStr += "-明";
+				}
+				timeStr += eTime;
+				return timeStr;
+			},
+			confirmTime() {
+				var item = this.devTimes[this.selectIndex];
+				var time = this.timeVal;
+				time.sTime = item.deliveryStartTimeSection,
+				time.eTime = item.deliveryEndTimeSection;
+				time.sType = item.startTimeType;
+				time.eType = item.endTimeType;
+				time.text = this.returnTimeStr(item);
+				item.index = this.selectIndex;
+				item.txt = time.text;
+				/*更新记录最新的配送时间段*/
+				sessionStorage.setItem("deliveryTime", JSON.stringify(item));
+			}
+		}
+	}
+</script>
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.delivery-info {
+		background: #FFF;
+		.prem(-4, 20);
+		padding: @prem;
+		.address-info,
+		.title {
+			.pxrem(font-size, 32);
+		}
+		.address {
+			color: #4A4A4A;
+			.pxrem(font-size, 26);
+		}
+		.title {
+			color: #222222;
+		}
+		.d-item {
+			position: relative;
+			.prem(20, 48);
+			padding: @prem;
+			border-bottom: 1px solid #F4F4F4;
+			.value {
+				.pxrem(font-size, 28);
+				float: right;
+			}
+		}
+		.d-item:before {
+			content: "";
+			position: absolute;
+			right: 0;
+			top: 50%;
+			.pxrem(margin-top, -20);
+			.pxrem(width, 13);
+			.pxrem(height, 22);
+			background: url(../../images/home_jifen_arrow.png) no-repeat 0 center;
+			background-size: 100% auto;
+		}
+		.d-1 {
+			background: url(../../images/list_order_address.png) no-repeat 0 center;
+			.rem(35);
+			background-size: auto @rem;
+		}
+		.d-2 {
+			background: url(../../images/list_order_time.png) no-repeat 0 center;
+			.rem(35);
+			background-size: auto @rem;
+			.value {
+				color: #999999;
+			}
+			.active {
+				color: #1EC551;
+			}
+		}
+		.d-3 {
+			background: url(../../images/list_order_fapiao.png) no-repeat 0 center;
+			.rem(35);
+			background-size: auto @rem;
+			.value {
+				color: #999999;
+			}
+		}
+		.dev-times {
+			.t-item {
+				display: inline-block;
+				.pxrem(width, 280);
+				.pxrem(height, 70);
+				.pxrem(line-height, 70);
+				border: 1px solid #D7D7D7;
+				.pxrem(border-radius, 6);
+				.pxrem(font-size, 26);
+				text-align: center;
+				.prem(10);
+				margin: @prem;
+			}
+			.active {
+				border-color: @m-c;
+				color: @m-c;
+			}
+		}
+	}
+</style>

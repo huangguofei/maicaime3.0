@@ -1,0 +1,94 @@
+/*
+ * author pizhenhua
+ * day 2017-7-13
+ * 主页js
+ */
+var indexModule = {
+	init : function() {
+		 this.getTeaList();
+		 this.pageEvent();
+	},
+	pageEvent : function() {
+		var mainCount = $('.swiper-container').find(".swiper-main").length;
+		var swiperObj = new Swiper('.swiper-container',{
+
+			mode: 'vertical',
+			keyboardControl : true,
+			mousewheelControl : true,
+			speed:600,
+			resistance : "100%",
+			onSlideChangeEnd: function(swiper){
+				var index = swiperObj.activeIndex;
+				var $footer = $(".footer-fixed");
+				if(index == mainCount - 1) {
+					$footer.removeClass("footer-hide").css("bottom",-$footer.height());
+					$footer.delay(50).animate({bottom:0},500);
+					$(".arrow").hide();
+				} else {
+					$footer.addClass("footer-hide");
+					$(".arrow").show();
+				}
+			}
+		})
+		
+		/*var mySwiperLive = new Swiper('.swiper-live',{
+		    grabCursor: true,
+			paginationClickable: true,
+			centeredSlides: true,
+    		slidesPerView: 1.5,
+    		speed:1000,
+		})
+		mySwiperLive.swipeTo(1);
+
+		var mySwiperPublic = new Swiper('.swiper-public',{
+		    grabCursor: true,
+			paginationClickable: true,
+			centeredSlides: true,
+    		slidesPerView: 1.5,
+    		resistance : "100%",
+		})
+		mySwiperPublic.swipeTo(1)*/
+	},
+	getTeaList : function() {
+		var that = this;
+		common.commAjax({
+ 			type : "POST",
+ 			url : "product/list",
+ 			success : function(result) {
+ 				if(result.length > 0) {
+ 					that.teaSwiperResolve(result);
+ 					
+ 				}
+ 			}
+ 		});
+	},
+	/*主页茶的轮播*/
+	teaSwiperResolve : function(result) {
+		var swiperHtml = "", that = this;
+		$.each(result, function(key, item) {
+				var url = "/web/view/detail?productId=" + item.productId,
+					backImg = item.productBGPC,
+					productIcon = item.productIcon;
+				swiperHtml += '<div class="swiper-slide n-1 s-back" style="background: url('+backImg+') no-repeat center center;background-size:cover">'+
+                                  '<div class="t-con">'+
+                                      '<div class="tea">'+
+                                          '<img src="'+productIcon+'">'+
+                                          '<span class="name">'+item.productName+'</span>'+
+                                      '</div>'+
+                                      '<a href="'+url+'" class="btn-more">查看详情</a>'+
+                                  '</div>'+
+                            '</div>';
+				
+		});
+		$(".swiper-nested").find(".swiper-wrapper").append(swiperHtml);
+		var swiper = new Swiper('.swiper-nested', {
+				pagination: '.swiper-pagination-nested',
+				paginationClickable: true,
+	    		autoplay : 2000,
+	    		speed:1000,
+				loop:true,
+				grabCursor: true,
+				paginationClickable: true,
+	    });
+	}
+}

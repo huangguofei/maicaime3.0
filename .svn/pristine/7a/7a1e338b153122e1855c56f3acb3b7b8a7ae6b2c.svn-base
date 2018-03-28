@@ -1,0 +1,434 @@
+<template>
+	<article class="content">
+		<article class="order-details padding" :class="{pbottom:orderDetailsInfo.orderStatusId!=100}" v-if="orderDetailsInfo.orderStatusText">
+			<header class="padding order-status bk-white radius-bottom item">
+				<section class="relative">
+					<h3 class="text-center">{{orderDetailsInfo.orderStatusText=='待确认'?'待收货':orderDetailsInfo.orderStatusText}}<img src="../../images/order_right.png"></h3>
+					<span class="style1">{{orderDetailsInfo.operationLog?orderDetailsInfo.operationLog.timeCreatedText:""}}</span>
+				</section>
+				<section class="text-center style1">{{orderDetailsInfo.operationLog?orderDetailsInfo.operationLog.logContent:""}}
+				</section>
+				<section class="radius"><b></b><i></i><b></b></section>
+			</header>
+			<section class="padding bk-white delivery-info item">
+				<p><img src="../../images/list_order_time.png">配送时间：{{orderDetailsInfo.deliveryTimeText}}
+					<span class="pull-right">{{orderDetailsInfo.deliveryWayId=='300'?'送货上门':orderDetailsInfo.deliveryWayText}}</span></p>
+				<p>缺货处理：{{orderDetailsInfo.stockoutTypeText+orderDetailsInfo.stockoutContact+orderDetailsInfo.stockoutNumber}}</p>
+				<section class="radius"><b></b><i></i><b></b></section>
+			</section>
+			<section class="btn-group padding gap bk-white radius-top">
+				<a class="cancel-order" :class="{disabled:orderStatus!=20}" v-if="orderDetailsInfo.orderStatusId!=100" @click="cancelOrder()">取消订单</a>
+				<a class="print-order" @click="err">打印订单</a>
+				<a class="again-shop link" @click="againShop">再次购买</a>
+				<!--<a class="evaluate link" @click="err" v-if="orderDetailsInfo.orderStatusId==100">评价<img src="../../images/order_value_jifen.png" /></a>-->
+			</section>
+			<food-list :foodData="orderDetailsInfo" :noShowNum="noShowNum" v-if="orderDetailsInfo.orderStatusId != 20"></food-list>
+			<food-list v-for="(val,key) in orderDetailsInfo.products" :foodData="val" :noShowNum="noShowNum" v-if="orderDetailsInfo.orderStatusId == 20"></food-list>
+			<section class="order-info gap">
+				<div class="padding bk-white radius-bottom item">
+					<p><span>订单编号</span>{{orderDetailsInfo.orderId}}</p>
+					<p><span>下单时间</span>{{orderDetailsInfo.timeSubmited}}</p>
+					<p><span>接单时间</span>{{orderDetailsInfo.timeOrderReceived}}</p>
+					<p v-if="orderDetailsInfo.orderStatusId==50||orderDetailsInfo.orderStatusId==100"><span>收货时间</span>{{orderDetailsInfo.timeReceived}}</p>
+					<p v-if="orderDetailsInfo.orderStatusId==100"><span>付款时间</span>{{orderDetailsInfo.timePayed}}</p>
+					<p><span>订单备注</span>{{orderDetailsInfo.purchaserRemark}}</p>
+					<!-- <section class="radius"><b></b><i></i><b></b></section> -->
+				</div>
+				<!-- <p class="invoice bk-white padding radius-top"><span>发票类型</span>{{orderDetailsInfo.invoiceTypeText}}</p> -->
+			</section>
+			<section class="price-info">
+				<div class="padding bk-white radius-bottom item">
+					<p>食材总额<span class="pull-right">¥{{orderDetailsInfo.payableAmount|ms}}</span></p>
+					<p>配送费<span class="pull-right">¥0.00</span></p>
+					<p v-if="orderDetailsInfo.orderTypeId!=2">优惠金额<span class="pull-right">¥{{orderDetailsInfo.discountAmount|ms}}</span></p>
+					<p v-else-if="orderDetailsInfo.discountAmount>0">额外支付<span class="pull-right">¥{{orderDetailsInfo.discountAmount|ms}}</span></p>
+					<section class="radius"><b></b><i></i><b></b></section>
+				</div>
+				<p class="price-pay bk-white padding radius-top">实付款:<span class="pull-right price">¥{{orderDetailsInfo.totalAmount|ms}}</span></p>
+				<p class="price-pay bk-white padding " v-if="orderDetailsInfo.payedAmount > 0">
+					已付款:<span class="pull-right price">¥{{orderDetailsInfo.payedAmount|ms}}</span>
+				</p>
+			</section>
+
+			<verify-food-list :foodData="orderDetailsInfo" v-if="isShowPage" @hidePage="offPage" @confirmReceipt="confirmReceipt" @practicalAmount="practicalAmount"></verify-food-list>
+			<footer class="" v-if="orderDetailsInfo.orderStatusId!=100">
+				<p class="pull-left">合计：<span class="price" v-once>¥{{orderDetailsInfo.totalAmount|ms}}</span></p>
+				<a v-if="orderDetailsInfo.orderStatusId==40" href="javascript:;" class="pull-right" @click="confirmReceipt">确认收货</a>
+				<a v-if="orderDetailsInfo.orderStatusId==20 || orderDetailsInfo.orderStatusId==50" href="javascript:;" class="pull-right" @click="pay">付款</a>
+				<!-- <a v-if="orderDetailsInfo.orderStatusId==50" href="javascript:;" class="pull-right" @click="pay">
+				还需付{{"¥" + (orderDetailsInfo.totalAmount - orderDetailsInfo.payedAmount).toFixed(2)}}
+			</a> -->
+			</footer>
+			<pay-ment v-if="payShow" :totalAmount="payPrice" :submitPay="submitPay" :prodType="prodType" :supportDelivery="supportDelivery" @closePay="closePay"></pay-ment>
+			<recharge-layer v-if="rechargeShow" :surplusPrice="surplusPrice" @closeRecharge="closeRecharge"></recharge-layer>
+		</article>
+		<loading v-else></loading>
+	</article>
+</template>
+
+<script>
+	import orderApi from "actionurl/order/order"
+	import payMent from 'components/common/payment-type'
+	import commonAction from 'actionurl/common/common'
+	import foodList from 'components/order/food-list'
+	import verifyFoodList from 'components/order/verify-food-list'
+	import rechargeLayer from "components/common/recharge-layer"
+	import loading from 'components/common/loading'
+	export default {
+		data() {
+			return {
+				orderDetailsInfo: {},
+				orderId: this.$route.params.id,
+				orderStatus: this.$route.query.status ? this.$route.query.status : "",
+				noShowNum: "",
+				isShowPage: false,
+				totalAmount: "",
+				payShow: false,
+				rechargeShow: false,
+				surplusPrice: 0,
+				prodType: 0,
+				payPrice: 0,
+				supportDelivery: false,
+				orderType: 0
+			}
+		},
+		filters: {
+
+		},
+		created() {
+			orderApi.getOrderDetails(this);
+		},
+		mounted() {
+			if(this.orderStatus == 50) {
+				this.prodType = 2;
+			} else if(this.orderStatus == 20) {
+				/*支持货到付款*/
+				this.supportDelivery = true;
+			}
+		},
+		watch: {
+			totalAmount: function() {
+				if(this.orderStatus == 50) {
+					let info = this.orderDetailsInfo;
+					this.payPrice = (info.totalAmount - info.payedAmount).toFixed(2);
+				} 
+			}
+		},
+		methods: {
+			pay() {
+				this.payShow = true;
+				/*订单号写入localStorage*/
+				localStorage.setItem("orderId", this.orderId);
+				this.totalAmount = this.orderDetailsInfo.totalAmount;
+			},
+			submitPay(payType, balance) {
+				if(payType == 2) {
+					commonAction.delayedPayment(this);
+				} else {
+					if(balance - this.totalAmount < 0) {
+						this.rechargeShow = true;
+						this.surplusPrice = (this.totalAmount - balance).toFixed(2);
+					} else {
+						commonAction.payByBalance(this, this.orderStatus);
+					}
+				}
+			},
+			offPage() {
+				this.isShowPage = false;
+				document.getElementsByTagName("body")[0].setAttribute("style","overflow:auto");
+			},
+			confirmReceipt() {
+				if(this.orderDetailsInfo.orderTypeId==2){
+					orderApi.integralOrderConfirmReceipt(this,this.orderId);
+					return false;
+				}
+				var _that = this;
+				if(_that.isShowPage) {
+					_that.orderType = 40;
+					_that.supportDelivery = false;
+					orderApi.orderConfirmReceipt(_that, "", (price) => {
+						_that.totalAmount = _that.orderDetailsInfo.totalAmount;
+						/*订单号写入localStorage*/
+						localStorage.setItem("orderId", _that.orderId);
+						_that.surplusPrice = (price * 1).toFixed(2);
+						_that.payPrice = _that.surplusPrice;
+						_that.payShow = true;
+						_that.isShowPage = false;
+					});
+				}
+				this.orderDetailsInfo.totalAmount=_that.orderDetailsInfo.totalAmount;
+				_that.isShowPage = true;
+				document.getElementsByTagName("body")[0].setAttribute("style","overflow:hidden");
+			},
+			reduce(item) {
+				this.orderDetailsInfo.totalAmount = this.Subtr(this.orderDetailsInfo.totalAmount, item);
+			},
+			add(item) {
+				this.orderDetailsInfo.totalAmount = (this.orderDetailsInfo.totalAmount * 100 + item * 100) / 100;
+			},
+			practicalAmount(amount) {
+				console.log(amount-this.orderDetailsInfo.discountAmount, amount, this.orderDetailsInfo.discountAmount);
+				var price = amount - this.orderDetailsInfo.discountAmount;
+				if(price < 0){
+					price = 0;
+				}
+				this.orderDetailsInfo.totalAmount = price;
+
+			},
+			cancelOrder() {
+				if(this.orderStatus == 20) {
+					orderApi.orderCancel(this);
+				}
+			},
+			againShop() {
+				this.$router.push({
+					name: "market.index"
+				});
+			},
+			Subtr(arg1, arg2) {
+				var r1, r2, m, n;
+				try {
+					r1 = arg1.toString().split(".")[1].length
+				} catch(e) {
+					r1 = 0
+				}
+				try {
+					r2 = arg2.toString().split(".")[1].length
+				} catch(e) {
+					r2 = 0
+				}
+				m = Math.pow(10, Math.max(r1, r2));
+				n = (r1 >= r2) ? r1 : r2;
+				return((arg1 * m - arg2 * m) / m).toFixed(n);
+			},
+			err() {
+				cJs.message('暂未开通此功能');
+			},
+			closePay() {
+				this.payShow = false;
+				if(this.orderType == 40) {
+					window.location.reload();
+				}
+			},
+			closeRecharge() {
+				this.rechargeShow = false;
+				if(this.orderType == 40) {
+					window.location.reload();
+				}
+			}
+		},
+		components: {
+			payMent,
+			foodList,
+			verifyFoodList,
+			rechargeLayer,
+			loading
+		}
+	}
+</script>
+
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.pbottom {
+		.pxrem(padding-bottom, 120);
+	}
+	
+	.order-details {
+		.bk-white {
+			background: #fff;
+		}
+		.style1 {
+			color: #666;
+			.pxrem(font-size, 28);
+		}
+		.item {
+			position: relative;
+			.radius {
+				position: absolute;
+				bottom: -10px;
+				left: -10px;
+				right: -10px;
+				z-index: 2;
+				height: 20px;
+				.clearfix();
+				i {
+					display: inline-block;
+					width: calc(~"100% - 40px");
+					border-bottom: 1px dashed #e9e9e9;
+					position: absolute;
+					top: 10px;
+				}
+				b:first-child {
+					float: left;
+					width: 20px;
+					height: 20px;
+					border-radius: 10px;
+					background: @m-back;
+				}
+				b:last-child {
+					float: right;
+					width: 20px;
+					height: 20px;
+					border-radius: 10px;
+					background: @m-back;
+				}
+			}
+		}
+		.gap {
+			margin-bottom: .15rem;
+		}
+		.order-status {
+			section {
+				span {
+					position: absolute;
+					top: 0;
+					.pxrem(right, 16);
+				}
+			}
+			section:first-child {
+				.pxrem(line-height, 80);
+				.pxrem(height, 80);
+			}
+			h3 {
+				color: @m-c;
+				text-align: center;
+				.pxrem(font-size, 36);
+				img {
+					.pxrem(width, 33);
+					/*.pxrem(margin-left, 5);*/
+					vertical-align: middle;
+				}
+			}
+		}
+		.delivery-info {
+			p {
+				.pxrem(margin-bottom, 10);
+				.pxrem(font-size, 28);
+				color: #222;
+				img {
+					.pxrem(width, 30);
+					.pxrem(margin-right, 20);
+					vertical-align: bottom;
+				}
+				span {
+					color: @m-c;
+				}
+			}
+			p:last-child {
+				.pxrem(padding-left, 50);
+			}
+		}
+		.btn-group {
+			text-align: center;
+			a {
+				position: relative;
+				width: 23%;
+				display: inline-block;
+				text-align: center;
+				.pxrem(height, 60);
+				.pxrem(line-height, 60);
+				.pxrem(font-size, 28);
+				.pxrem(border-radius, 5);
+				color: #222;
+				border: 1px #D7D7D7 solid;
+				margin: 0 1%;
+				background: #fff;
+				img {
+					.pxrem(width, 65);
+					position: absolute;
+					.pxrem(top, -20);
+					.pxrem(right, -50);
+				}
+			}
+			a.disabled {
+				color: #D7D7D7;
+				border-color: #D7D7D7;
+			}
+			.link {
+				color: #fff;
+				background: @m-c;
+				border: 0;
+			}
+		}
+		.shop-details {
+			header {
+				.clearfix();
+				img {
+					.pxrem(width, 50);
+					.pxrem(margin-right, 10);
+					vertical-align: middle;
+				}
+				h3 {
+					.pxrem(font-size, 32);
+				}
+			}
+			ul {
+				padding-bottom: 0;
+			}
+			.look-more {
+				text-align: center;
+				img {
+					.pxrem(width, 50);
+					vertical-align: middle;
+				}
+			}
+		}
+		.order-info {
+			p {
+				.pxrem(font-size, 28);
+				.pxrem(line-height, 50);
+				span {
+					color: #999;
+					.pxrem(margin-right, 40);
+				}
+			}
+			.invoice {
+				.pxrem(height, 30);
+				.pxrem(line-height, 30);
+			}
+		}
+		.price-info {
+			p {
+				.pxrem(font-size, 28);
+				color: #999;
+				.pxrem(line-height, 50);
+				span {
+					.pxrem(font-size, 32);
+				}
+			}
+			.price-pay {
+				.pxrem(height, 30);
+				.pxrem(line-height, 30);
+			}
+		}
+		footer {
+			.pxrem(font-size, 28);
+			/*.clearfix();*/
+			background: #FAFAFA;
+			position: fixed;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			.pxrem(height, 100);
+			.pxrem(line-height, 100);
+			border-top: 1px solid #F3F3F3;
+			.pxrem(padding-left, 16);
+			z-index: 10;
+			a {
+				display: inline-block;
+				.pxrem(width, 250);
+				text-align: center;
+				.pxrem(font-size, 36);
+				background: @m-c;
+				color: #fff;
+				.pxrem(padding-left, 16);
+				.pxrem(padding-right, 16);
+			}
+		}
+	}
+	/*.page-modal {
+		.page {
+			.pxrem(bottom, 100)!important;
+		}
+	}*/
+</style>

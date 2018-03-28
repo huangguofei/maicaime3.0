@@ -1,0 +1,27 @@
+/*路由*/
+import Vue from 'vue'
+import VueRouter from 'vue-router'
+import IndexRouter from './index'
+import MarketRouter from './market'
+import OrderRouter from './order'
+import OftenRouter from './often'
+import UserRouter from './user'
+Vue.use(VueRouter);
+
+const routes = [];
+/*合并路由配置*/
+const routesArray = routes.concat(IndexRouter.router).
+					concat(MarketRouter.router).
+					concat(OrderRouter.router).
+					concat(OftenRouter.router).
+					concat(UserRouter.router);
+
+export const router = new VueRouter({
+	mode : "history",
+	base: __dirname,
+	routes : routesArray
+})
+
+new Vue({
+	router
+}).$mount("#app")

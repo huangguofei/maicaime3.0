@@ -1,0 +1,127 @@
+<template>
+	<article class="food-list shop-details gap" v-if="foodData">
+		<header class="padding bk-white">
+			<img class="pull-left" src="../../images/list_order_store.png" />
+			<h3 class="pull-left ellipsis">{{foodData.supplierName}}</h3>
+			<a class="pull-right" :href="'tel:' + foodData.supplierMobile"><img src="../../images/market_details_tele.png" /></a>
+		</header>
+		<ul class="padding">
+			<li v-for="(item,key) in foodData.products" :class="{hide:key>1&&!isShowAll}">
+				<div class="shop-item">
+					<section class="item-left pull-left">
+						<p class="commodity-name"><i></i><span>{{item.prodName}}</span></p>
+						<p class="price-num"><span>单价:¥{{item.skuPrice|ms}}</span><span>数量:{{item.actualQuantity}}</span></p>
+					</section>
+					<section class="item-right pull-right">
+						<b>¥{{item.totalAmount|ms}}</b>
+					</section>
+				</div>
+			</li>
+		</ul>
+		<!--(查看更多{{noShowNum}}件食材)-->
+		<p class="look-more" v-if="foodData.msg" @click="showAll(foodData)">{{foodData.msg}}</p>
+	</article>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+				isShowAll:false,
+				zoomStr:"(查看更多"+this.noShowNum+"件食材)"
+			}
+		},
+		props: ['foodData','noShowNum'],
+		created() {
+		},wacth:{
+			foodData:(val)=>{
+				this.isShowAll=val.showAll;
+			}
+		},
+		methods: {
+			showAll(data){
+				if(this.isShowAll){
+					this.isShowAll=false;
+					data.msg="(查看更多"+(data.products.length - 2)+"件食材)";
+				}else{
+					this.isShowAll=true;
+					data.msg="(收起)";
+				}
+			}
+		}
+	}
+</script>
+
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.gap {
+		margin-bottom: .15rem;
+	}
+	.bk-white {
+			background: #fff;
+		}
+	.shop-details {
+		header {
+			.clearfix();
+			img {
+				.pxrem(width, 50);
+				.pxrem(margin-right, 10);
+				vertical-align: middle;
+			}
+			h3 {
+				.pxrem(font-size, 32);
+				width: calc(~'100% - 2rem');
+			}
+		}
+		ul {
+			padding-bottom: 0;
+		}
+		.look-more {
+			text-align: center;
+			img {
+				.pxrem(width, 50);
+				vertical-align: middle;
+			}
+		}
+	}
+	.shop-item {
+			.pxrem(margin-bottom, 26);
+			overflow: auto;
+			.item-left {
+				.commodity-name {
+					color: #151009;
+					.pxrem(height, 40);
+					.pxrem(line-height, 40);
+					.pxrem(font-size, 28);
+					.pxrem(margin-bottom, 5);
+					i {
+						background: @p-p-c;
+						vertical-align: middle;
+						display: inline-block;
+						.pxrem(width, 12);
+						.pxrem(height, 12);
+						.pxrem(border-radius, 6);
+						.pxrem(margin-right, 6);
+					}
+				}
+				.price-num {
+					.pxrem(height, 33);
+					.pxrem(line-height, 33);
+					color: #999999;
+					.pxrem(font-size, 24);
+					.pxrem(padding-left, 22);
+					span:first-child {
+						margin-right: 0.3rem;
+					}
+				}
+			}
+			.item-right {
+				.pxrem(height, 74);
+				.pxrem(line-height, 74);
+				b {
+					color: #343534;
+					.pxrem(font-size, 28);
+				}
+			}
+		}
+</style>

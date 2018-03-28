@@ -1,0 +1,37 @@
+/**
+ * author hgf
+ * day    2017-12-08
+ * 银行卡接口
+ */
+import { depositAPI } from "apiurl/user"
+export default {
+	/*获取提现记录*/
+	getDepositList(vm) {
+		depositAPI.depositListAPI((result) => {
+			vm.depositList = result.resultList;
+
+		});
+	},
+	/*获取提现详情*/
+	getDepositDetails(vm) {
+		depositAPI.depositDetailsAPI({
+			withdrawRecordId: vm.id
+		}, (result) => {
+			vm.depositData=result;
+		});
+	},
+	/*提交提现申请*/
+	depositApply(vm) {
+		depositAPI.depositApplyAPI({
+			cardId: vm.cardData.cardId,
+			userNote:vm.userNote
+		}, (result) => {
+			if(result) {
+				cJs.message("提交申请成功！请等待审批");
+				vm.balance="0";
+//				vm.$router.go(0);
+			}
+		});
+	},
+
+}

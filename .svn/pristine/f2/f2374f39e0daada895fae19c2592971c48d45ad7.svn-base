@@ -1,0 +1,241 @@
+<!-- 限时特价 -->
+<template>
+	<div class="page-layer footer-page prompt-page">
+		<header v-if="!loading && detailInfo !=''">
+			<p class="title">
+					<i><img src="../../images/home_shuaihuo_time.png"></i>
+					<span>{{message}}</span>
+			</p>
+			<p class="time" >
+				<span v-if="time.day < 1 && activityStart == 0">
+					<span class="t-1">{{time.h | firstval}}</span>
+					<span class="t-1">{{time.h | lastVal}}</span>
+					<span class="t-2">:</span>
+					<span class="t-1">{{time.m | firstval}}</span>
+					<span class="t-1">{{time.m | lastVal}}</span>
+					<span class="t-2">:</span>
+					<span class="t-1">{{time.s | firstval}}</span>
+					<span class="t-1">{{time.s | lastVal}}</span>
+				</span>
+				<span v-if="time.day >= 1 && activityStart == 0" class="t-1">
+					{{dayStr}}
+				</span>
+				<span class="t-1" v-if="activityStart == 1">
+						活动正在进行中
+				</span>
+				<span class="t-1" v-if="activityStart == 2">活动已结束</span>
+				<span class="rule">活动规则</span>
+			</p>
+			
+		</header>
+		<div class="con" v-if="!loading && detailInfo !=''">
+			<category-nar 
+				:categoryData="categoryData" 
+				@returnInfo="categoryInfo" class="nar" :styles="{background:'#FAFAFA',border:'1px solid #e5e5e5'}">
+			</category-nar>
+			<prompt-prod :prodData="prodData" :activityStart="activityStart" v-if="prodData.length"></prompt-prod>
+		</div>
+		<div class="not-data" v-else>
+			<div class="con">
+				<i><img src="../../images/not-activity.png"></i>
+				<p>暂无任何活动，敬请期待</p>
+			</div>
+		</div>
+		<cart-suspend></cart-suspend>
+	</div>
+</template>
+<script>
+	import categoryNar from "components/often/category-nar"
+	import promptProd from "components/index/prompt-prod"
+	import promptAction from "actionurl/index/prompt"
+	import cartSuspend from "components/common/cart-suspend"
+	export default{
+		data() {
+			return{
+				categoryData : [],
+				prodData : [],
+				time : {
+					day : 0,
+					h : 0,
+					m : 0,
+					s : 0,
+				},
+				detailInfo : "",
+				activityStart : 0,
+				message : "距离开放时间",
+				dayStr : "",
+				loading: true
+			}
+		},
+		filters : {
+			firstval : function(value) {
+				return value < 10 ? 0 : value.toString().substring(0,1)
+			},
+			lastVal : function(value) {
+				return value < 10 ? value : value.toString().substring(1,2)
+			}
+		},
+		created() {
+			promptAction.getDetailInfo(this);
+		},
+		mounted() {
+			promptAction.getCategoryList(this);
+		},
+		components : {
+			categoryNar,
+			promptProd,
+			cartSuspend
+		},
+		methods : {
+			activityDownTime() {
+				var info = this.detailInfo, _that = this;
+				function _dateCalculate(startDate, endDate) {
+					startDate = startDate.replace(/-/g,"/"), endDate = endDate.replace(/-/g,"/")
+					var sdStr = new Date(startDate).getTime(), edStr = new Date(endDate).getTime();
+					var thatStr = new Date().getTime();
+					if(sdStr > thatStr) {
+						_that.activityStart = 0;
+						var times = _that.returnTimes(startDate);
+						if(times.day >= 1) {
+							_that.time.day = times.day;
+							_that.dayStr = times.day + "天"+times.h + "时" + times.m + "分" + times.s + "秒";
+						} else {
+							_that.time = times;
+						}
+					} else if(sdStr <= thatStr && thatStr <= edStr) {
+						_that.activityStart = 1;
+					} else {
+						_that.activityStart = 2;
+					}
+				}
+				if(info.statusId == 0) {
+					_that.activityStart = 2;
+					return false;
+				}
+				if(info.marketingStatusId == -1 || info.marketingStatusId == -5) {
+					_that.activityStart = 2;
+				} else {
+					if(info.startDate && info.startTime) {
+						var sd = info.startDate.split(" ")[0], ed = info.endDate.split(" ")[0];
+						var startDate = sd + " " + info.startTime, endDate =  ed + " " + info.endTime;
+						_dateCalculate(startDate , endDate );
+					} else if(info.startDate && !info.startTime) {
+						_dateCalculate(info.startDate , info.endDate );
+					} else if(!info.startDate && info.startTime) {
+						var date = new Date();
+						date = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+						var startDate = date + " " + info.startTime, endDate = date + " " + info.endTime;
+						_dateCalculate(startDate , endDate );
+					} else {
+						_that.activityStart = 1;
+					}
+				}
+				
+			},
+			categoryInfo(info) {
+				promptAction.getProdList(this, info.categoryId);
+			},
+			returnTimes(date,type) {
+				let time = new Date().getTime(), times = "";
+				if(type == "start") {
+					times = time - (new Date(date).getTime());
+				} else {
+					times = (new Date(date).getTime()) - time;
+				}
+				var days=Math.floor(times/(24*3600*1000));
+				let l1 = (times % (24*3600*1000)),
+					hours = Math.floor(l1 / (3600 * 1000));
+				let l2 = (l1 % (3600*1000)),
+					minute = Math.floor(l2 / (60 * 1000));
+				let l3 = (l2 % (60 * 1000)),
+					second = Math.round(l3 / 1000);
+				return {day : days, h : hours, m : minute, s : second};
+			}
+		}
+	}
+</script>
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.prompt-page{
+		header{
+			.pxrem(height, 160);
+			background: #FFF;
+			text-align: center;
+			.title{
+				.prem(20, -4);
+				padding:@prem;
+				i{
+					display: inline-block;
+					position: relative;
+					@h:31;
+					.pxrem(width, @h);
+					.pxrem(height, @h);
+					.pxrem(top, -2);
+					img{
+						width: 100%;
+					}
+				}
+			}
+			.time{
+				position: relative;
+				.pxrem(margin-top, -16);
+				.t-1{
+					display: inline-block;
+					background: #222;
+					.pxrem(font-size, 32);
+					.prem(1,5);
+					padding:@prem;
+					color:#FFF;
+					.pxrem(border-radius,5);
+				}
+				.t-2{
+					.pxrem(font-size, 46);
+				}
+				.rule{
+					position: absolute;
+					.pxrem(right, 20);
+					.pxrem(top, 15);
+					color:#666;
+					&:after{
+						content : "";
+						position: relative;
+						display: inline-block;
+						.pxrem(width, 30);
+						.pxrem(height, 30);
+						.pxrem(top, 2);
+						.pxrem(margin-left, 2);
+						background: url(../../images/home_shuaihuo_rule.png) no-repeat;
+						background-size: 100% auto;
+
+					}
+				}
+			}
+		}
+		.con{
+			.pxrem(margin-top, 20);
+			.nar{
+				background:#FAFAFA;
+			}
+		}
+		.not-data{
+			text-align: center;
+			position: absolute;
+			top:50%;
+			width:100%;
+			.pxrem(margin-top,-240);
+			.con{
+				width:100%;
+				text-align: center;
+			}
+			img{
+				.pxrem(width,248);
+				.pxrem(height,240);
+			}
+			p{
+				.pxrem(margin-top,20);
+				.pxrem(font-size,32);
+				color: @d-b-c;
+			}
+		}
+	}
+</style>

@@ -1,0 +1,131 @@
+<!-- 注册 -->
+<template>
+	<div class="page-layers">
+		<article class="register">
+			<header></header>
+			<article class="register-status">
+				<section class="one-status">
+					<img src="../../images/register_one_y.png" />
+					<p class="action"></p>
+				</section>
+				<section class="two-status">
+					<p :class="{action:isFinish}"></p>
+					<img src="../../images/register_two_n.png" :class="{hide:isFinish}" />
+					<img src="../../images/register_two_y.png" :class="{hide:!isFinish}" />
+				</section>
+			</article>
+			<article class="form">
+				<register-one v-if="fromStatus" ref="register1"></register-one>
+				<register-two v-else ref="register2"></register-two>
+			</article>
+			<article class="register_fooler">
+				<input type="button" name="" id="btn" @click="changeStatus" :value="btnStr" />
+				<p>已有账号，
+					<router-link class="login" to="/login/">立即登录</router-link>
+				</p>
+			</article>
+		</article>
+	</div>
+</template>
+<script>
+	import registerOne from 'components/login/register-one'
+	import registerTwo from 'components/login/register-two'
+	export default {
+		data() {
+			return {
+				registerData: {},
+				isFinish: false,
+				twoImg: "../../images/register_two_n.png",
+				fromStatus: true,
+				btnStr: '下一步'
+			}
+		},
+		components: {
+			registerOne,
+			registerTwo
+		},
+		methods: {
+			changeStatus() {
+				if(this.fromStatus) {
+					this.registerData = {
+						mobile: this.$refs.register1.mobile,
+						verificationCode: this.$refs.register1.verificationCode,
+						password: this.$refs.register1.password
+					}
+					if(this.registerData.mobile){
+						
+					}
+				}
+
+				this.fromStatus = false;
+				this.btnStr = "提交信息";
+				this.isFinish = true;
+				//				this.$refs
+			},
+			registerInfo(data) {
+				console.log(data)
+			}
+		}
+	}
+</script>
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.page-layer {
+		background: #fff;
+	}
+	
+	.rem(54);
+	.register {
+		padding: .5rem .7rem;
+		header {
+			.pxrem(height, 293);
+			background: url(../../images/register-header.png);
+			background-size: cover;
+		}
+		.register-status {
+			margin: .5rem 0;
+			section {
+				width: 50%;
+				float: left;
+				height: 30px;
+				position: relative;
+				p {
+					height: 2px;
+					background: #D8D8D8;
+				}
+				p.action {
+					background: #46C895;
+				}
+				img {
+					position: absolute;
+					top: -10px;
+					width: @rem;
+				}
+			}
+			.two-status {
+				text-align: right;
+			}
+		}
+		.register_fooler {
+			input {
+				margin: .5rem 0 0;
+				border: 0;
+				background: #46c895;
+				color: #fff;
+				width: 100%;
+				.pxrem(font-size, 36);
+				.pxrem(border-radius, 44);
+				.pxrem(height, 88);
+			}
+			p {
+				color: #666666;
+				text-align: center;
+				margin: .3rem 0;
+				.pxrem(font-size, 28);
+				a {
+					color: #46c895;
+				}
+			}
+		}
+	}
+</style>

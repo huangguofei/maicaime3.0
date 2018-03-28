@@ -1,0 +1,103 @@
+<!-- 商品列表 -->
+<template>
+	<div class="page-layer">
+		<el-breadcrumb separator="/">
+			<el-breadcrumb-item>当前位置</el-breadcrumb-item>
+			<el-breadcrumb-item>商品管理</el-breadcrumb-item>
+			<el-breadcrumb-item>商品分类</el-breadcrumb-item>
+			<el-breadcrumb-item>分类列表</el-breadcrumb-item>
+		</el-breadcrumb>
+		<el-row class="search-wrap">
+		  	 <el-col :span="3">
+		  	 	<el-input v-model="keydown" placeholder="请输入内容"></el-input>
+		  	 </el-col>
+		  	 <el-col :span="2">
+		  	 	<el-button style="margin-left:20px;" @click="queryInfo()">查询</el-button>
+		  	 </el-col>
+		  	 <el-col :span="2" style="float:right;text-align:right;">
+		  	 	<el-button style="margin-left:20px;" @click="queryInfo()">添加</el-button>
+		  	 </el-col>
+		</el-row>
+		<el-table
+		    :data="tableData"
+		    border
+		    style="width: 100%"
+		   >
+	   		 <el-table-column
+			      type="index"
+			      width="50">
+			    </el-table-column>
+			    <el-table-column
+			      prop="agentName"
+			      label="服务站名称"
+			      width="150">
+			    </el-table-column>
+			    <el-table-column
+			      prop="contact"
+			      label="联系人"
+			      width="120">
+			    </el-table-column>
+			    <el-table-column
+			      prop="mobile"
+			      label="联系电话"
+			      width="180">
+			    </el-table-column>
+			    <el-table-column
+			      prop="longitude"
+			      label="经度"
+			      width="120">
+			    </el-table-column>
+			    <el-table-column
+			      prop="dimension"
+			      label="纬度"
+			      width="120">
+			    </el-table-column>
+			    <el-table-column
+			      prop="phone"
+			      label="固定电话"
+			      width="120">
+			    </el-table-column>
+			    <el-table-column
+			      prop="address"
+			      label="地址"
+			      >
+			    </el-table-column>
+			    <el-table-column
+			      label="操作"
+			      width="120">
+			      <template scope="scope">
+			        
+			      </template>
+			    </el-table-column>
+			  </el-table>
+	</div>
+</template>
+<script>
+	import PRODUCTCATEGORY from "../../../action/product/category"
+	export default{
+		data() {
+			return{
+				keydown : "",
+				tableData : [
+					{
+						agentName : "大运",
+						contact : "联系人",
+						mobile : "15813720294",
+						longitude : "经度",
+						dimension : "纬度",
+						phone : "固定电话",
+						address : "地址"
+					}
+				]
+			}
+		},
+		created() {
+			PRODUCTCATEGORY.getCategoryList();
+		},
+		methods : {
+			queryInfo() {
+
+			}
+		}
+	}
+</script>

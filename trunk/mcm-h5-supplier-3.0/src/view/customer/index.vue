@@ -1,0 +1,159 @@
+<!-- 客户 -->
+<template>
+	<div class="page-layer">
+		<article class="client padding">
+			<header class="search bk-white">
+				<img src="../../images/food_search.png" />
+				<input type="text" :class="{active:isBlur}" @focus="focus" @blur="blur" @keyup.enter="loadData" v-model="searchTxt" placeholder="搜索客户" />
+			</header>
+			<main class="client-list">
+				<section class="item bk-white" v-for="(v,k) in clientList" @click="clientDetails(v)">
+					<section class="head padding hr">
+						<img class="pull-left headimg" src="../../images/food_add_image@2x.png" />
+						<section class="info pull-left">
+							<h2 class="name ellipsis">{{v.merchantName}}</h2>
+							<p>累计消费: ¥{{v.consumeAmount|ms}}</p>
+						</section>
+						<a href="javascript:;" @click.stop="callPhone(v.merchantPhone)" class="pull-right"><img src="../../images/order_details_tele.png" /></a>
+					</section>
+					<section class="footer padding">
+						<img src="../../images/guest_time@2x.png" />
+						<span class="remark">最后消费时间：{{v.lastConsumeDate}}</span>
+					</section>
+				</section>
+				
+			</main>
+		</article>
+		<goods-not-data icon="http://maicaim3.oss-cn-shenzhen.aliyuncs.com/product/d2c81449729d4c66bf4f38ab4b09041f.png" v-if="clientList.length == 0">
+			<p>没有找到客户!</p>
+		</goods-not-data>
+		<FOOTERNAR :active="2"></FOOTERNAR>
+	</div>
+</template>
+<script>
+	import FOOTERNAR from "components/common/footer-nar"
+	import goodsNotData from "components/common/goods-not-data"
+	import server from "actionurl/client/client"
+	export default {
+		data() {
+			return {
+				isBlur: false,
+				searchTxt: "",
+				clientList:[]
+			}
+		},
+		components: {
+			FOOTERNAR,
+			goodsNotData
+		},
+		created() {
+			this.loadData();
+		},
+		methods: {
+			loadData(){
+				server.getClientList(this);
+			},
+			focus() {
+				this.isBlur = true;
+			},
+			blur() {
+				if(this.searchTxt == "") {
+					this.isBlur = false;
+				}
+			},
+			clientDetails(data) {
+				this.$router.push({
+					name: "customer.details",
+					params: {
+						id: data.merchantId
+					}
+				});
+			},callPhone(phone){
+				try{
+					window.android.call(phone);
+				} catch(e) {
+					window.location.href = "tel:" + phone;
+				}
+			}
+		}
+	}
+</script>
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.client {
+		.search {
+			.pxrem(border-radius, 8);
+			.active {
+				text-align: left;
+			}
+			input {
+				width: 90%;
+				.pxrem(height, 60);
+				.pxrem(line-height, 60);
+				text-align: center;
+				border: 0;
+				display: inline-block;
+				.pxrem(font-size, 26);
+			}
+			img {
+				.pxrem(width, 35);
+				.pxrem(margin-left, 10);
+				.pxrem(margin-right, 10);
+				vertical-align: middle;
+			}
+		}
+		.client-list {
+			.pxrem(margin-top, 20);
+			.item {
+				.pxrem(border-radius, 8);
+				.pxrem(margin-bottom, 20);
+				.head {
+					.pxrem(height, 102);
+					.clearfix();
+					&:before {
+						.pxrem(left, -15);
+					}
+					&:after {
+						.pxrem(right, -15);
+					}
+					.headimg {
+						.pxrem(width, 90);
+						.pxrem(height, 90);
+						.pxrem(border-radius, 45);
+						border: 1px solid #eee;
+						.pxrem(margin-right, 20);
+					}
+					.info {
+						width: 70%;
+						.name {
+							.pxrem(font-size, 32);
+						}
+						p {
+							.pxrem(font-size, 24);
+							color: #999;
+						}
+					}
+					a {
+						.pxrem(width, 50);
+						.pxrem(margin-top, 10);
+						img {
+							width: 100%;
+						}
+					}
+				}
+				.footer {
+					text-indent: .5rem;
+					img {
+						.pxrem(width, 30);
+						.pxrem(margin-right, 10);
+						vertical-align: middle;
+					}
+					span {
+						.pxrem(font-size, 24);
+						color: #999;
+					}
+				}
+			}
+		}
+	}
+</style>

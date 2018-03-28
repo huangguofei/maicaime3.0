@@ -1,0 +1,53 @@
+/*头部广告*/
+
+const receive_header = "receive_header"
+
+const state = {
+	headerData : []
+}
+const getters = {
+	allHeaderData : state => state.headerData,
+}
+const actions = {
+	getHeaderData({commit}) {
+		var data = [
+			{
+				picture : "http://y.gtimg.cn/music/photo_new/T003R720x288M000001YCZlY3aBifi.jpg",
+				action : {
+					type : "none",
+					url : "",
+					content : ""
+				}
+			},
+			{
+				picture : "http://y.gtimg.cn/music/photo_new/T003R720x288M00000236sfA406cmk.jpg",
+				action : {
+					type : "link",
+					url : "",
+					content : ""
+				}
+			},
+			{
+				picture : "http://y.gtimg.cn/music/photo_new/T003R720x288M000002cwng4353HKz.jpg",
+				action : {
+					type : "textarea",
+					url : "",
+					content : ""
+				}
+			}
+		]
+		commit(receive_header, {data});
+	}
+}
+const mutations = {
+	[receive_header](state, {data}) {
+		console.log(123);
+		state.headerData = data;
+	}
+}
+export default{
+	state,
+	getters,
+	actions,
+	mutations
+}

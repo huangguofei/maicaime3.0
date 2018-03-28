@@ -1,0 +1,317 @@
+<!-- 下单 -->
+<template>
+	<div class="page-layer often-orders-page footer-page">
+		<div class="content">
+			<delivery-info :addressInfo="addressInfo" :timeVal="timeVal"></delivery-info>
+			<orders-prod :supplierProd="supplierProd"></orders-prod>
+			<section class="payment-wrap">
+				<header v-if="$route.params.productId">
+					<span class="title">优惠券</span>
+					<span class="value">不可用</span>
+				</header>
+				<header @click="toCoupon" v-else>
+					<span class="title">优惠券</span>
+					<span class="value">{{couponText}}</span>
+				</header>
+				<div class="p-content">
+					<div class="c-item">
+						<span class="title">食材金额：</span>
+						<span class="value">¥{{subPrice|ms}}</span>
+					</div>
+					<div class="c-item">
+						<span class="title">配送费：</span>
+						<span class="value">¥0.00</span>
+					</div>
+					<div class="c-item">
+						<span class="title">优惠金额：</span>
+						<span class="value" v-if="couponPrice != 0">- ¥{{couponPrice|ms}}</span>
+						<span class="value" v-else>-¥{{couponPrice|ms}}</span>
+					</div>
+				</div>
+				<footer>
+					<span class="v-1" v-if="!$route.params.productId">应付：¥{{(subPrice*1).toFixed(2)}}</span>
+					<span class="v-1" v-else>应付：{{firstIntegralProd.integralPrice}}积分 + ¥{{(firstIntegralProd.extraPrice*1).toFixed(2)}}</span>
+					<span class="v-2" v-if="!$route.params.productId">实付：¥{{subTotal}}</span>
+				</footer>
+			</section>
+		</div>
+		<div class="stockout" v-if="!$route.params.productId" @click="message">
+			<header>
+				<span class="reamk">遇到部分食材缺货时，这样联系我：</span>
+				<i class="h-icon"></i>
+			</header>
+			<section style="display:none;">
+				<stockout-contact></stockout-contact>
+			</section>
+		</div>
+		<footer class="footer">
+			<div class="content">
+				<span>合计：</span>
+				<span class="price" v-if="$route.params.productId">{{firstIntegralProd.integralPrice}}积分 + ¥{{(firstIntegralProd.extraPrice*1).toFixed(2)}}</span>
+				<span class="price" v-else>¥{{subTotal}}</span>
+				<button @click="confimPay()" class="btn">确定支付</button>
+			</div>
+
+		</footer>
+		<payment-type 
+			v-if="payShow" 
+			@closePay="closePay"
+			:payShow="payShow" 
+			:totalAmount="totalAmount" 
+			:prodType="prodType"
+			:firstIntegralProd="firstIntegralProd"
+			:supportDelivery = "true"
+			:submitPay="submitPay">
+		</payment-type>
+		<recharge-layer v-if="rechargeShow" :surplusPrice="surplusPrice"></recharge-layer>
+	</div>
+</template>
+<script>
+	import couponServer from 'actionurl/user/coupon'
+	import deliveryInfo from "components/often/delivery-info"
+	import stockoutContact from "components/often/stockout-contact"
+	import ordersProd from "components/often/orders-prod"
+	import paymentType from "components/common/payment-type"
+	import rechargeLayer from "components/common/recharge-layer"
+	import ordersAction from "actionurl/often/orders"
+	import commonAction from "actionurl/common/common"
+	import { mapGetters } from 'vuex'
+	export default {
+		data() {
+			return {
+				payShow: false,
+				addressInfo: {},
+				supplierProd: [],
+				totalAmount: 0,
+				orderId: 0,
+				couponText: "未使用",
+				couponPrice: 0,
+				couponId: "",
+				subPrice: 0,
+				couponData: '',
+				/*券信息*/
+				getOne: true,
+				prodType: 0,
+				/*0为正常商品 1为积分商品*/
+				firstIntegralProd: {
+					extraPrice: 0,
+					integralPrice: 0
+				},
+				timeVal: {
+					sTime: "",
+					eTime: "",
+					text: ""
+				},
+				rechargeShow : false,
+				rechargeShow : false,
+				surplusPrice : 0,
+			}
+		},
+		computed: {
+			subTotal() {
+				this.loadCoupon();
+				var suppliers = this.supplierProd;
+				if(!suppliers) return 0;
+				var len = suppliers.length,
+					total = 0;
+				for(var i = 0; i < len; i++) {
+					var su = suppliers[i].list;
+					var l = su.length;
+					for(var n = 0; n < l; n++) {
+						var prod = su[n];
+						total += prod.skuQuantity * prod.skuPrice;
+					}
+				}
+				this.subPrice = total;
+				/*获取可用券数量*/
+				ordersAction.getCouponList(this);
+				total -= this.couponPrice;
+				if(total < 0) total = 0;
+				return total.toFixed(2);
+			}
+		},
+		components: {
+			deliveryInfo,
+			stockoutContact,
+			ordersProd,
+			paymentType,
+			rechargeLayer
+		},
+		created() {
+			if(!this.$route.params.coupon)
+				localStorage.removeItem("couponData");
+			if(this.$route.params.productId) {
+				ordersAction.getIntegralOrderInfo(this);
+				this.prodType = 1;
+			} else {
+				ordersAction.getOrdersInfo(this);
+			}
+			couponServer.getCouponList(this);
+		},
+		methods: {
+			confimPay() {
+				if(!this.timeVal.sTime || !this.timeVal.eTime) {
+					cJs.message("请选择配送时间!");
+					return false;
+				}
+				if(this.$route.params.productId) {
+					ordersAction.saveIntegralOrdersInfo(this);
+				} else {
+					ordersAction.saveOrdersInfo(this);
+				}
+
+			},
+			submitPay(payType, balance) {
+				if(payType == 2) {
+					commonAction.delayedPayment(this);
+				} else {
+					if(this.prodType == 1) {
+						commonAction.payByIntegral(this);
+					} else {
+						if(balance - this.totalAmount < 0) {
+							this.rechargeShow = true;
+							this.surplusPrice = (this.totalAmount - balance).toFixed(2);
+						} else {
+							commonAction.payByBalance(this);
+						}
+						
+					}
+				}
+				
+			},
+			toCoupon() {
+				sessionStorage.setItem("priceCondition", this.subPrice);
+				this.$router.push({
+					name: "mcm.purchaser.coupons",
+					params: {
+						type: "select"
+					}
+				});
+			},
+			loadCoupon() {
+				var couponData = localStorage.getItem("couponData");
+				if(couponData) {
+					couponData = JSON.parse(couponData);
+					this.couponText = "- ¥" + couponData[0].couponPrice;
+					this.couponPrice = couponData[0].couponPrice;
+					this.couponId = couponData[0].couponId;
+				}
+			},
+			closePay() {
+				this.payShow = false;
+			},
+			message() {
+				cJs.message('程序员们正在加班赶...')
+			}
+		}
+	}
+</script>
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.often-orders-page {
+		.content {
+			.prem(20);
+			padding: @prem;
+			.pxrem(margin-bottom, 60);
+		}
+		.payment-wrap {
+			.prem(-4, 20);
+			background: #FFF;
+			.pxrem(margin-top, 20);
+			padding: @prem;
+			header {
+				position: relative;
+				.pxrem(height, 91);
+				.pxrem(line-height, 91);
+				.pxrem(font-size, 32);
+				.value {
+					float: right;
+					.pxrem(font-size, 28);
+					color: #999999;
+					.pxrem(margin-right, 20);
+				}
+				border-bottom:1px solid #F4F4F4;
+			}
+			header:before {
+				content: "";
+				position: absolute;
+				right: 0;
+				top: 50%;
+				.pxrem(margin-top, -20);
+				.pxrem(width, 13);
+				.pxrem(height, 22);
+				background: url(../../images/home_jifen_arrow.png) no-repeat 0 center;
+				background-size: 100% auto;
+			}
+			.p-content {
+				.prem(20, 0);
+				padding: @prem;
+				.c-item {
+					.prem(5, 0);
+					padding: @prem;
+					.pxrem(font-size, 28);
+					.value {
+						float: right;
+					}
+				}
+			}
+			footer {
+				.pxrem(height, 91);
+				.pxrem(line-height, 91);
+				border-top: 1px dotted #E9E9E9;
+				.v-2 {
+					float: right;
+				}
+			}
+		}
+		.stockout {
+			position: fixed;
+			left: 0;
+			width: 100%;
+			.pxrem(bottom, 98);
+			header {
+				position: relative;
+				.pxrem(height, 70);
+				.pxrem(line-height, 70);
+				background: rgba(185, 240, 208, 1);
+				border: 1px solid rgba(185, 240, 208, 1);
+				.pxrem(font-size, 28);
+				.prem(-4, 20);
+				padding: @prem;
+				.h-icon {
+					position: absolute;
+					.pxrem(right, 20);
+					.pxrem(top, 7);
+					display: inline-block;
+					.pxrem(width, 47);
+					.pxrem(height, 47);
+					background: url(../../images/list_order_arrow1.png) no-repeat;
+					background-size: cover;
+				}
+			}
+		}
+		.footer {
+			position: fixed;
+			left: 0;
+			bottom: 0;
+			width: 100%;
+			.pxrem(height, 98);
+			background: #FFF;
+			.pxrem(line-height, 98);
+			.content {
+				.prem(0, 20);
+				padding: @prem;
+			}
+			span {
+				.pxrem(font-size, 28);
+			}
+			button {
+				position: absolute;
+				top: 0;
+				right: 0;
+				height: 100%;
+				.pxrem(width, 250);
+			}
+		}
+	}
+</style>

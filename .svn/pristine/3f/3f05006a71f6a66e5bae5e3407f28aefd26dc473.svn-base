@@ -1,0 +1,42 @@
+<!-- 分类商品 -->
+<template>
+	<div class="page-layer footer-page">
+		<category-nar :categoryData="categoryData" @returnInfo="categoryInfo"></category-nar>
+		<prodlist :prodData="prodData"  class="prod-wrap"  ></prodlist>
+		<cart-suspend></cart-suspend>
+	</div>
+</template>
+<script>
+	import categoryNar from "components/often/category-nar"
+	import prodlist from "components/market/prod-list"
+	import cartSuspend from "components/common/cart-suspend"
+	import categoryAction from "actionurl/index/category"
+	export default{
+		data() {
+			return{
+				categoryData : [],
+				prodData : []
+			}
+		},
+		created() {
+			categoryAction.getSubCateById(this);
+		},
+		components : {
+			categoryNar,
+			prodlist,
+			cartSuspend
+		},
+		methods : {
+			categoryInfo(info) {
+				var id = info.categoryId;
+				categoryAction.getProdsById(this,id);
+			}
+		}
+	}
+</script>
+<style lang="less" scoped>
+@import "../../common/less/config.less";
+.prod-wrap{
+	.pxrem(margin-top, 20);
+}
+</style>

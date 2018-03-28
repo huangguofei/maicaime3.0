@@ -1,0 +1,53 @@
+/*路由*/
+import Vue from 'vue'
+import VueRouter from 'vue-router'
+import store from '../store'
+import CommonJs from './../common/js/common'
+import IndexRouter from './index'
+import MarketRouter from './market'
+import OrderRouter from './order'
+import OftenRouter from './often'
+import UserRouter from './user'
+import LoginRouter from'./login'
+Vue.use(VueRouter);
+
+const routes = [];
+/*合并路由配置*/
+const routesArray = routes.concat(IndexRouter.router).
+					concat(MarketRouter.router).
+					concat(OrderRouter.router).
+					concat(OftenRouter.router).
+					concat(UserRouter.router).
+					concat(LoginRouter.router);
+
+export const router = new VueRouter({
+	mode : "history",
+	base: __dirname,
+	routes : routesArray
+})
+
+window.cJs = CommonJs;
+cJs.adaptiveRem();
+
+/*验证是否登录*/
+router.beforeEach((to, from, next) => {
+	var path = to.path, name = to.name;
+	var userInfo = cJs.getCookie("p-user-info");
+	if(userInfo) {
+		next();
+	} else {
+		if(name.indexOf("login") >= 0) {
+			next();
+			return false;
+		}
+		next({
+			name: "login.index"
+		});
+	}
+
+})
+
+new Vue({
+	router,
+	store
+}).$mount("#app")

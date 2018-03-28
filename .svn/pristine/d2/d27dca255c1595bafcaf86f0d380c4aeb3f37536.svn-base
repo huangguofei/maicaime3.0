@@ -1,0 +1,117 @@
+<template>
+	<article class="page-layer statistic-analysis">
+		<header>
+			<ul>
+				<li :class="{active:rankType==1}" @click="changeRank('1')">订单统计</li>
+				<li :class="{active:rankType==2}" @click="changeRank('2')">商户统计</li>
+			</ul>
+			<router-link :to="{path:'/user/salesTimeSearch',query:{type:2}}" class="select-time"><img src="../../../images/mine_rank_calendar2@2x.png" /></router-link>
+		</header>
+		<article class="info padding bk-white">
+			<section class="info-left">
+				<h3>89</h3>
+				<p>昨日下单（笔）</p>
+			</section>
+			<section class="info-right">
+				<h3>¥8140.25</h3>
+				<p>昨日订单总额</p>
+			</section>
+		</article>
+		<p class="title padding">2017年09月11日</p>
+		<chart></chart>
+	</article>
+</template>
+
+<script>
+	import chart from "components/user/statisticsChart"
+	export default {
+		data() {
+			return {
+				rankType: 1,
+
+			}
+		},
+		props: [],
+		created() {
+
+		},
+		methods: {
+			changeRank(type) {
+				this.rankType = type;
+			}
+		},
+		components: {
+			chart
+		}
+	}
+</script>
+
+<style lang="less" scoped>
+	@import "../../../common/less/config.less";
+	.statistic-analysis {
+		header {
+			position: relative;
+			background: #222222;
+			.pxrem(height, 80);
+			.pxrem(padding-top, 10);
+			ul {
+				width: 60%;
+				margin: 0 auto;
+				display: flex;
+				color: #fff;
+				border: 1px solid #fff;
+				.pxrem(border-radius, 8);
+				li {
+					width: 50%;
+					.pxrem(height, 60);
+					.pxrem(line-height, 60);
+					.pxrem(padding-left, 25);
+					.pxrem(padding-right, 25);
+					border-left: 1px solid #fff;
+					box-sizing: border-box;
+					text-align: center;
+				}
+				li:first-child {
+					border: 0;
+				}
+				li.active {
+					background: #fff;
+					color: #222;
+				}
+			}
+			.select-time {
+				position: absolute;
+				.pxrem(right, 20);
+				.pxrem(top, 18);
+				.pxrem(width, 45);
+				img {
+					width: 100%;
+				}
+			}
+		}
+		.info {
+			.pxrem(height, 100);
+			display: flex;
+			justify-content: center;
+			text-align: center;
+			.info-left {
+				border-right: 1px solid #D7D7D7;
+			}
+			section {
+				width: 50%;
+				h3 {
+					.pxrem(font-size, 46);
+					color: @m-c;
+				}
+				p {
+					.pxrem(font-size, 24);
+					color: #999;
+				}
+			}
+		}
+		.title {
+			.pxrem(font-size, 28);
+			color: #666666;
+		}
+	}
+</style>

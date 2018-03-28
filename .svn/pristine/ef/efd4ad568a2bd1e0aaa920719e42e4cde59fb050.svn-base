@@ -1,0 +1,15 @@
+/**
+ * author hgf 
+ * day    2017-11-2
+ * 个人中心模块接口
+ */
+import https from "httpurl/https"
+/*限时活动*/
+export const activitiesAPI= {
+	/*获取活动种类列表*/
+	getActivitiesKindListAPI: (...v) => https.commAjax(cJs.apiDataReturnParams("get", "/feature_area/enterableList", v)),
+	/*获取限时特价详情*/
+	getActivitiesDetailsAPI:(...v) => https.commAjax(cJs.apiDataReturnParams("get", "/feature_area/ms/details", v)),
+	/*参加活动发布产品*/
+	joinActivityAPI:(...v) => https.commAjax(cJs.apiDataReturnParams("post", "/feature_area/ms/joinProd", v)),
+}

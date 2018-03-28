@@ -1,0 +1,24 @@
+<!-- 概况 -->
+<template>
+	<page-layer :narData="narData" classs="back-color padd">
+		客户概况
+	</page-layer>
+</template>
+<script>
+import pageLayer from "components/common/page-layer"
+export default{
+	data() {
+		return {
+			narData : [
+				{
+					name : "客户概况",
+					router : ""
+				}
+			]
+		}
+	},
+	components : {
+		pageLayer
+	}
+}
+</script>

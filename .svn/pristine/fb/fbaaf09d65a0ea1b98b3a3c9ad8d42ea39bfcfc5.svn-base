@@ -1,0 +1,87 @@
+/**
+ * author pzh
+ * day    2017-9-28
+ * 食材业务
+ */
+import {foodAPI} from "apiurl/food"
+ export default{
+ 	/*获取食材分类*/
+ 	getCategoryList(vm) {
+        var _that = this;
+        foodAPI.categoryAPI((result) => {
+            if(result[0]) {
+                 var categoryId = result[0].categoryId;
+                 var params = {categoryId : categoryId};
+                _that.getProdList(vm,params);
+                vm.$store.commit("writeCategoryList", {data : result});
+                vm.categoryData = result;
+            }
+        });
+ 	},
+    /*获取商品列表*/
+    getProdList(vm, params, callback) {
+         foodAPI.categoryProdAPI(params, (result) => {
+            vm.prodData = result;
+            vm.load = false;
+            if(vm.pattern == 1) {
+                vm.$refs.prodList ? vm.$refs.prodList.calculateItemHeight() : null;
+            } else {
+                 vm.$refs.prodListPic ? vm.$refs.prodListPic.calculateItemHeight() : null;
+            }   
+            callback ? callback() : null;
+        },() => {
+            vm.load = false;
+        });
+    },
+    /*保存食材信息*/
+    saveProductInfo(vm) {
+        foodAPI.addProductAPI(vm.form, (result) => {
+            cJs.message("提交成功");
+            vm.$router.push({
+                name : "food.index"
+            });
+        });
+    },
+    /*修改商品报价*/
+    editorProductPrice(vm, params) {
+        foodAPI.offerProductAPI(params, (result) => {});
+    },
+    /*商品素材搜索*/
+    searchProdInfo(vm, params) {
+        foodAPI.suggestAPI(params, (result) => {
+            try{
+                var jsonData = JSON.parse(result);
+                if(jsonData.status == "OK") {
+                    var items = jsonData.result.items;
+                    var len = items.length;
+                    if(len > 0) {
+                        vm.searchProds = items;
+                        vm.searchShow = true;
+                    } else {
+                        vm.searchShow = false;
+                    }
+                } else {
+                    vm.searchShow = false;
+                }
+            }catch(e) {
+                vm.searchProds = [];
+                vm.searchShow = false;
+            }
+        });
+    },
+    /*更新商品状态*/
+    updateProdStatus(vm, item, status) {
+        var params = {
+            productSkuId : item.productSkuId,
+            skuStatusId : status
+        }
+        foodAPI.prodStatusAPI(params, (result) => {
+            item.skuStatusId = status;
+            if(status == 0) {
+                cJs.message("下架成功");
+            } else if(status == 1) {
+                cJs.message("上架成功");
+            }
+        });
+    }
+ }

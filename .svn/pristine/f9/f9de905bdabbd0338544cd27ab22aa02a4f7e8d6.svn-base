@@ -1,0 +1,22 @@
+<div class="goods-page scroll" id="goodsPage">
+     	<div class="header">
+          <a href="javascript:void(0)" class="close common-icon-1" onclick="common.closeGoods()"></a>
+          <a href="" class="logo"><img src="../../images/logo.png" /></a>
+      </div>
+      <div class="content-wrap">
+            <div class="prod-wrap" >
+                <ul class="prod-list">
+                  <!--  <li class="p-item">
+                      <div class="pro-img">
+                      <img src="../../images/4.png">
+                      
+                      </div>
+                      <p class="en">XIHU<br/>LONGJING</p>
+                        <p class="zh">西湖龙井</p>
+                  </li>  -->
+                 
+                </ul>
+                <div style="clear:both;"></div>
+            </div>
+      </div>
+    </div>

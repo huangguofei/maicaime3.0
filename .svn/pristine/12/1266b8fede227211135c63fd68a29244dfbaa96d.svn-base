@@ -1,0 +1,134 @@
+/*注册 第二步*/
+<template>
+	<article class="register-form">
+		<section class="from-item">
+			<img src="../../images/signin_store.png" />
+			<input type="text" name="shopname" id="shopname" ref="purchaserName" v-model="purchaserName" placeholder="请输入店铺名称" />
+		</section>
+		<section class="from-item">
+			<img src="../../images/signin_people.png" />
+			<input type="text" name="linkman" id="linkman" ref="contact" v-model="contact" placeholder="请输入联系人" />
+		</section>
+		<section class="from-item">
+			<img src="../../images/signin_address.png" />
+			<article class="location-info" @click="selectCity">
+				<span>
+					{{locationData.provinceName}}
+					<img src="../../images/register_bottom.png"/>
+				</span>
+				<span>
+					{{locationData.cityName}}
+					<img src="../../images/register_bottom.png"/>
+				</span>
+				<span>
+					{{locationData.countyName}}
+					<img src="../../images/register_bottom.png"/>
+				</span>
+			</article>
+			<city-select ref="cityselect" :locationData="locationData" @citySelect="getCityData"></city-select>
+		</section>
+		<section class="from-item">
+			<img src="../../images/signin_no..png" />
+			<input type="text" name="shoplocation" id="shoplocation" ref="address" v-model="address" placeholder="店铺所在街道及门牌" />
+			<!--<a href="javascript:;" @click="getlocation" class="get-location">{{locationStr}}</a>-->
+		</section>
+	</article>
+</template>
+
+<script>
+	import citySelect from 'components/login/city-select'
+	const timeNum=60;
+	export default{
+		data(){
+			return {
+				info: [],
+				locationData: {
+					provinceId: "440000",
+					provinceName: "广东省",
+					cityId: "440300",
+					cityName: "深圳市",
+					countyId: "440305",
+					countyName: "南山区"
+				},
+				selectCityShow:false,
+				locationStr: "正在定位",
+				numTime: "",
+				timer: null,
+				purchaserName: "",
+				contact: "",
+				address: "",
+				areaId: 12365,
+				longitude: 11111,
+				dimension: 22222,
+				cityId: 11111
+			}
+		},methods:{
+			getlocation() {
+				if(!this.timer) {
+					this.numTime = timeNum;
+					this.timer = setInterval(() => {
+						console.log(this.numTime)
+						if(this.numTime > 0) {
+							this.numTime--;
+							this.codeStr = this.numTime + "s";
+						} else {
+							clearInterval(this.timer);
+							this.timer = null;
+							this.numTime = timeNum;
+							this.codeStr = "重新获取";
+						}
+					}, 1000);
+				}
+			},
+			formGetFocus(index) {
+				if(index) {
+					this.$refs[index].focus();
+				}
+			},
+			selectCity(){
+				this.$refs.cityselect.choseAdd();
+			},
+			getCityData(data){
+				console.log(data);
+				this.locationData.provinceId=data.provinceId;
+				this.locationData.provinceName=data.provinceName;
+				this.locationData.cityId=data.cityId;
+				this.locationData.cityName=data.cityName;
+				this.locationData.countyId=data.countyId;
+				this.locationData.countyName=data.countyName;
+			}
+		},
+		components:{
+			citySelect
+		}
+	}
+</script>
+
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.register-form {
+		.from-item {
+			position:relative;
+			.get-location{
+				position: absolute;
+				right: 0;
+				display: inline-block;
+				color: @m-c;
+				text-align: center;
+			}
+		}
+		.location-info {
+			display: inline-block;
+			width: calc(~"100% - 32px");
+			border: 0;
+			border-bottom: 1px solid #f0f0f0;
+			text-align: left;
+			padding: .05rem 0;
+			.pxrem(font-size, 30);
+			.pxrem(margin-left, 10);
+			span{
+				margin: 0 .05rem;
+			}
+		}
+	}
+</style>

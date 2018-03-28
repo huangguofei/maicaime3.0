@@ -1,0 +1,399 @@
+<template>
+	<article class="order-details">
+		<header class="padding order-status bk-white border-bottom radius-bottom">
+			<section class="relative">
+				<h3 class="text-center">待付款></h3>
+				<span class="style1">今天15:50</span>
+			</section>
+			<section class="text-center style1">订单已生成，15分钟未付款则自动取消
+			</section>
+		</header>
+		<section class="padding bk-white delivery-info border-bottom">
+			<p><img src="../../images/list_order_time.png">配送时间：明日16:00<span class="pull-right">送货上门</span></p>
+			<p>缺货处理：部分食材缺货时，请联系（136XXXXXXXX）我</p>
+		</section>
+		<section class="btn-group padding gap bk-white radius-top">
+			<a class="cancel-order disabled" id="">取消订单</a>
+			<a class="print-order" id="">打印订单</a>
+			<a class="again-shop" id="">再次购买</a>
+		</section>
+		<section class="shop-details gap">
+			<header class="padding bk-white">
+				<img class="pull-left" src="../../images/list_order_store.png" />
+				<h3 class="pull-left">诚信药店</h3>
+				<a class="pull-right" href="tel:10086"><img src="../../images/market_details_tele.png" /></a>
+			</header>
+			<ul class="padding">
+				<li>
+					<div class="shop-item">
+						<section class="item-left pull-left">
+							<p class="commodity-name"><i></i><span>{{commodityName}}</span></p>
+							<p class="price-num"><span>单价:¥{{price}}</span><span>数量:{{num}}</span></p>
+						</section>
+						<section class="item-right pull-right">
+							<b>¥{{totalPrices}}</b>
+						</section>
+					</div>
+				</li>
+			</ul>
+			<p class="look-more" @click="lookMore">(查看更多5件食材)</p>
+		</section>
+		<section class="order-info gap">
+			<div class="padding bk-white radius-bottom border-bottom">
+				<p><span>订单编号</span>22222222222222</p>
+				<p><span>下单时间</span>2017年9月26日15:14:56</p>
+				<p><span>接单时间</span>2017-9-26 15:15:05</p>
+				<p><span>订单备注</span>猪肉要灌水哦</p>
+			</div>
+			<p class="invoice bk-white padding radius-top"><span>发票类型</span>不爱发票</p>
+		</section>
+		<section class="price-info">
+			<div class="padding bk-white radius-bottom border-bottom">
+				<p>食材总额<span class="pull-right">¥99.00</span></p>
+				<p>配送费<span class="pull-right">¥99.00</span></p>
+				<p>优惠金额<span class="pull-right">¥99.00</span></p>
+			</div>
+			<p class="price-pay bk-white padding radius-top">实付款:<span class="pull-right">¥99.00</span></p>
+		</section>
+		<section class="page-modal" v-show="isShowPage">
+			<div class="page-bg" @click="offPage"></div>
+			<div class="page padding">
+				<h3>核对实到食材数量</h3>
+				<ul class="padding">
+					<li>
+						<div class="shop-item">
+							<section class="item-left pull-left">
+								<p class="commodity-name"><i></i><span>{{commodityName}}</span></p>
+								<p class="price-num"><span>单价:¥{{price}}</span><span>数量:{{num}}</span></p>
+							</section>
+							<section class="item-right pull-right">
+								实到<img src="../../images/market_minus.png" />
+								<span>22</span>
+								<img src="../../images/market_plus+.png" />
+							</section>
+						</div>
+					</li>
+					<li>
+						<div class="shop-item">
+							<section class="item-left pull-left">
+								<p class="commodity-name"><i></i><span>{{commodityName}}</span></p>
+								<p class="price-num"><span>单价:¥{{price}}</span><span>数量:{{num}}</span></p>
+							</section>
+							<section class="item-right pull-right">
+								实到<img src="../../images/market_minus.png" />
+								<span>22</span>
+								<img src="../../images/market_plus+.png" />
+							</section>
+						</div>
+					</li>
+				</ul>
+			</div>
+		</section>
+		<footer class="">
+			<p class="pull-left">合计：<span>¥60.00</span></p>
+			<a href="javascript:;" class="pull-right">确认收货</a>
+		</footer>
+	</article>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+				orderList: [],
+				shopName: '诚信商行批发部',
+				orderStatusStr: '待收货',
+				commodityName: '清远三只小鸡2kg/只',
+				price: '2000.00',
+				num: '200',
+				totalPrices: '229.00',
+				realityPay: '399.00',
+				isRemark: true,
+				btnStr: '确认付款',
+				isShowPage: false
+			}
+		},
+		props: ['orderData'],
+		created() {
+
+		},
+		methods: {
+			orderDateils() {
+				this.$router.push({
+					name: "order.detail",
+					params: {
+						id: "123"
+					}
+				})
+			},
+			lookMore(){
+				this.isShowPage=true;
+			},
+			offPage(){
+				this.isShowPage=false;
+			}
+		}
+	}
+</script>
+
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.order-details {
+		.pxrem(padding-bottom, 120);
+		.bk-white {
+			background: #fff;
+		}
+		.style1 {
+			color: #666;
+			.pxrem(font-size, 28);
+		}
+		.border-top {
+			border-top: 2px dashed #e9e9e9;
+		}
+		.border-bottom {
+			border-bottom: 2px dashed #e9e9e9;
+		}
+		.radius-top {
+			border-radius: .2rem .2rem 0 0;
+		}
+		.radius-bottom {
+			border-radius: 0 0 .2rem .2rem;
+		}
+		.gap {
+			margin-bottom: .15rem;
+		}
+		.order-status {
+			section {
+				span {
+					position: absolute;
+					top: 0;
+					.pxrem(right, 16);
+				}
+			}
+			section:first-child {
+				.pxrem(line-height, 80);
+				.pxrem(height, 80);
+			}
+			h3 {
+				color: #FF5B60;
+				text-align: center;
+				.pxrem(font-size, 36);
+			}
+		}
+		.delivery-info {
+			border-radius: .2rem;
+			p {
+				.pxrem(margin-bottom, 10);
+				.pxrem(font-size, 28);
+				color: #222;
+				img {
+					.pxrem(width, 30);
+					.pxrem(margin-right, 20);
+					vertical-align: bottom;
+				}
+				span {
+					color: #FF5F64;
+				}
+			}
+			p:last-child {
+				.pxrem(padding-left, 50);
+			}
+		}
+		.btn-group {
+			text-align: center;
+			a {
+				width: 23%;
+				display: inline-block;
+				text-align: center;
+				.pxrem(height, 60);
+				.pxrem(line-height, 60);
+				.pxrem(font-size, 28);
+				.pxrem(border-radius, 5);
+				color: #222;
+				border: 1px #D7D7D7 solid;
+				margin: 0 1%;
+				background: #fff;
+			}
+			a.disabled {
+				color: #D7D7D7;
+				border-color: #D7D7D7;
+			}
+			a:last-child {
+				color: #fff;
+				background: @m-c;
+				border: 0;
+			}
+		}
+		.shop-details {
+			header {
+				/*.clearfix();*/
+				img {
+					.pxrem(width, 50);
+					.pxrem(margin-right, 10);
+					vertical-align: middle;
+				}
+				h3 {
+					.pxrem(font-size, 32);
+				}
+			}
+			ul {
+				padding-bottom: 0;
+			}
+			.look-more {
+				text-align: center;
+				img {
+					.pxrem(width, 50);
+					vertical-align: middle;
+				}
+			}
+		}
+		.order-info {
+			p {
+				.pxrem(font-size, 28);
+				.pxrem(line-height, 50);
+				span {
+					color: #999;
+					.pxrem(margin-right, 40);
+				}
+			}
+			.invoice {
+				.pxrem(height, 30);
+				.pxrem(line-height, 30);
+			}
+		}
+		.price-info {
+			p {
+				.pxrem(font-size, 28);
+				color: #999;
+				.pxrem(line-height, 50);
+				span {
+					.pxrem(font-size, 32);
+					color: #000;
+				}
+			}
+			.price-pay {
+				.pxrem(height, 30);
+				.pxrem(line-height, 30);
+				span{
+					color:@p-p-c;
+				}
+			}
+		}
+		.shop-item {
+			.pxrem(margin-bottom, 26);
+			overflow: auto;
+			.item-left {
+				.commodity-name {
+					color: #151009;
+					.pxrem(height, 40);
+					.pxrem(line-height, 40);
+					.pxrem(font-size, 28);
+					.pxrem(margin-bottom, 5);
+					i {
+						background: @p-p-c;
+						vertical-align: middle;
+						display: inline-block;
+						.pxrem(width, 12);
+						.pxrem(height, 12);
+						.pxrem(border-radius, 6);
+						.pxrem(margin-right, 6);
+					}
+				}
+				.price-num {
+					.pxrem(height, 33);
+					.pxrem(line-height, 33);
+					color: #999999;
+					.pxrem(font-size, 24);
+					.pxrem(padding-left, 22);
+					span:first-child {
+						margin-right: 0.3rem;
+					}
+				}
+			}
+			.item-right {
+				.pxrem(height, 74);
+				.pxrem(line-height, 74);
+				b {
+					color: #343534;
+					.pxrem(font-size, 28);
+				}
+			}
+		}
+		footer {
+			.pxrem(font-size, 28);
+			/*.clearfix();*/
+			background: #FAFAFA;
+			position: fixed;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			.pxrem(height, 100);
+			.pxrem(line-height, 100);
+			border-top: 1px solid #F3F3F3;
+			.pxrem(padding-left, 16);
+			p {
+				span {
+					color: @p-p-c;
+				}
+			}
+			a {
+				.pxrem(font-size, 36);
+				background: @m-c;
+				color: #fff;
+				.pxrem(padding-left, 16);
+				.pxrem(padding-right, 16);
+			}
+		}
+		.page-modal {
+			position: fixed;
+			top: 0;
+			.pxrem(bottom, 100);
+			left: 0;
+			right: 0;
+			.page-bg {
+				background: #000;
+				opacity: 0.6;
+				position: absolute;
+				width: 100%;
+				top: 0;
+				bottom: 0;
+			}
+			.page {
+				background: #fff;
+				position: absolute;
+				bottom: 0;
+				width: 100%;
+				box-sizing: border-box;
+				h3 {
+					.pxrem(font-size, 32);
+					text-align: center;
+				}
+				ul {
+					background: #F8F8F8;
+					margin-top: .2rem;
+					img {
+						.pxrem(width, 43);
+						vertical-align: middle;
+						position: relative;
+						z-index: 2;
+					}
+					img:first-child {
+						.pxrem(margin-left, 10);
+					}
+					.item-right {
+						span {
+							display: inline-block;
+							text-align: center;
+							background: #fff;
+							.pxrem(width, 117);
+							.pxrem(height, 40);
+							.pxrem(line-height, 40);
+							margin: 0 -.2rem;
+						}
+						color: #4A4A4A;
+					}
+				}
+			}
+		}
+	}
+</style>

@@ -1,0 +1,26 @@
+<!-- 活动列表 -->
+<template>
+	<page-layer :narData="narData" classs="">
+		<p>热门搜索</p>
+	</page-layer>
+</template>
+<script>
+	import pageLayer from "components/common/page-layer"
+	export default {
+		data() {
+			return {
+				narData: [{
+						name: "热门搜索"
+					}
+				]
+			}
+		},
+		components: {
+			pageLayer
+		}
+	}
+</script>
+<style lang="less" scoped>
+	@import "../../../common/less/config.less";
+	
+</style>

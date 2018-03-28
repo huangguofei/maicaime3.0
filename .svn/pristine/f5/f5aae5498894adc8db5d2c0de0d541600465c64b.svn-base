@@ -1,0 +1,78 @@
+<template>
+	<page-layer :narData="narData" classs="back-color">
+		<p class="total">交易金额：{{tradeAmount|ms}}</p>
+		<el-table :data="billData" style="width: 100%" v-if="billData">
+			<el-table-column type="index" width="60">
+			</el-table-column>
+			<el-table-column prop="billId" label="账单号" width="190">
+			</el-table-column>
+			<el-table-column prop="refId" label="订单号">
+			</el-table-column>
+			<el-table-column prop="approachText" label="说明">
+			</el-table-column>
+			<el-table-column prop="subsidies" label="补贴">
+			</el-table-column>
+			<el-table-column prop="amount" label="交易金额">
+			</el-table-column>
+			<el-table-column prop="amountBeforeChange" label="交易前余额">
+			</el-table-column>
+			<el-table-column prop="amountAfterChange" label="交易后余额">
+			</el-table-column>
+			<el-table-column prop="tradeAmount" label="合计">
+			</el-table-column>
+			<el-table-column prop="datatime" label="账单时间">
+			</el-table-column>
+		</el-table>
+		<el-pagination @current-change="handleCurrentChange" :current-page.sync="queryParams.pageNum" :page-size="queryParams.pageSize" layout="total, prev, pager, next" :total="queryParams.total">
+		</el-pagination>
+	</page-layer>
+</template>
+
+<script>
+	import billServer from "actionurl/data/bill"
+	import pageLayer from "components/common/page-layer"
+
+	export default {
+		data() {
+			return {
+				narData: [{
+					name: "账单详情",
+					router: ""
+				}],
+				tradeAmount:"0.00",
+				Amount:"0.00",
+				billData: "",
+				queryParams: {
+					billId: this.$route.params.id,
+					pageNum: 1,
+					pageSize: 10,
+					pages: 1,
+					total: 0
+				}
+			}
+		},
+		created() {
+			billServer.getBillDetails(this);
+		},
+		methods: {
+			handleCurrentChange() {
+
+			},
+			viewDetails(data) {
+
+			}
+		},
+		components: {
+			pageLayer
+		}
+	}
+</script>
+
+<style>
+.total{
+	height: 60px;
+	padding: 16px;
+	box-sizing: border-box;
+	font-size: 20px;
+}
+</style>

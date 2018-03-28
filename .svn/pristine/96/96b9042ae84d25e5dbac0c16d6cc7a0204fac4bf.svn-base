@@ -1,0 +1,17 @@
+/**
+ * author hgf
+ * day    2017-11-23
+ * 客户业务
+ */
+import { checkingAPI } from "apiurl/checking"
+export default { /*获取客户列表*/
+	getCheckingList(vm) {
+		checkingAPI.checkingListAPI({
+			startDate:vm.Time.sTime,
+			endDate:vm.Time.eTime
+		}, (result) => {
+			vm.checkingList = result.resultList;
+			vm.amount=result.sumAmount;
+		});
+	}
+}

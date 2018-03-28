@@ -1,0 +1,149 @@
+<template>
+	<article class="order-item">
+		<section class="search-nav padding bk-white">
+			<section class="">
+				<a href="javscript:;" @click="changeSearch('1')" :class="{active:searchIndex==1}">数量
+					<img v-if="searchIndex==1" src="../../images/order_arrowhighlight.png">
+					<img v-else src="../../images/order_arrow.png">
+				</a>
+				<a href="javscript:;" @click="changeSearch('2')" :class="{active:searchIndex==2}">时间
+					<img v-if="searchIndex==2" src="../../images/order_arrowhighlight.png">
+					<img v-else src="../../images/order_arrow.png"></a>
+				<a href="javscript:;" @click="changeSearch('3')" :class="{active:searchIndex==3}">金额
+					<img v-if="searchIndex==3" src="../../images/order_arrowhighlight.png">
+					<img v-else src="../../images/order_arrow.png"></a>
+			</section>
+			<a href="javascript:;" class="pull-right"><img src="../../images/order_exchange.png">食材模式</a>
+		</section>
+		<order-list-view :order-data="orderList" :no-show-num="option.prodQuantity"></order-list-view>
+		<footer class="padding">
+			<label class="pull-left" :class="{active:isSelectAll}" @click="selectAll">
+				<span></span>
+				全选
+			</label>
+			<a href="javscript:;" class="pull-right">打印</a>
+		</footer>
+	</article>
+</template>
+
+<script>
+	import orderListView from 'components/order/order-list'
+	import orderApi from 'actionurl/order/order'
+	export default {
+		data() {
+			return {
+				orderList: [],
+				searchIndex: 2,
+				isSelectAll: false,
+				option: {
+					orderStatusId: 40,
+					/*待付款*/
+					prodQuantity: 2,
+					pageNum: 1,
+					pageSize: 10
+				},
+				totalPage: "",
+				currentPage: 1
+			}
+		},
+		components: {
+			orderListView
+		},
+		created() {
+			orderApi.getOrderListData(this);
+		},
+		watch: {
+			orderList(val) {
+				console.log(val)
+			}
+		},
+		methods: {
+			changeSearch(index) {
+				if(this.searchIndex == index) {}
+				this.searchIndex = index;
+			},
+			selectAll() {
+				if(this.isSelectAll)
+					this.isSelectAll = false;
+				else
+					this.isSelectAll = true;
+			}
+		}
+	}
+</script>
+
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.bk-white {
+		background: #fff;
+	}
+	
+	footer {
+		position: fixed;
+		.pxrem(bottom, 100);
+		width: 100%;
+		box-sizing: border-box;
+		.clearfix();
+		background: #fafafa;
+		.pxrem(height, 90);
+		.pxrem(line-height, 58);
+		.pxrem(font-size, 28);
+		span {
+			display: inline-block;
+			.pxrem(width, 32);
+			.pxrem(height, 32);
+			border: 1px solid #a4a4a4;
+			.pxrem(border-radius, 16);
+			vertical-align: sub;
+		}
+		a{
+			border:1px solid @m-c;
+			display: inline-block;
+			.pxrem(width,160);
+			.pxrem(height,56);
+			color: @m-c;
+			text-align: center;
+		}
+	}
+	
+	.active {
+		span {
+			background: url(../../images/order_check.png)no-repeat -1px -1px;
+			background-size: 120% auto;
+			border-color: #3084F2;
+		}
+	}
+	
+	.search-nav {
+		text-align: center;
+		section {
+			display: inline-block;
+			width: calc(~"100% - 1.5rem");
+			a {
+				color: #222222;
+				width: 29%;
+				background: #eee;
+				margin: 0 .05rem;
+				img {
+					.pxrem(width, 14);
+				}
+			}
+			.active {
+				color: @m-c;
+			}
+		}
+		a {
+			.pxrem(font-size, 28);
+			.pxrem(line-height, 56);
+			.pxrem(height, 56);
+			display: inline-block;
+			width: 1.5rem;
+			color: @m-c;
+			.pxrem(border-radius, 8);
+			img {
+				.pxrem(width, 30);
+				vertical-align: middle;
+			}
+		}
+	}
+</style>

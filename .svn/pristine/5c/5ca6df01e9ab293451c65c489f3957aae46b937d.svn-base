@@ -1,0 +1,26 @@
+<!-- 常用清单 -->
+<template>
+	<div class="page-layer">
+		常用清单
+		<FOOTERNAR :active="4"></FOOTERNAR>
+	</div>
+</template>
+<script>
+	import FOOTERNAR from "../../components/common/footer-nar"
+	export default{
+		data() {
+			return {
+
+			}
+		},
+		components : {
+			FOOTERNAR
+		},
+		created() {
+			
+		},
+		methods : {
+			
+		}
+	}
+</script>

@@ -1,0 +1,44 @@
+import Vue from 'vue'
+import Router from './router/router'
+import ElementUI from 'element-ui'
+import '../static/theme/index.css'
+import CommonLess from './common/less/common.less'
+Vue.use(ElementUI)
+
+// 金额过滤器
+Vue.filter('ms', (v) => {
+	if(v == "" || v == 0)
+		return "0.00";
+	return(v * 100 / 100).toFixed(2);
+
+});
+//Vue.directive('focus', {
+//	// 当被绑定的元素插入到 DOM 中时……
+//	update: function(el, {
+//		value
+//	}) {
+//		if(value) {
+//			el.focus()
+//		}
+//	}
+//
+//});
+//Vue.directive('focus', function(el, option) {
+//	var defClass = 'el-input',
+//		defTag = 'input';
+//	var value = option.value || true;
+//	if(typeof value === 'boolean')
+//		value = {
+//			cls: defClass,
+//			tag: defTag,
+//			foc: value
+//		};
+//	else
+//		value = {
+//			cls: value.cls || defClass,
+//			tag: value.tag || defTag,
+//			foc: value.foc || false
+//		};
+//	if(el.classList.contains(value.cls) && value.foc)
+//		el.getElementsByTagName(value.tag)[0].focus();
+//});

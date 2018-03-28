@@ -1,0 +1,209 @@
+<!-- 登录 -->
+<template>
+	<div class="login" @keyup.enter="submitForm('ruleForm')">
+		<div class="login-content">
+			<i class="account-icon"></i>
+			<div class="logo-wrap">
+			</div>
+			<h2>买菜么服务站运营系统</h2>
+			<el-form :model="ruleForm" :rules="rules" ref="ruleForm">
+				<el-form-item prop="userName">
+					<el-input type="text" v-model="ruleForm.userName" auto-complete="off" placeholder="用户名">
+						<template slot="prepend">
+							<img src="../images/login_account@1x.png" />
+						</template>
+					</el-input>
+				</el-form-item>
+				<el-form-item prop="password">
+					<el-input type="password" v-model="ruleForm.password" auto-complete="off" placeholder="密码">
+						<template slot="prepend">
+							<img src="../images/login_secret@1x.png" />
+						</template>
+					</el-input>
+				</el-form-item>
+				<el-form-item>
+					<el-button type="primary" @click="submitForm('ruleForm')" v-loading.body="loading">登 录</el-button>
+				</el-form-item>
+			</el-form>
+		</div>
+		<select-station :info="dialogData" @select="select"></select-station>
+	</div>
+</template>
+<script>
+	import https from "../axios/https"
+	import MD5 from "../../static/md5.js"
+	import selectStation from "components/login/selectStation"
+	import reqServer from "action/login/login"
+	export default {
+		data() {
+			return {
+				ruleForm: {
+					userName: "13242963728",
+					password: "123456"
+				},
+				rules: {
+					password: [{
+						required: true,
+						message: '请输入密码',
+						trigger: 'blur'
+					}, ],
+					userName: [{
+						required: true,
+						message: '请输入用户名',
+						trigger: 'blur'
+					}, ],
+				},
+				loading: false,
+				dialogData: {
+					isShow: false
+				}
+			}
+		},
+		created() {},
+		components: {
+			selectStation
+		},
+		methods: {
+			submitForm(formName) {
+				var _that = this;
+				this.$refs[formName].validate((valid) => {
+					if(valid) {
+						var params = {
+							userName: _that.ruleForm.userName,
+							password: MD5(_that.ruleForm.password)
+						}
+						_that.loading = true;
+						https.commAjax({
+							method: "post",
+							url: "/user/login",
+							params: params,
+							success: function(response) {
+								_that.loading = false;
+								var userInfo = {
+									realName: response.realName,
+									mobile: response.mobile,
+									token: response.token,
+								}
+								cJs.setCookie("mcm-agent-user-info", JSON.stringify(userInfo));
+								if(response.merchantBOList.length > 1) {
+									_that.verifyDialog(response);
+								}
+
+								
+
+								/*_that.$router.push({
+									name: "index.index"
+								});*/
+							},
+							error: function() {
+								_that.loading = false;
+							}
+						});
+					} else {
+						return false;
+					}
+				});
+			},
+			verifyDialog(data) {
+				this.dialogData.list = data.merchantBOList;
+				this.dialogData.isShow = true;
+			},
+			select(val) {
+				reqServer.selectStation(this, {
+					"merchantId": val
+				});
+			}
+		}
+	}
+</script>
+<style lang="less">
+	@import "../common/less/config.less";
+	.login {
+		width: 100%;
+		height: 100%;
+		background: url(../images/ouryue-back.jpg) no-repeat;
+		background-size: cover;
+		.login-content {
+			position: absolute;
+			left: 50%;
+			top: 50%;
+			margin-left: -230px;
+			margin-top: -240px;
+			width: 360px;
+			height: 380px;
+			background: rgba(255, 255, 255, 0.6);
+			border-radius: 20px;
+			padding: 50px;
+			text-align: center;
+			.account-icon {
+				position: absolute;
+				right: 0;
+				top: 0;
+				width: 90px;
+				height: 90px;
+				display: inline-block;
+				border-top-right-radius: 26px;
+				border-bottom-left-radius: 150px;
+			}
+		}
+		.logo-wrap {
+			width: 100%;
+			text-align: center;
+			img {
+				width: 100px;
+				height: 100px;
+			}
+		}
+		h2 {
+			color: rgba(255, 255, 255, 0.9);
+			height: 60px;
+			line-height: 60px;
+			font-weight: normal;
+			font-size: 26px;
+		}
+		.el-form-item {
+			margin-bottom: 30px;
+		}
+		.el-form-item__content {
+			.el-input__inner {
+				float: left;
+				width: 300px;
+			}
+			.el-input-group--prepend {
+				border: 2px solid rgba(255, 255, 255, 0.3);
+				border-radius: 8px;
+				margin-bottom: 6px;
+			}
+			.el-input-group__prepend {
+				background: rgba(255, 255, 255, 0);
+				border: 0;
+				position: relative;
+				img {
+					width: 18px;
+					margin-top: 3px;
+				}
+			}
+			.el-input-group__prepend:before {
+				position: absolute;
+				content: " ";
+				height: 30px;
+				top: 10px;
+				right: 0;
+				border-right: 2px solid rgba(255, 255, 255, 0.3);
+			}
+			.el-input__inner {
+				height: 50px;
+				background: rgba(255, 255, 255, 0);
+				border: 0px solid rgba(255, 255, 255, 0.7);
+				font-size: 18px;
+			}
+			.el-button--primary {
+				width: 100%;
+				border-radius: 8px;
+				height: 50px;
+				font-size: 24px;
+				color: rgba(255, 255, 255, 0.7);
+			}
+		}
+	}
+</style>

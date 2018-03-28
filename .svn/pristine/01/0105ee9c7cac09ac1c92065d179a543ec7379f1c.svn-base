@@ -1,0 +1,36 @@
+<!-- 活动列表 -->
+<template>
+	<page-layer :narData="narData" class="">
+		<p>新增优惠券</p>
+	</page-layer>
+</template>
+<script>
+	import pageLayer from "components/common/page-layer"
+//	import coupon from "view/marketing/coupon/coupon"
+	export default {
+		data() {
+			return {
+				narData: [{
+					name: "优惠券",
+					router:"marketing.coupon.index"
+				},{
+					name: "发起优惠券",
+					router:"marketing.coupon.new"
+				}],
+				isShowPage:false
+			}
+		},
+		components: {
+			pageLayer,
+			coupon
+		},methods:{
+			couponDetails:function(){
+				this.isShowPage=true;
+			}
+		}
+	}
+</script>
+<style lang="less" scoped>
+	@import "../../../common/less/config.less";
+	
+</style>

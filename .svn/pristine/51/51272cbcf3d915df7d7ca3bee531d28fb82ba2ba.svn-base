@@ -1,0 +1,76 @@
+<template>
+	<div class="main-page">
+		<div class="header" ref="header">
+			<MAINHEADER ></MAINHEADER>
+		</div>
+		<div class="main-left" v-show="!isShrink">
+			<LEFTMAINMENU></LEFTMAINMENU>
+		</div> 
+		<div class="main-content" ref="con" :class="isShrink ? 'main-shrink' : ''">
+			<div class="content" >
+				<router-view ></router-view>
+			</div>
+			
+		</div>
+	</div>
+</template>
+<script>
+	import MAINHEADER from "../components/common/main-header"
+	import LEFTMAINMENU from "../components/common/left-main-menu"
+	export default{
+		data() {
+			return {
+				isShrink : false
+			}
+		},
+		components : {
+			MAINHEADER,
+			LEFTMAINMENU
+		},
+		mounted() {
+			var _that = this;
+			var docEl = document.documentElement,
+	    	resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',
+		    recalc = function() {
+		    	 if(_that.$refs.page) {
+						const pageH = _that.$refs.page.getBoundingClientRect().height;
+						const header = _that.$refs.header.getBoundingClientRect().height;
+						_that.$refs.con.style.height = (pageH - header) + "px";
+					}
+		    };
+			recalc();
+			window.addEventListener(resizeEvt, recalc, false);
+			document.addEventListener('DOMContentLoaded', recalc, false);
+		},
+		methods : {
+			
+		}
+	}
+</script>
+<style lang="less" scoped >
+	@import "../common/less/config.less";
+	.main-page{
+		height:100%;
+		width: 100%;
+	}
+	.main-left{
+		position: fixed;
+		z-index:99;
+		left:0;
+		top:90px;
+		width:260px;
+		height:100%;
+	}
+	.main-content{
+		overflow-y: auto;
+		.content{
+			padding-left:260px;
+			min-width:1200px;
+		}
+	}
+	.main-shrink{
+		.content{
+			padding-left:0;
+		}
+	}
+</style>

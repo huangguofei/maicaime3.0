@@ -1,0 +1,59 @@
+/**
+* author pzh 
+* day    2017-9-13
+* less 配置文件
+*/
+
+/*主色调*/
+@color-main : #2CBB59;
+/*一级菜单选中 */
+@back-m-s-1:#46CD72;
+/*二级菜单选中*/
+@back-m-s-2:#F0FFF8;
+/*一般背景色*/
+@back-gen:#F4F4F4;
+/*页面级背景色*/
+@back-page:#ECEDEF;
+/*黄色*/
+@color-yellow:#F98A0C;
+
+/*字体颜色*/
+
+/*一般字体颜色*/
+@color-f-gen:#343434;
+/*主要字体颜色*/
+@color-font:#000;
+/*辅助色*/
+@color-f-assist:#737373;
+
+/*字体大小*/
+/*默认*/
+@size-detail:12px;
+/*一般字体*/
+@size-gen:14px;
+/*一般标题*/
+@size-title:16px;
+/*中号标题*/
+@size-m-title:18px;
+/*大号标题*/
+@size-d-title:24px;
+
+/*边框*/
+@color-border:#DFDFDF;
+
+/*按钮组*/
+.btnAddBack(@p) {
+	background: darken(#20a0ff, @p);
+	color:#FFF;
+}
+/*清除浮动*/
+
+.clearFloat {
+    content: "";
+    display: block;
+    height: 0;
+    overflow: hidden;
+    *zoom: 1;
+    clear: both;
+    visibility: hidden;
+}

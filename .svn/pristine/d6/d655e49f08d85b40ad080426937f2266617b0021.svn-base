@@ -1,0 +1,45 @@
+<!-- 分类商品 -->
+<template>
+	<div class="page-layer footer-page category-page">
+		<category-nar :categoryData="categoryData" @returnInfo="categoryInfo" v-if="categoryData.length > 0"></category-nar>
+		<prodlist :prodData="prodData"  class="prod-wrap"  v-if="prodData.length > 0"></prodlist>
+		<goods-not-data  v-if="prodData.length <= 0"><p>暂无任何食材!</p></goods-not-data>
+		<cart-suspend></cart-suspend>
+	</div>
+</template>
+<script>
+	import categoryNar from "components/often/category-nar"
+	import prodlist from "components/market/prod-list"
+	import cartSuspend from "components/common/cart-suspend"
+	import categoryAction from "actionurl/index/category"
+	import goodsNotData from "components/common/goods-not-data"
+	export default{
+		data() {
+			return{
+				categoryData : [],
+				prodData : []
+			}
+		},
+		created() {
+			categoryAction.getSubCateById(this);
+		},
+		components : {
+			categoryNar,
+			prodlist,
+			cartSuspend,
+			goodsNotData
+		},
+		methods : {
+			categoryInfo(info) {
+				var id = info.categoryId;
+				categoryAction.getProdsById(this,id);
+			}
+		}
+	}
+</script>
+<style lang="less" scoped>
+@import "../../common/less/config.less";
+.prod-wrap{
+	.pxrem(margin-top, 20);
+}
+</style>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>找高端茶叶礼盒,上源优大地-质优价实良心茶</title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <meta name="keywords" content="源优大地茶,中国十大名茶,高瑞茶叶,茶叶礼盒" />
+    <meta name="description" content="源优大地茶致力于质优价实的高端茶叶：商品严选、品质控制，构建原产地与顾客之间的信任桥梁、公众值得信赖品牌。让好茶走近国人，享受到好茶赋予的健康生活、品味生活。" />
+    <meta name="format-detection" content="telephone=no">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" type="text/css" href="../../css/main.min.css">
+    <link rel="stylesheet" type="text/css" href="../../js/plugin/idangerous.swiper.css">
+</head>
+<body scroll="no" >
+
+  <div class="index-page comm-page">
+  	 @@include('../include/goods.tpl')
+  	 @@include('../include/nar.tpl')
+  	 <div class="swiper-container">
+        <div class="swiper-wrapper">
+              <div class="swiper-slide swiper-main s-1 s-back">
+              			<div class="swiper-nested">
+                              <div class="swiper-wrapper">
+                                    <!-- <div class="swiper-slide swiper-map">
+                                        <div class="t-img">
+                                            <img src="http://yydd.oss-cn-shenzhen.aliyuncs.com/yydd-product/49ab31e9d722481cabbede2e5d5e7477.png" title="" alt=""/>
+                                        </div>
+                                         
+                                    </div> -->
+                              </div>
+                               <h1 class="head">走遍大地 源优好茶</h1>
+                               <div class="swiper-pagination-nested"></div>
+                        </div>
+              </div>
+              <div class="swiper-slide swiper-main s-2">
+                      <div class="s-content">
+                          <h1 class="head">如何以合理的价格喝到好茶？</h1>
+                          <p class="reamk">长久以来，只有极少数的人，能够用合理的价格，买到真正的好茶......</p>
+                          <a href="/wap/view/rational/" class="btn-more">了解更多</a>
+                      </div>
+              </div>
+              <div class="swiper-slide swiper-main s-3">
+                      <div class="s-content">
+                          <h1 class="head">如何识别好茶？</h1>
+                          <p class="reamk">评价一款茶，主要从两个方面来看：一是感官判断，二是科学检测......</p>
+                          <a href="/wap/view/standard/" class="btn-more">了解更多</a>
+                          <!-- <div class="tea-img">
+                            <img src="http://yydd.oss-cn-shenzhen.aliyuncs.com/yydd-product/ce85d21aa7484da29cb127745a176735.png" />
+                          </div> -->
+                      </div>
+              </div>
+              <div class="swiper-slide swiper-main s-4">
+                      <div class="s-content">
+                          <h1 class="head">源优大地如何确保茶叶品质？</h1>
+                          <p class="reamk">产区茶园、原料鲜叶、制茶工艺、专家品鉴、权威检测、产品包装，全程精细把控，品质保驾护航......</p>
+                          <a href="/wap/view/good-tea/" class="btn-more">了解更多</a>
+                          
+                      </div>
+              </div>
+              <div class="swiper-slide swiper-main s-5">
+                        <div class="s-content">
+                            <h1 class="head">好茶为何不会太便宜？</h1>
+                            <p class="reamk">国家地理标志的保护产区的原产茶青，一叶难求。严苛的制茶工艺下，4~5斤优质鲜叶仅能制作1斤干茶......</p>
+                            <a href="/wap/view/cheap/" class="btn-more">了解更多</a>
+                            
+                        </div>
+              </div>
+               <div class="swiper-slide colse-footer swiper-main s-6">
+                        <div class="s-content">
+                            <h1 class="head">欢迎莅临源优大地终端体验中心</h1>
+                            <p class="reamk">香港顶尖设计团队操刀，融东方文化底蕴与时尚科技于一体......</p>
+                            <a href="/wap/view/shops/" class="btn-more">了解更多</a>
+                            
+                        </div>
+              </div>
+              <!-- <div class="swiper-slide swiper-main s-7">
+                        <div class="s-content">
+                            <h1 class="head">源优大地与生活</h1>
+                        </div>
+                     <div class="swiper-con">
+                          <div class="swiper-live">
+                                <div class="swiper-wrapper">
+                                    <div class="swiper-slide l-1"></div>
+                                    <div class="swiper-slide l-2"></div>
+                                    <div class="swiper-slide l-3"></div>
+                                    <div class="swiper-slide l-4"></div>
+                                  </div>
+                            </div> 
+                            <p class="reamk">煮水品茗，宾主尽欢</p>
+                     </div>
+              </div>
+               <div class="swiper-slide swiper-main colse-footer s-8">
+                        <div class="s-content">
+                            <h1 class="head">源优大地与大众</h1>
+                        </div>
+                     <div class="swiper-con">
+                          <div class="swiper-public">
+                                <div class="swiper-wrapper">
+                                    <div class="swiper-slide l-1"></div>
+                                    <div class="swiper-slide l-2"></div>
+                                    <div class="swiper-slide l-3"></div>
+                                    <div class="swiper-slide l-4"></div>
+                                  </div>
+                            </div> 
+                            <p class="reamk">非遗传承人—高碰来</p>
+                     </div>
+              </div> -->
+        </div>
+    </div>
+    <div class="arrow"><a href="javascript:void(0)" id="swiperDown"></a></div>
+     <!-- 底部 -->
+    <div class="footer-fixed footer-hide">
+       @@include('../include/footer.tpl')
+    </div> 
+    <script type="text/javascript" src="../../js/plugin/jquery.min.js"></script>
+    <script type="text/javascript" src="../../js/plugin/idangerous.swiper.min.js"></script>
+    <script type="text/javascript" src="../../js/main.min.js"></script>
+    <script>
+	    $(function() {
+	    	common.narActive("index");
+	    	indexModule.init()
+	    })
+    </script>
+</body>
+</html>

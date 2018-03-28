@@ -1,0 +1,26 @@
+<!-- 对账 -->
+<template>
+	<div class="page-layers">
+		对账
+		<FOOTERNAR :active="2"></FOOTERNAR>
+	</div>
+</template>
+<script>
+	import FOOTERNAR from "components/common/footer-nar"
+	export default{
+		data() {
+			return {
+
+			}
+		},
+		components : {
+			FOOTERNAR
+		},
+		created() {
+			
+		},
+		methods : {
+			
+		}
+	}
+</script>

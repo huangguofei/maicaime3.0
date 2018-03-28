@@ -1,0 +1,6 @@
+<!-- 订单详情 -->
+<template>
+	<div class="page-layer">
+		订单详情
+	</div>
+</template>

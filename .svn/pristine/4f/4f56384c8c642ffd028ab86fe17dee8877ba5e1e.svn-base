@@ -1,0 +1,129 @@
+<!-- 订单 -->
+<template>
+	<div class="page-layer">
+		<ul class="order-nav" ref="nav">
+			<li>
+				<router-link to="/order/new">新订单</router-link>
+			</li>
+			<li>
+				<router-link to="/order/obligation">待送货</router-link>
+			</li>
+			<li>
+				<router-link to="/order/waitreceiving">已完成</router-link>
+			</li>
+			<li>
+				<router-link to="/order/accomplish">已取消</router-link>
+			</li>
+		</ul>
+		<section ref="content">
+			<router-view></router-view>
+		</section>
+		<FOOTERNAR :active="1" ref="footer"></FOOTERNAR>
+	</div>
+</template>
+<script>
+	import FOOTERNAR from "../../components/common/footer-nar"
+	export default {
+		data() {
+			return {
+				
+			}
+		},
+		components: {
+			FOOTERNAR
+		},
+		created() {
+
+		},
+		mounted() {
+			var footer = document.getElementById("footerWrap");
+			if(this.$refs.nav && footer) {
+				const h = this.$refs.nav.getBoundingClientRect().height;
+				var height = footer.offsetHeight ? footer.offsetHeight : 0;
+				this.$refs.content.style.height = (document.body.clientHeight - h - height) + "px";
+			}
+		},
+		methods: {
+			
+		}
+	}
+</script>
+<style lang="less" scope>
+	@import "../../common/less/config.less";
+	.bk-white {
+		background: #fff;
+	}
+	
+	.order-nav {
+		background: #222;
+		overflow: auto;
+		li {
+			.pxrem(height, 80);
+			.pxrem(line-height, 80);
+			float: left;
+			width: 25%;
+			text-align: center;
+			a {
+				color: #999;
+				display: inline-block;
+				width: 60%;
+				.pxrem(height, 70);
+			}
+			a.router-link-active {
+				color: #fff;
+				border-bottom: 2px solid #fff;
+			}
+		}
+	}
+	
+	.search-nav {
+		text-align: center;
+		section {
+			display: inline-block;
+			width: calc(~"100% - 1.5rem");
+			a {
+				color: #222222;
+				width: 29%;
+				background: #eee;
+				margin: 0 .05rem;
+				i {
+					border-left: 5px solid transparent;
+					border-right: 5px solid transparent;
+					font-size: 0;
+					margin-left: .05rem;
+					position: relative;
+				}
+				.top {
+					border-bottom: 5px solid #000;
+					.pxrem(top, -20);
+				}
+				.bottom {
+					border-top: 5px solid #000;
+					.pxrem(top, -5);
+				}
+			}
+			.active {
+				color: @m-c;
+				.top {
+					border-bottom-color: @m-c;
+				}
+				.bottom {
+					border-top-color: @m-c;
+				}
+			}
+		}
+		a {
+			.pxrem(font-size, 28);
+			.pxrem(line-height, 56);
+			.pxrem(height, 56);
+			display: inline-block;
+			width: 1.5rem;
+			color: @m-c;
+			.pxrem(border-radius, 8);
+			img {
+				.pxrem(width, 46);
+				vertical-align: middle;
+			}
+		}
+	}
+</style>

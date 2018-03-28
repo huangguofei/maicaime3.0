@@ -1,0 +1,176 @@
+<!-- 流水信息 -->
+<template>
+	<page-layer :narData="narData" classs="back-color">
+		<el-form :inline="true" ref="form" :model="queryParams" label-width="80px" style='padding-bottom: 10px;' class="search-wrap"  size="small">
+			<el-form-item label="商户类型">
+				<el-select v-model="queryParams.merchantTypeId" placeholder="商户类型"  size="small">
+					<el-option v-for="item in shopType" :key="item.value" :label="item.name" :value="item.value">
+					</el-option>
+				</el-select>
+			</el-form-item>
+			<el-form-item label="提现状态">
+				<el-select v-model="queryParams.status" placeholder="提现状态"  size="small">
+					<el-option v-for="item in statusType" :key="item.value" :label="item.name" :value="item.value">
+					</el-option>
+				</el-select>
+			</el-form-item>
+			<el-form-item label="账单">
+				<el-input v-model="queryParams.billId"  size="small"></el-input>
+			</el-form-item>
+			<el-form-item label="提现时间">
+				 <el-date-picker
+				      v-model="depositDate"
+				      type="datetimerange"
+				      range-separator="至"
+				      start-placeholder="开始日期"
+				      end-placeholder="结束日期"
+				      value-format="yyyy-MM-dd HH:mm:ss"
+				      @change="depositDateChange"
+				      align="right" size="small">
+				    </el-date-picker>
+			</el-form-item>
+			
+			<el-form-item label="关键字">
+				<el-input v-model="queryParams.keyword"  size="small"></el-input>
+			</el-form-item>
+			<el-form-item>
+				<el-button type="primary" style="margin-left:20px;" @click="queryInfo()"  size="small">查询</el-button>
+			</el-form-item>
+		</el-form>
+		<el-table :data="tableData" style="width: 100%" show-summary :summary-method="getSummaries">
+			<el-table-column type="index" width="60" fixed="left">
+			</el-table-column>
+			<el-table-column prop="billId" label="账单号" width="190" fixed="left">
+			</el-table-column>
+			<el-table-column label="商户信息" width="300px">
+				<template scope="scope">
+					<p>{{scope.row.merchantName }}</p>
+					<p>{{scope.row.merchantMobile }}</p>
+				</template>
+			</el-table-column>
+			<el-table-column prop="bankName" label="银行名称" width="160px">
+			</el-table-column>
+			<el-table-column prop="ownerUserName" label="申请人">
+			</el-table-column>
+			<el-table-column prop="statusText" label="状态">
+			</el-table-column>
+			<el-table-column label="交易金额">
+				<template scope="scope">
+					<p class="price" :class="{active:scope.row.amount>0}">{{scope.row.amount>0?"+"+scope.row.amount:scope.row.amount|ms}}</p>
+				</template>
+			</el-table-column>
+			<el-table-column prop="timeCreated" label="提现时间" width="160px">
+			</el-table-column>
+			<el-table-column prop="userNote" label="备注" width="300px">
+			</el-table-column>
+
+		</el-table>
+		<pagination :pagings="queryParams" :totalCount="totalCount" @changePageSize="changePageSize"></pagination>
+	</page-layer>
+</template>
+<script>
+	import SETTINGAREA from "action/data/depositApply"
+	import pageLayer from "components/common/page-layer"
+	import pagination from "components/common/pagination"
+	export default {
+		data() {
+			return {
+				narData: [{
+					name: "提现记录",
+					router: ""
+				}],
+				queryParams: {
+					merchantTypeId: 300,
+					status: "",
+					beginDate: "",
+					endDate: "",
+					keyword: "",
+					billId:"",
+					pageSize : 10,
+	  	 			pageNum : 1,
+				},
+				amount:"0.00",
+				tableData: [],
+				totalCount : 0,
+				shopType: [{
+					name: '供应商',
+					value: 300
+				}, {
+					name: '驿站',
+					value: 600
+				}, {
+					name: '配送商',
+					value: 700
+				}],
+				statusType: [{
+					name: '选择提现状态',
+					value: ""
+				}, {
+					name: '申请中',
+					value: "0"
+				}, {
+					name: '正在转账',
+					value: 1
+				}, {
+					name: '转账成功',
+					value: 2
+				}, {
+					name: '转账失败',
+					value: -1
+				}, {
+					name: '金额异常',
+					value: -5
+				}],
+				depositDate : "",
+			}
+		},
+		created() {
+			SETTINGAREA.getDepositApplyAPIList(this);
+		},
+		components: {
+			pageLayer,
+			pagination
+		},
+		methods: {
+			queryInfo() {
+				SETTINGAREA.getDepositApplyAPIList(this);
+			},
+			changePageSize() {
+				SETTINGAREA.getDepositApplyAPIList(this);
+			},
+			depositDateChange(val) {
+				var beginDate = "", endDate = "";
+				if(val && val.length > 0) {
+					beginDate = val[0];
+					endDate = val[1];
+				} 
+				this.queryParams.beginDate = beginDate;
+				this.queryParams.endDate = endDate;
+			},getSummaries(param) {
+				const {
+					columns,
+					data
+				} = param;
+				const sums = [];
+				columns.forEach((column, index) => {
+					if(index === 0) {
+						sums[index] = '合计';
+						return;
+					}
+					if(column.label == "交易金额")
+						sums[index] = this.amount.toFixed(2);
+				});
+				return sums;
+			}
+		}
+	}
+</script>
+<style lang="less" scoped>
+	@import "../../../common/less/config.less";
+	.price{
+		color:red;
+	}
+	.active{
+		color:#46CD72;
+	}
+</style>

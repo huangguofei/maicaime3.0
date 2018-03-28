@@ -1,0 +1,156 @@
+<template>
+	<page-layer :narData="narData" classs="back-color">
+		<div class="order-details padding" v-if="depositData">
+			<div class="item">
+				<p class="title">申请信息</p>
+				<el-row class="item-content padding">
+					<el-col :span="24">
+						<el-col :span="1" class="key">申请编号</el-col>
+						<el-col :span="5" class="val">{{depositData.withdrawRecordId}}</el-col>
+						<el-col :span="1" class="key">账单号</el-col>
+						<el-col :span="5" class="val">{{depositData.billId|isNull}}</el-col>
+						<el-col :span="1" class="key">申请金额</el-col>
+						<el-col :span="5" class="val">{{depositData.amount}}</el-col>
+						<el-col :span="1" class="key">实际金额</el-col>
+						<el-col :span="5" class="val">{{depositData.actualAmount|isNull}}</el-col>
+					</el-col>
+					<el-col :span="24">
+						<el-col :span="1" class="key">银行名称</el-col>
+						<el-col :span="5" class="val">{{depositData.bankName}}</el-col>
+						<el-col :span="1" class="key">银行卡号</el-col>
+						<el-col :span="5" class="val">{{depositData.cardCode}}</el-col>
+						<el-col :span="1" class="key">持卡人</el-col>
+						<el-col :span="5" class="val">{{depositData.bankAddr|isNull}}</el-col>
+						<el-col :span="1" class="key">申请状态</el-col>
+						<el-col :span="5" class="val">{{depositData.statusText|isNull}}</el-col>
+					</el-col>
+					<el-col :span="24">
+						<el-col :span="1" class="key">申请时间</el-col>
+						<el-col :span="5" class="val">{{depositData.timeCreated}}</el-col>
+					</el-col>
+				</el-row>
+			</div>
+			<div class="item">
+				<p class="title">申请方信息</p>
+				<el-row class="item-content padding">
+					<el-col :span="24">
+						<el-col :span="1" class="key">申请方</el-col>
+						<el-col :span="5" class="val">{{depositData.merchantName}}</el-col>
+						<el-col :span="1" class="key">身份</el-col>
+						<el-col :span="5" class="val">{{depositData.merchantTypeText}}</el-col>
+						<el-col :span="1" class="key">电话</el-col>
+						<el-col :span="5" class="val">{{depositData.merchantMobile|isNull}}</el-col>
+					</el-col>
+				</el-row>
+			</div>
+			<div class="item">
+				<p class="title">日志信息</p>
+				<div class="items padding" v-for="(v,k) in depositData.operationLogs">
+					<p class="titles">处理时间：{{v.timeCreated}}</p>
+					<el-row class="item-content padding">
+						<el-col :span="24">
+							<el-col :span="1" class="key">内容</el-col>
+							<el-col :span="5" class="val">{{v.logContent}}</el-col>
+							<el-col :span="1" class="key">处理人</el-col>
+							<el-col :span="5" class="val">{{v.merchantTypeText}}</el-col>
+							<el-col :span="1" class="key">处理状态</el-col>
+							<el-col :span="5" class="val">{{v.logTitle}}</el-col>
+							<el-col :span="1" class="key">加密级别</el-col>
+							<el-col :span="5" class="val">{{v.privacyLevelText|isNull}}</el-col>
+						</el-col>
+					</el-row>
+				</div>
+			</div>
+			<!--<div class="item">
+				<p class="title">商品信息</p>
+				<div class="items padding" v-for="(v,k) in depositData.products">
+					<p class="titles">供应商：{{v.supplierName}}</p>
+					<el-table :data="v.products" style="width: 100%">
+						<el-table-column type="index" width="60">
+						</el-table-column>
+						<el-table-column prop="prodName" label="食材名称">
+						</el-table-column>
+						<el-table-column prop="actualQuantity" label="食材数量">
+						</el-table-column>
+						<el-table-column prop="skuPrice" label="食材单价">
+						</el-table-column>
+						<el-table-column prop="totalAmount" label="合计">
+						</el-table-column>
+					</el-table>
+				</div>
+
+			</div>-->
+		</div>
+		<p v-else>暂无数据</p>
+	</page-layer>
+</template>
+
+<script>
+	import pageLayer from "components/common/page-layer"
+	import SETTINGAREA from "actionurl/data/depositApply"
+	export default {
+		data() {
+			return {
+				narData: [{
+					name: "取现记录详情",
+					router: ""
+				}],
+				depositData: "",
+				withdrawRecordId: this.$route.params.id
+			}
+		},
+		created() {
+
+			SETTINGAREA.depositApplyDetails(this);
+		},
+		methods: {
+
+		},
+		components: {
+			pageLayer
+		},
+		filters: {
+			isNull(val) {
+				if(!val) {
+					return "无"
+				}
+				return val;
+			}
+		}
+	}
+</script>
+
+<style lang="less" scoped>
+	@import "../../../common/less/config.less";
+	.order-details {
+		.item {
+			border-bottom: 1px solid #ccc;
+			padding-bottom: 10px;
+			padding-top: 10px;
+			.title {
+				font-size: 20px;
+				border-left: 5px solid @color-main;
+				padding-left: 10px;
+			}
+			.item-content {
+				font-size: 14px;
+				span {
+					display: inline-block;
+				}
+				.goods-name {
+					width: 60%;
+				}
+				.price {
+					width: 40%;
+				}
+			}
+			.titles {
+				font-size: 14px;
+				margin-bottom: 10px;
+			}
+		}
+		.item:first-child {
+			padding: 0;
+		}
+	}
+</style>

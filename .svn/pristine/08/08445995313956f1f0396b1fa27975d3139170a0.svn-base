@@ -1,0 +1,50 @@
+<!-- 设置供应商 -->
+<template>
+	<el-dialog :title="supplierDialog.title" :visible.sync="supplierDialog.dialogShow" size="tiny" :close-on-click-modal="false">
+		<span>
+	          <el-checkbox-group v-model="selectSupplier">
+	            <el-checkbox :label="s.supplierId" :key="s.supplierId" v-for="s in supplierData">{{s.supplierName}}</el-checkbox>
+	          </el-checkbox-group>
+	      </span>
+
+		<span slot="footer" class="dialog-footer">
+		    <el-button @click="supplierDialog.dialogShow = false">取 消</el-button>
+		    <el-button type="primary" @click="submitForm('ruleForm')">确 定</el-button>
+		  </span>
+	</el-dialog>
+</template>
+<script>
+	import CIRCLEACTION from "action/customer/circle"
+	export default {
+		data() {
+			return {
+				supplierData: [],
+				selectSupplier: []
+			};
+		},
+		props: ["supplierDialog", "submitClick", "selectData"],
+		created() {
+			CIRCLEACTION.getAllSupplierInfo(this);
+		},
+		methods: {
+			submitForm(formName) {
+				var _that = this;
+				_that.submitClick(_that.selectSupplier);
+			},
+			editFormData(formData) {
+				var _that=this;
+				if(!formData) return false;
+//				console.log(formData);
+				formData.supplierBOList.forEach((d, y) => {
+//					console.log(d);
+					this.supplierData.forEach((v, k) => {
+						if(d.supplierId==v.supplierId){
+							_that.selectSupplier.push(v.supplierId);
+						}
+					});
+				});
+			}
+
+		}
+	};
+</script>

@@ -1,0 +1,310 @@
+<!-- 食材列表-图片模式 -->
+<template>
+<div class="prod-list-pic">
+	<scroll 
+		:listenScroll="true"
+		:listenBeforeScroll = "true"
+		@scroll="scroll"
+		ref="prodScroll"
+		@beforeScrollStart="beforeScrollStart"
+		:probeType="3"
+		v-if="categoryProdData.length > 0">
+		 <div class="con" ref="formList">
+			<div class="c-item"  v-for="(c,cIndex) in categoryProdData" ref="prodItem">
+				<header>
+					<span class="category-name">{{c.categoryBO.categoryName}}</span>
+				</header>
+				<section>
+					<div class="p-item" v-for="(p,pIndex) in c.supplierProductItemBOList">
+						<div class="img f-l">
+							<img :src="p.skuImage" />
+						</div>
+						<div class="p-info f-l">
+							<p class="name">{{p.skuName}}</p>
+							 <span class="out-mes" v-if="p.skuStatusId == 0">已下架</span> 
+						</div>
+						<div class="event f-r">
+							<p class="price-wrap">
+								<span class="icon" v-if="p.offerPrice">¥</span>
+								<input type="number" class="text-input"  :value="p.offerPrice | offerPriceFilter"  @change="upadteSkuPrice(p, $event)" placeholder="未报价"/>
+							</p>
+							<!-- <button class="sold event" @click="prodEevent(p, cIndex, pIndex)">编辑</button> -->
+							<button class="sold sold-up" v-if="p.skuStatusId == 0" @click="prodStatus(p, 1)">上架</button>
+							<button class="sold sold-down" v-if="p.skuStatusId == 1" @click="prodStatus(p, 0)">下架</button>
+						</div>
+					</div>
+				</section>
+			</div>
+		</div>
+	</scroll>
+	<div class="event-wrap" v-show="editShow">
+		<div class="bg" @click="editShow = false"></div>
+		<div class="content">
+			<button class="btn btn-del" @click="prodStatus(-1)">删除</button>
+			<button class="btn btn-edit">修改</button>
+			<button class="btn btn-up" v-if="prodItem.skuStatusId == 0" @click="prodStatus(1)">上架</button>
+			<button class="btn btn-up" v-if="prodItem.skuStatusId == 1" @click="prodStatus(0)">下架</button>
+		</div>
+	</div>
+</div>
+</template>
+<script >
+import scroll from "components/common/scroll"
+import FOODACTION from "actionurl/food/food"
+export default{
+	data(){
+		return {
+			probeType : 3,
+			itemHeight : [],
+			itemBottom : [],
+			prodItem : {},
+			editShow : false,
+			editIndex : {}
+		}
+	},
+	props : ["categoryProdData", "submitEditorPrice"],
+	filters : {
+		offerPriceFilter: function(value) {
+			if(value == 0) {
+				value = ""
+			} else {
+				value = (value * 1).toFixed(2);
+			}
+			return value;
+		}
+	},
+	components : {
+		scroll
+	},
+	methods : {
+		upadteSkuPrice(prod, event) {
+			var value = event.target.value;
+			if(value != 0 && value != "" && !cJs.checkPrice(value)) {
+				cJs.message("输入正确金额！");
+				return false;
+			}
+			prod.offerPrice = value;
+			this.submitEditorPrice(prod);
+		},
+		scroll(pos) {
+			var y = Math.abs(pos.y);
+			var items = this.itemBottom;
+			if(items.length) {
+				items.map((item, key) => {
+					if((item.bottom - item.height - 30) < y  && y < item.bottom) {
+						this.$emit("scrollCategory", key);
+					}
+				})
+			}
+		},
+		calculateItemHeight() {
+			var _that = this;
+			setTimeout(() => {
+				var items = this.$refs.prodItem;
+				if(items) {
+					items.map((item, key) => {
+						let h = item.clientHeight;
+						_that.itemHeight.push(h);
+					});
+					var heights = this.itemHeight;
+					if(heights.length) {
+						heights.map((item, key) => {
+							var h = 0;
+							for(var i = 0; i < key ; i ++) {
+								h += heights[i] + 15;
+							}
+							h += item;
+							_that.itemBottom.push({
+								height : item,
+								bottom : h
+							});
+						});
+					}
+				}
+			}, 500);
+		},
+		scrollToElement(index) {
+			 this.$refs.prodScroll.scrollToElement(this.$refs.prodItem[index], 0)
+		},
+		updateScroll() {
+			setTimeout(() => {
+				this.$refs.prodScroll.refresh();
+			}, 500);
+		},
+		inputFocus() {
+			this.$emit("inputFocus");
+		},
+		inputBlur() {
+			this.$emit("inputBlur");
+		},
+		beforeScrollStart() {
+			let inputList = this.$refs.formList.querySelectorAll('.text-input');
+	        inputList.forEach((item) => {
+	          item.blur()
+	        })
+		},
+		prodStatus(item, status) {
+			FOODACTION.updateProdStatus(this, item, status);
+		},
+		prodEevent(item, pIndex, cIndex) {
+			this.prodItem = item;
+			this.editIndex.pIndex = pIndex;
+			this.editIndex.cIndex = cIndex;
+			var _that = this;
+			setTimeout(() => {
+				_that.editShow = true;
+			}, 100);
+		}
+	}
+}
+</script>
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.prod-list-pic{
+			height:100%;
+			.c-item{
+				background: #FFF;
+				.pxrem(margin-bottom,20);
+			}
+			header{
+				.pxrem(height,70);
+				.pxrem(line-height,70);
+				.pxrem(font-size,28);
+				.prem(-4, 20);
+				padding:@prem;
+				border-bottom:1px solid #d7d7d7;
+			}
+			section{
+				.prem(-4, 20);
+				padding:@prem;
+				.p-item{
+					.prem(20, -4);
+					padding:@prem;
+					border-bottom: 1px solid @b-c;
+					.f-l{
+						float:left;
+					}
+					.f-r{
+						float:right;
+					}
+					.img{
+						.pxrem(width,120);
+						.pxrem(height,120);
+						border:1px solid #EEEEEE;
+						.pxrem(border-radius,5);
+						text-align: center;
+						display: table-cell;
+						vertical-align: middle;
+						img{
+							max-width:100%;
+							max-height:100%;
+							vertical-align: middle;
+						}
+					}
+					.p-info{
+						.pxrem(padding-left,10);
+						.name{
+							.pxrem(font-size,28);
+							.pxrem(min-height,70);
+							.pxrem(width, 450);
+							overflow: hidden;
+							text-overflow:ellipsis;
+						}
+						.out-mes{
+							display: inline-block;
+							.prem(-2, 10);
+							padding:@prem;
+							.pxrem(line-height,38);
+							.pxrem(font-size,18);
+							background: @m-c;
+							color:#FFF;
+							text-align:center;
+							.pxrem(border-radius,5);
+						}
+					}
+					.event{
+						.price-wrap{
+							position: relative;
+							.pxrem(width,130);
+							.pxrem(height,50);
+							border:1px solid #d7d7d7;
+							.pxrem(border-radius,5);
+							.pxrem(line-height,50);
+							.icon{
+								position: absolute;
+								.pxrem(font-size,28);
+								.pxrem(left,3);
+							}
+							input{
+								.pxrem(width,120);
+								.pxrem(height,40);
+								border:0;
+								.pxrem(text-indent,20);
+								.pxrem(font-size,28);
+							}
+						}
+						.sold{
+							background: @m-c;
+							border:0;
+							color:#FFF;
+							.pxrem(width,130);
+							.pxrem(height,50);
+							text-align:center;
+							.pxrem(font-size,22);
+							.pxrem(border-radius,6);
+							.pxrem(margin-top,8);
+						}
+					}
+				}
+				.p-item:last-child{
+					border-bottom:0;
+				}
+				.p-item:after{
+					.clearFloat;
+				}
+			}
+			.no-data{
+				text-align: center;
+			}
+			.fx{
+				position: fixed;
+				top:0;
+				left:0;
+				width:100%;
+				height:100%;
+			}
+			.event-wrap{
+				.fx;
+				z-index:99998;
+				.bg{
+					.fx;
+					background: rgba(0, 0, 0, 0.5);
+					z-index:9999;
+				}
+				.content{
+					position:relative;
+					z-index:10000;
+					top:50%;
+					text-align: center;
+					.btn{
+						.prem(-4, 8);
+						margin:@prem;
+						.pxrem(border-radius, 5);
+						color:#FFF;
+					}
+					.btn-del{
+						background: @ass-c;
+						border-color:@ass-c;
+					}
+					.btn-edit{
+						background: @m-c;
+						border-color:@m-c;
+					}
+					.btn-up,.btn-down{
+						background: @m-c;
+						border-color:@m-c;
+					}
+				}
+			}
+	}
+</style>

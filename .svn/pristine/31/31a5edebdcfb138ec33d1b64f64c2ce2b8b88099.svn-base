@@ -1,0 +1,11 @@
+<template>
+	<div class="page-layer">
+		首页面
+	</div>
+</template>
+<script>
+	
+</script>
+<style lang="less" scope>
+	
+</style>

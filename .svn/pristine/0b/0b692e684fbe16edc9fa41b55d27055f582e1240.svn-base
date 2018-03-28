@@ -1,0 +1,18 @@
+/**
+*  author pzh
+*  day  2017-9-13
+*  订单路由配置
+*/
+const indexView = r => require.ensure([], () => r(require('../view/order/index')), 'Index')
+
+const router = [
+	{
+		name : "order.index",
+		path : "/order",
+		component : indexView
+	}
+]
+
+export default{
+	router
+}

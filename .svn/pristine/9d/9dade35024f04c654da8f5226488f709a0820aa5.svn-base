@@ -1,0 +1,12 @@
+<!-- 特色专区 -->
+<template>
+	<div class="feature-pre">
+		<h1>特色专区</h1>
+	</div>
+</template>
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.feature-pre{
+		
+	}
+</style>

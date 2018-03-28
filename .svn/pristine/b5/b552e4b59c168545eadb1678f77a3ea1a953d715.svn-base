@@ -1,0 +1,24 @@
+/**
+*  author pzh
+*  day  2017-9-27
+*  登录注册路由配置
+*/
+const Index = r => require.ensure([], () => r(require('../view/login/index')), 'Index')
+const register = r => require.ensure([], () => r(require('../view/login/register')), 'register')
+
+const router = [
+	{
+		name : "login.index",
+		path : "/login/",
+		component : Index
+	},
+	{
+		name : "login.register",
+		path : "/login/register",
+		component : register
+	}
+]
+
+export default{
+	router
+}

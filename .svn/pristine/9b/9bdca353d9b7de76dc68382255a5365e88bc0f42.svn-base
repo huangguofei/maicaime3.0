@@ -1,0 +1,198 @@
+<!-- 主题活动 -->
+<template>
+	<page-layer :narData="narData">
+		<div class="activity-list">
+			<div class="activity-item begin">
+				<div class="header back-color">
+					<div class="logo"><img src="../../../images/time-limit-icon.png" /></div>
+					<div class="title">
+						<p></p>
+						<h1>限时特价</h1>
+						<p></p>
+					</div>
+				</div>
+				<div class="content back-color padd">
+					<p class="title">适用场景</p>
+					<p>尾货甩卖、降价促销……可重新定义商品价格</p>
+				</div>
+				<div class="footer back-color padd">
+					<router-link to="/marketing/editor/index/type/4" class="footer-btn">立即发起</router-link>
+				</div>
+			</div>
+			<div class="activity-item being">
+				<div class="header back-color">
+					<div class="logo"><img src="../../../images/hot.png" /></div>
+					<div class="title">
+						<p></p>
+						<h1>新品上市</h1>
+						<p></p>
+					</div>
+				</div>
+				<div class="content back-color padd">
+					<p class="title">适用场景</p>
+					<p>新品上市、热门商品、海鲜必买、厨房用品，</p>
+				</div>
+				<div class="footer back-color padd">
+					<router-link to="/marketing/editor/index/type/0" class="footer-btn">立即发起</router-link>
+				</div>
+			</div>
+		</div>
+	</page-layer>
+</template>
+<script>
+	import pageLayer from "components/common/page-layer"
+	export default {
+		data() {
+			return {
+				narData: [{
+						name: "主题活动",
+						router: "marketing.feature.list"
+					},
+					{
+						name: "发起主题活动",
+						router: "marketing.feature.theme"
+					}
+				],
+				activityData: [1, 2]
+			}
+		},
+		components: {
+			pageLayer
+		}
+	}
+</script>
+<style lang="less" scoped>
+	@import "../../../common/less/config.less";
+	.activity-list {
+		.clearfix();
+		.begin {
+			.logo {
+				background: #2CBB59;
+			}
+			.title {
+				h1 {
+					color: #2CBB59;
+				}
+			}
+			.footer-btn {
+				background: #2CBB59;
+			}
+		}
+		.being {
+			.logo {
+				background: #F98A0C;
+			}
+			.title {
+				h1 {
+					color: #F98A0C;
+				}
+			}
+			.footer-btn {
+				background: #F98A0C;
+			}
+		}
+		.activity-item {
+			position: relative;
+			float: left;
+			width: 360px;
+			height: 390px;
+			margin-right: 10px;
+			overflow: hidden;
+			
+			.header {
+				border: 1px solid #DFDFDF;
+				border-bottom: 0;
+				padding-top: 35px;
+				position: relative;
+				&:before {
+					content: "";
+					width: 20px;
+					height: 20px;
+					border-radius: 10px;
+					background: @back-page;
+					position: absolute;
+					left: -11px;
+					bottom: 4px;
+				}
+				&:after {
+					content: "";
+					width: 20px;
+					height: 20px;
+					border-radius: 10px;
+					background: @back-page;
+					position: absolute;
+					right: -11px;
+					bottom: 4px;
+				}
+				.logo {
+					width: 80px;
+					height: 80px;
+					line-height: 80px;
+					border-radius: 40px;
+					text-align: center;
+					font-size: 24px;
+					color: #fff;
+					margin: 0 auto;
+					margin-bottom: 10px;
+					text-align: center;
+					img {
+						width: 80%;
+						margin-top: 8px;
+					}
+				}
+				.title {
+					position: relative;
+					text-align: center;
+					p {
+						width: 63px;
+						height: 1px;
+						position: absolute;
+						top: 15px;
+						border-top: 2px solid #DFDFDF;
+					}
+					p:first-child {
+						left: 50px;
+					}
+					p:last-child {
+						right: 50px;
+					}
+					h1 {
+						font-size: 24px;
+					}
+				}
+			}
+			.content {
+				padding-top: 40px;
+				border: 1px solid #DFDFDF;
+				height: 140px;
+				box-sizing: border-box;
+				border-top: 0;
+				border-bottom: 0;
+				.title {
+					font-size: 18px;
+					text-align: center;
+					margin-bottom: 15px;
+				}
+				p:last-child {
+					font-size: 14px;
+					color: #343434;
+				}
+			}
+			.footer {
+				border: 1px solid #DFDFDF;
+				border-top: 0;
+				a {
+					display: block;
+					width: 90%;
+					margin: 0 auto;
+					height: 50px;
+					line-height: 50px;
+					border-radius: 2px;
+					text-align: center;
+					font-size: 18px;
+					color: #fff;
+				}
+			}
+		}
+	}
+</style>

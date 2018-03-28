@@ -1,0 +1,28 @@
+<!-- 新增活动 -->
+<template>
+	<page-layer :narData="narData" classs="back-color padd">
+		<p>新增活动</p>
+	</page-layer>
+</template>
+<script>
+import pageLayer from "components/common/page-layer"
+export default{
+	data() {
+		return{
+			narData : [
+	    	  	{
+	    	  		name : "优惠活动",
+	    	  		router : "marketing.activity.index"
+	    	  	},
+	    	  	{
+	    	  		name : "发起优惠活动",
+	    	  		router : "marketing.activity.new"
+	    	  	}
+	    	  ],
+		}
+	},
+	components : {
+		pageLayer
+	}
+}
+</script>

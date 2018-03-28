@@ -1,0 +1,27 @@
+/**
+*  author pzh
+*  day  2017-9-13
+*  我的模块路由配置
+*/
+const indexView = r => require.ensure([], () => r(require('../view/user/index')), 'Index')
+const userMssageView = r => require.ensure([], () => r(require('../view/user/user-message')), 'Index')
+const userCouponView = r => require.ensure([], () => r(require('../view/user/user-coupon')), 'Index')
+const router = [
+	{
+		name : "mcm.purchaser.user.index",
+		path : "/user/",
+		component : indexView
+	},{
+		name : "mcm.purchaser.message",
+		path : "/message/",
+		component : userMssageView
+	},{
+		name : "mcm.purchaser.coupon",
+		path : "/coupon/",
+		component : userCouponView
+	}
+]
+
+export default{
+	router
+}

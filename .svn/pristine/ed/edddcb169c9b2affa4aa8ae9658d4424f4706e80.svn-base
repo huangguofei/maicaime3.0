@@ -1,0 +1,16 @@
+/**
+ * hgf 2017年12月8日
+ * 数据模块
+ */
+import https from "../axios/https"
+/*对账信息*/
+export const checkAPI = {
+	/*获取对账列表*/
+	checkListAPI: (...v) => https.commAjax(cJs.apiDataReturnParams("get", "/trade/generalList", v)),
+}
+/*提现申请*/
+export const depositApplyAPI = {
+	/*获取提现申请列表*/
+	depositApplyListAPI: (...v) => https.commAjax(cJs.apiDataReturnParams("get", "/withdraw/list", v)),
+
+}

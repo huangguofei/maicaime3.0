@@ -1,0 +1,16 @@
+/**
+ * hgf 2017年12月8日
+ * 对账
+ */
+import { checkAPI } from "../../api/data"
+export default {
+	/*获取对账列表*/
+	getcheckList(vm) {
+		checkAPI.checkListAPI(vm.queryParams, (result) => {
+			vm.tableData = result.pageInfo.resultList;
+			vm.queryParams.pageNum = result.pageInfo.currentPage;
+			vm.queryParams.pages = result.pageInfo.totalPage;
+			vm.queryParams.total = result.pageInfo.totalCount;
+		});
+	}
+}

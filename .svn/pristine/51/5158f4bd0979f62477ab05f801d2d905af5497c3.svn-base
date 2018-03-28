@@ -1,0 +1,18 @@
+/**
+* author pzh 
+* day    2017-10-31
+* 营销模块接口
+*/
+import https from "../axios/https"
+
+/*优惠券*/
+export const couponAPI = {
+	/*发行新的券*/
+	launchCouponAPI : (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/coupon/launchCoupon", v)),
+}
+
+/*优惠活动*/
+export const activityAPI = {
+	/*发起优惠活动*/
+	launchSpecialOfferAPI : (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/special_offer/launchSpecialOffer", v)),
+}

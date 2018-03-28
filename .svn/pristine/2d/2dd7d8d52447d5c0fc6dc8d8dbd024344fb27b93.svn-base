@@ -1,0 +1,52 @@
+/**
+ * author hgf 
+ * day    2017-9-27
+ * 订单
+ */
+import serverAPI from "apiurl/order"
+import cityApi from "apiurl/public"
+export default {
+	/*获取订单列表数据*/
+	getOrderListData(vm) {
+		serverAPI.orderAPI(vm.option, (result) => {
+			vm.orderList = result.resultList;
+			vm.currentPage = result.currentPage;
+			vm.totalPage = result.totalPage;
+		});
+	},
+	/*获取订单详情*/
+	getOrderDetails(vm) {
+		serverAPI.orderDetailsAPI({
+			deliveryOrderId: vm.orderId
+		}, (result) => {
+			vm.orderData = result;
+		});
+	},
+	/*确认订单*/
+	orderConfirm(vm) {
+		serverAPI.orderConfirmReceiptAPI({
+			deliveryOrderId: vm.orderId
+		}, (result) => {
+			vm.$router.push({
+				name: "order.index.obligation"
+			});
+			cJs.message("取货成功");
+		});
+	},
+	/*根据二维码获取订单id*/
+	getOrderId(vm, code) {
+		serverAPI.getOrderIdAPI({
+			qrCodeId: code
+		}, (result) => {
+			vm.$router.push({
+				name: "order.detail",
+				params: {
+					id: result.dataId
+				},query:{
+					isCodeOpen:true
+				}
+			});
+		});
+	}
+
+}

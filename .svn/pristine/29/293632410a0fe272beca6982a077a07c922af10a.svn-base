@@ -1,0 +1,196 @@
+<!-- 搜索结果页面 -->
+<template>
+	<div class="search-result">
+		<header ref="head">
+			<div class="con">
+				<i class="s-icon"></i>
+				<input type="text" v-model="keyword"   @input="queryKeyword" @keyup.enter="submitSearch" class="text-input" placeholder="搜索您想要找的食材"/>
+				<span class="clear-icon" @click="submitSearch">搜索</span>
+			</div>
+		</header>
+		<div class="content" ref="content">
+			<scroll 
+			:pullingDown="true" 
+			:pullUpLoad="true"
+			:listenBeforeScroll = "true"
+			 @pullingUp="onPullingUp"
+			 ref="scroll"
+			 @beforeScrollStart="beforeScrollStart"
+			 v-if="prodList.length > 0">
+				<prod-list :prodData="prodList"  @previewImgEvent="previewImgEvent" ref="items"></prod-list>
+			</scroll>
+			<loading v-if="load"></loading>
+			<goods-not-data  v-if="prodList.length <= 0 && !load"><p>未搜索到食材</p></goods-not-data>
+			
+		</div>
+		<search-layer v-show="layer" :keys="keys" @queryKey="queryKey"></search-layer>
+		<cartSuspend ></cartSuspend>
+		<img-preview :imgSrc="previewImg" ref="preview"></img-preview>
+	</div>
+</template>
+<script>
+import searchAction from "actionurl/index/search"
+import prodList from "components/market/prod-list"
+import loading from "components/common/loading"
+import goodsNotData from "components/common/goods-not-data"
+import searchLayer from "components/index/search-layer"
+import scroll from "components/common/scroll"
+import cartSuspend from "components/common/cart-suspend"
+import imgPreview from "components/common/img-preview"
+export default{
+	data() {
+		return{
+			keyword : "",
+			load : false,
+			option : {
+				query : "",
+				pageIndex : 0
+			},
+			prodList : [],
+			layer : false,
+			keys : [],
+			previewImg : ""
+		}
+	},
+	components : {
+		prodList,
+		scroll,
+		loading,
+		goodsNotData,
+		searchLayer,
+		cartSuspend,
+		imgPreview
+	},
+	created() {
+		this.keyword = this.$route.query.name;
+		this.load = true;
+	},
+	mounted() {
+		if(this.keyword) {
+			var option = this.option;
+			//option.query = "sku_name:'" + this.keyword + "'";
+			option.query =  this.keyword;
+			searchAction.getSearchProdList(this);
+		}
+		setTimeout(function() {
+			if(this.$refs.head) {
+				const h = this.$refs.head.getBoundingClientRect().height;
+				this.$refs.content.style.height = (document.body.clientHeight - h) + "px";
+			}
+		}, 100);
+		
+	},
+	methods : {
+		submitSearch() {
+			if(this.keyword == "") {
+				cJs.message("请输入关键字");
+				return false;
+			}
+			this.option.pageIndex = 0;
+			//this.option.query = "sku_name:'" + this.keyword + "'";
+			this.option.query =  this.keyword;
+			this.prodList = [];
+			if(localStorage.historyKeywords) {
+				var ary = [];
+				ary = JSON.parse(localStorage.historyKeywords);
+				ary.push(this.keyword);
+				localStorage.historyKeywords = JSON.stringify(ary);
+			} else {
+				var ary = [];
+				ary[0] = this.keyword;
+				localStorage.historyKeywords = JSON.stringify(ary)
+			}
+			searchAction.getSearchProdList(this);
+			
+		},
+		clearInput() {
+			this.keyword = "";
+		},
+		onPullingUp() {
+			var _that = this;
+			setTimeout(() => {
+				searchAction.getSearchProdList(_that, (count) => {
+					_that.pullingUpPage(count);
+				});
+			}, 500);
+		},
+		pullingUpPage(count) {
+			if(count >= 10) {
+				this.$refs.scroll.forceUpdate();
+			} else {
+				setTimeout(() => {
+					this.$refs.scroll.forceUpdate(true);
+				}, 20);
+			}
+		},
+		queryKeyword() {
+			searchAction.queryKeyword(this);
+		},
+		queryKey(name) {
+			this.layer = false;
+			this.keyword = name;
+			this.submitSearch();
+		},
+		previewImgEvent(src) {
+			this.previewImg = src;
+			this.$refs.preview.show = true;
+		},
+		beforeScrollStart() {
+			let inputList = this.$refs.head.querySelectorAll('.text-input');
+			var len = inputList.length;
+			for(var i = 0;i < len; i ++) {
+				inputList[i].blur();
+			}
+		},
+	}
+}
+</script>
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.search-result{
+		header{
+			background: #222;
+			.pxrem(height, 90);
+			.con{
+				.prem(10, 20);
+				padding:@prem;
+				position: relative;
+				input{
+					width:100%;
+					.pxrem(height, 60);
+					border:0;
+					.pxrem(text-indent, 70);
+					.pxrem(font-size,26);
+					border-radius:0;
+				}
+				i{
+					display: inline-block;
+					position: absolute;
+					.pxrem(top,18);
+					.pxrem(width,40);
+					.pxrem(height,40);
+				}
+				.s-icon{
+					.pxrem(left,32);
+					background:rgba(255, 255, 255, 0.8) url(../../images/home_search.png) no-repeat;
+					background-size: cover;
+				}
+				.clear-icon{
+					position:absolute;
+					background:#222;
+					color:#FFF;
+					.pxrem(font-size, 24);
+					.pxrem(right,0);
+					.pxrem(top,0);
+					.pxrem(height, 80);
+					.pxrem(line-height, 85);
+					.pxrem(width, 120);
+					text-align:center;
+					/*background:rgba(255, 255, 255, 0.8) url(../../images/home_search_delete1.png) no-repeat;
+					background-size: cover;*/
+				}
+			}
+		}
+		
+	}
+</style>

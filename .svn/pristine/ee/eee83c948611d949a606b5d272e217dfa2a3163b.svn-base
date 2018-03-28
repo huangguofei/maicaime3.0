@@ -1,0 +1,29 @@
+/**
+* author pzh 
+* day    2017-11-1
+* 特色专区业务接口
+*/
+import { featureAPI } from "../../api/marketing"
+export default{
+	saveThemeActivity(vm, info) {
+		var _that = this,
+		_success = (mes) => {
+			vm.$message({
+	          message: mes,
+	          type: 'success'
+	        });
+			vm.$router.push({
+				name : "marketing.feature.theme"
+			});
+		}
+		if(info.id) {
+			
+		} else {
+			console.log(info);
+			featureAPI.mothlySpecialAPI(info,(result) => {
+				_success("添加成功");
+			})
+		}
+		
+	}
+}

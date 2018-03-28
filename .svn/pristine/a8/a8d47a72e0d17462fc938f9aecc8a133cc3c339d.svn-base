@@ -1,0 +1,76 @@
+/**
+ * author hgf 
+ * day    2017-9-27
+ * 订单
+ */
+import serverAPI from "apiurl/order"
+import cityApi from "apiurl/public"
+export default {
+	/*获取订单列表数据*/
+	getOrderListData(vm) {
+		serverAPI.orderAPI(vm.option, (result) => {
+			vm.orderList = vm.orderList.concat(result.resultList);
+			vm.currentPage = result.currentPage;
+			vm.totalPage = result.totalPage;
+		});
+	},
+	/*获取订单详情*/
+	getOrderDetails(vm) {
+		var data = {
+			orderId: vm.orderId
+		}
+		if(vm.orderStatus == 20)
+			serverAPI.orderNoPayDetailsAPI(data, (result) => {
+				vm.orderDetailsInfo = result;
+				console.log(vm.orderDetailsInfo)
+			});
+		else
+			serverAPI.orderDetailsAPI(data, (result) => {
+				vm.orderDetailsInfo = result;
+				console.log(vm.orderDetailsInfo)
+			});
+	},
+	/*确认收货*/
+	orderConfirmReceipt(vm) {
+		var data = [];
+		if(vm.orderDetailsInfo.products.length != 0) {
+			_mergeData(vm.orderDetailsInfo.products);
+		}
+		var params = {
+			orderprductIds: JSON.stringify(data),
+			orderId: vm.orderId
+		}
+
+		serverAPI.orderConfirmReceiptAPI(params, (result) => {
+			vm.$router.push({
+				name: "often.orders.success"
+			});
+		});
+
+		function _mergeData(list) {
+			for(var i in list) {
+				if(list[i].products) {
+					_mergeData(list[i].products);
+				} else {
+					data.push({
+						orderProductId: list[i].orderProductId,
+						actualQuantity: list[i].actualQuantity
+					});
+				}
+			}
+		}
+	},
+	/*取消订单*/
+	orderCancel(vm) {
+		serverAPI.orderCancelAPI({
+			orderId: vm.orderId,
+			cause: ""
+		}, (result) => {
+			vm.$router.push({
+				name: "often.orders.success"
+			});
+		});
+
+	}
+
+}

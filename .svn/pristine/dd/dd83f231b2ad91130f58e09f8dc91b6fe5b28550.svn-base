@@ -1,0 +1,135 @@
+<!-- 服务站模块 -->
+<template>
+	<div class="page-layer">
+		<el-breadcrumb separator="/">
+			<el-breadcrumb-item>当前位置</el-breadcrumb-item>
+			<el-breadcrumb-item>服务站管理</el-breadcrumb-item>
+			<el-breadcrumb-item>服务站</el-breadcrumb-item>
+			<el-breadcrumb-item>服务站列表</el-breadcrumb-item>
+		</el-breadcrumb>
+		<el-row class="search-wrap">
+			<el-col :span="3">
+				<el-input v-model="seachData.agentName" placeholder="请输入服务站名称"></el-input>
+			</el-col>
+			<el-col :span="3">
+				<el-input v-model="seachData.contact" :maxlength="8" placeholder="请输入联系人姓名"></el-input>
+			</el-col>
+			<el-col :span="3">
+				<el-input v-model.number="seachData.mobile" :maxlength="11" placeholder="请输入电话号码"></el-input>
+			</el-col>
+			<el-col :span="3">
+				<el-cascader placeholder="试试搜索：四川" :clearable="true" expand-trigger="hover" :props="keyobj" :options="options" @change="handleChange">
+				</el-cascader>
+			</el-col>
+			<el-col :span="2">
+				<el-button style="margin-left:20px;" @click="queryInfo()">查询</el-button>
+			</el-col>
+			<el-col :span="2" style="float:right;text-align:right;">
+				<el-button style="margin-left:20px;" @click="addStairCategory()" class="btn-add">添加服务站</el-button>
+			</el-col>
+		</el-row>
+		<el-table :data="tableData">
+			<el-table-column type="index" width="60">
+			</el-table-column>
+			<el-table-column prop="agentName" label="名称"></el-table-column>
+			<el-table-column prop="contact" label="联系人"></el-table-column>
+			<el-table-column prop="mobile" label="电话号码"></el-table-column>
+			<el-table-column label="操作">
+				<template scope="scope">
+					<el-button type="text" size="small" @click="editorDetail(scope.row)">编辑</el-button>
+				</template>
+			</el-table-column>
+		</el-table>
+		<div class="pagination">
+			<el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-size="pagings.size" :current-page.sync="pagings.current" layout="total, prev, pager, next" :total="pagings.total">
+			</el-pagination>
+		</div>
+		<add-server-dialog :editInfo="addServeData" :cityData="options" :submitClick="submitCategoryInfo" ref="agentInfo"></add-server-dialog>
+	</div>
+</template>
+<script>
+	import serverModule from "actionurl/serve/agent"
+	import addServerDialog from "components/serve/add-serve"
+	export default {
+		data() {
+			return {
+				tableData: [],
+				options: [],
+				seachData: {
+					agentName: "",
+					contact: "",
+					mobile: "",
+					areaId: "",
+					pageNum: "1"
+				},
+				pagings: {
+					current: 1,
+					size: 10,
+					total: 300
+				},
+				keyobj: {
+					value: "areaId",
+					label: "areaName",
+					children: "subAreas"
+				},
+				addServeData: {
+					title: "",
+					dialogShow: false
+				}
+			}
+		},
+		created() {
+			serverModule.getSiteList(this);
+			serverModule.getCityData(this);
+		},
+		methods: {
+			handleChange(val) {
+				this.seachData.areaId = val[1];
+				console.log(this.seachData);
+			},
+			queryInfo() {
+				serverModule.setSearch(this);
+			},
+			addStairCategory() {
+				this.addServeData.title = "添加服务站";
+				this.addServeData.dialogShow = true;
+				this.$refs.agentInfo.resetForm();
+			},
+			submitCategoryInfo(data) {
+				if(data.agentId) {
+					serverModule.editServer(this, data);
+				} else {
+					serverModule.addServer(this, data);
+				}
+				this.addServeData.dialogShow = false;
+			},
+			handleSizeChange(page) {
+				console.log("sss")
+			},
+			handleCurrentChange(page) {
+				this.seachData.pageNum = page;
+				this.queryInfo();
+			},
+			editorDetail(data) {
+				console.log(data)
+				this.addServeData.title = "编辑";
+				this.addServeData.dialogShow = true;
+				/*this.addServeData.serveData=data;*/
+				this.$refs.agentInfo.updateInfo(data);
+			}
+		},
+		components: {
+			addServerDialog
+		}
+	}
+</script>
+<style>
+	.pagination {
+		text-align: right;
+		margin-top: 10px;
+	}
+	
+	.search-wrap>div {
+		margin-right: 10px;
+	}
+</style>

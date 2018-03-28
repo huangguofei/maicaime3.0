@@ -1,0 +1,253 @@
+<!-- 活动列表 -->
+<template>
+	<page-layer :narData="narData" classs="">
+		<div class="activity-list">
+			<div class="activity-item begin" v-for="(f,k) in featureList" :class="{being:f.featureTypeId == 200}">
+				<div class="header back-color radius">
+					<div class="logo">甩卖</div>
+					<div class="title">
+						<p></p>
+						<h1>{{f.title}}</h1>
+						<p></p>
+					</div>
+				</div>
+				<!-- <div class="content back-color padd radius">
+					<p class="title">基本信息</p>
+					<el-row class="info" :span="24">
+						<el-col :span="8" class="info-item">
+							<span>供应商</span>
+							<p>8</p>
+						</el-col>
+						<el-col :span="8" class="info-item">
+							<span>商品数（种）</span>
+							<p>18</p>
+						</el-col>
+						<el-col :span="8" class="info-item">
+							<span>库存（件）</span>
+							<p>184</p>
+							<i>剩余：184</i>
+						</el-col>
+					</el-row>
+				</div> -->
+				<div class="footer back-color padd">
+					<p>活动时间</p>
+					<span v-if="f.startDate && f.startTime">
+							{{f.startDate.split(" ")[0] + " "  + f.startTime}}至 {{f.endDate.split(" ")[0] + " "  + f.endTime}}
+					</span>
+					<span v-else-if="f.startDate && !f.startTime">
+							{{f.startDate.split(" ")[0] }}至 {{f.endDate.split(" ")[0] }}
+					</span>
+					<span v-else-if="!f.startDate && f.startTime">
+							{{f.startTime.split(" ") }}至 {{f.endTime.split(" ") }}
+					</span>
+					<span v-else>
+						没有时间限制
+					</span>
+				</div>
+				<div class="mark">{{f.featureTypeText}}</div>
+			</div>
+		</div>
+	</page-layer>
+</template>
+<script>
+	import pageLayer from "components/common/page-layer"
+	import featureAction from "action/marketing/feature"
+	export default {
+		data() {
+			return {
+				narData: [{
+						name: "主题活动",
+						router: "marketing.feature.list"
+					},
+					{
+						name: "发起主题活动",
+						router: "marketing.feature.theme"
+					}
+				],
+				featureList : []
+			}
+		},
+		components: {
+			pageLayer
+		},
+		created() {
+			featureAction.getFeatureAreaList(this);
+		}
+	}
+</script>
+<style lang="less" scoped>
+	@import "../../../common/less/config.less";
+	.activity-list {
+		.clearfix();
+		.begin {
+			.logo {
+				background: #FABC05;
+			}
+			.mark {
+				background: #F98A0C;
+			}
+		}
+		.being {
+			.logo {
+				background: #16A8FD;
+			}
+			.mark {
+				background: #2CBB59;
+			}
+		}
+		.being-status {
+			.logo {
+				/*background: #F98A0C;*/
+			}
+		}
+		.radius{
+			position: relative;
+			&:before {
+					content: "";
+					width: 20px;
+					height: 20px;
+					border-radius: 10px;
+					background: @back-page;
+					position: absolute;
+					left: -11px;
+					bottom: 4px;
+				}
+				&:after {
+					content: "";
+					width: 20px;
+					height: 20px;
+					border-radius: 10px;
+					background: @back-page;
+					position: absolute;
+					right: -11px;
+					bottom: 4px;
+				}
+		}
+		.activity-item {
+			position: relative;
+			float: left;
+			width: 360px;
+			height: 430px;
+			margin-right: 10px;
+			margin-bottom: 10px;
+			overflow: hidden;
+			
+			.header {
+				border: 1px solid #DFDFDF;
+				border-bottom: 0;
+				padding-top: 45px;
+				.logo {
+					width: 80px;
+					height: 80px;
+					line-height: 80px;
+					border-radius: 40px;
+					text-align: center;
+					font-size: 24px;
+					color: #fff;
+					margin: 0 auto;
+					margin-bottom: 10px;
+				}
+				.title {
+					position: relative;
+					text-align: center;
+					p {
+						width: 63px;
+						height: 1px;
+						position: absolute;
+						top: 12px;
+						border-top: 2px solid #DFDFDF;
+					}
+					p:first-child {
+						left: 20px;
+					}
+					p:last-child {
+						right: 20px;
+					}
+					h1 {
+						font-size: 20px;
+						color: #000;
+					}
+				}
+			}
+			.content {
+				padding-top: 40px;
+				border: 1px solid #DFDFDF;
+				border-top: 0;
+				border-bottom: 0;
+				height: 180px;
+				box-sizing:border-box;
+				.title {
+					font-size: 16px;
+					text-align: center;
+					margin-bottom: 15px;
+				}
+				.info {
+					.info-item {
+						text-align: center;
+						span {
+							font-size: 14px;
+							color: #737373;
+						}
+						p {
+							font-size: 30px;
+							color: #343434;
+						}
+						i {
+							font-size: 12px;
+							font-style: initial;
+							border: 1px solid #DFDFDF;
+							display: inline-block;
+							height: 24px;
+							line-height: 24px;
+							border-radius: 12px;
+							padding: 0 10px;
+							color: #737373;
+						}
+					}
+				}
+			}
+			.footer {
+				border: 1px solid #DFDFDF;
+				border-top: 0;
+				text-align: center;
+				padding:20px 10px;
+				height: 90px;
+				box-sizing:border-box;
+				p {
+					font-size: 16px;
+					margin-bottom: 5px;
+				}
+				span {
+					font-size: 12px;
+					color: #737373;
+				}
+				&:before {
+					content: "";
+					display: block;
+					border-top: 2px dashed #DFDFDF;
+					position: relative;
+					top: -35px;
+				}
+			}
+			.mark {
+				position: absolute;
+				top: 28px;
+				right: -35px;
+				height: 30px;
+				line-height: 30px;
+				width: 150px;
+				text-align: center;
+				font-size: 18px;
+				color: #fff;
+				transform: rotate(45deg);
+				-ms-transform: rotate(45deg);
+				/* IE 9 */
+				-moz-transform: rotate(45deg);
+				/* Firefox */
+				-webkit-transform: rotate(45deg);
+				/* Safari 和 Chrome */
+				-o-transform: rotate(45deg);
+			}
+		}
+	}
+</style>

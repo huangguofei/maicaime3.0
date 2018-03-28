@@ -1,0 +1,51 @@
+<!-- 登录 -->
+<template>
+	<article class="login">
+		<header>
+			<img src="../../images/Rectangle 18@2x.png" />
+		</header>
+		<article>
+			<section class="from-item">
+				<img src="../../images/Combined Shape.png" />
+				<input type="number" name="phone" id="phone" value="" placeholder="请输入手机号码" />
+			</section>
+			<section class="from-item">
+				<img src="../../images/login_secret.png" />
+				<input type="password" name="psw" id="psw" value="" placeholder="请输入密码" />
+			</section>
+			<section class="from-item">
+				<input type="button" id="loginBtn" value="登录" />
+			</section>
+		</article>
+	</article>
+</template>
+<script>
+</script>
+<style lang="less" scope>
+	@import "../../common/less/config.less";
+	.login {
+		article{
+			margin: 1rem .5rem;
+		}
+		header {
+			/*.pxrem(height,230);*/
+			/*background: url(../../images/Rectangle 18@2x.png);*/
+			img {
+				width: 100%;
+				height: auto;
+			}
+		}
+		.from-item {
+			text-align: center;
+			img {
+				vertical-align: middle;
+				.pxrem(width, 30);
+			}
+			input{
+				border: 0;
+				
+			}
+		}
+		
+	}
+</style>

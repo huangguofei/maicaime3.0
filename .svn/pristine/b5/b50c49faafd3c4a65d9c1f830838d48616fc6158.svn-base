@@ -1,0 +1,60 @@
+<!-- 特色专区 -->
+<template>
+	<div class="feature-pre">
+		<section>
+			<div class="left">
+				<router-link :to="{name : 'index.prompt'}">
+					<img src="../../images/home_activity.jpg">
+				</router-link>
+				
+			</div>
+			<div class="right">
+				<div class="top">
+					<img src="../../images/home_activity2.jpg">
+				</div>
+				<div class="bottom">
+					<img src="../../images/home_activity3.jpg">
+				</div>
+			</div>
+		</section>
+	</div>
+</template>
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.feature-pre{
+		section{
+			.prem(20);
+			padding:@prem;
+			.left{
+				.pxrem(height,455);
+				display: inline-block;
+				width:50%;
+				float:left;
+				.prem(2);
+				margin-left:-@prem;
+			}
+			.right{
+				width:50%;
+				float:right;
+				display: inline-block;
+				.prem(2);
+				margin-right:-@prem;
+				.top{
+					.pxrem(height,220);
+				}
+				.bottom{
+					.pxrem(height,221);
+					.prem(5);
+					margin-top:@prem;
+				}
+			}
+			img{
+				height:100%;
+				width:100%;
+			}
+		}
+		section:after{
+			.clearFloat;
+		}
+	}
+</style>

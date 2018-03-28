@@ -1,0 +1,175 @@
+<template>
+	<article class="page-layer user-paylist">
+		<!--<err msg="流水明细"></err>-->
+		<header class="padding">
+			<section class="pull-left time-search">
+				<p>2017.08.30</p>
+				<span>(当天)</span>
+				<img src="../../images/register_bottom.png" />
+			</section>
+			<section class="pull-right info-show">
+				<span>支出：</span>
+				<p>¥{{integralData.amount|ms}}</p>
+			</section>
+		</header>
+		<article class="content">
+			<p class="title padding"><span>订单信息</span><span>付款时间</span><span>金额</span></p>
+			<ul>
+				<li class="padding" v-for="(v,k) in payListData">
+					<section class="pull-left">
+						<p>{{v.approachText}}</p>
+						<span>订单号：{{v.serialNumber}}</span>
+					</section>
+					<section class="pull-left">
+						{{v.timeCreated|Time}}
+					</section>
+					<section class="pull-left last">
+						¥{{v.amount|ms}}
+					</section>
+					<img src="../../images/home_jifen_arrow.png" />
+				</li>
+			</ul>
+		</article>
+		<p class="remark"><img src="../../images/home_shuaihuo_rule.png" />订单已配送，但没有纳入收入记录</p>
+	</article>
+</template>
+
+<script>
+	//	import err from "components/common/err"
+	import server from 'actionurl/user/paylist'
+	export default {
+		data() {
+			return {
+				integralData: "",
+				payListData: []
+			}
+		},
+		created() {
+			server.getPayInfo(this);
+			server.getPayList(this);
+		},
+		components: {
+			//			err
+		},
+		filters: {
+			Time: function(val) {
+				if(!val)
+					return '';
+				val = new Date(val);
+				var M = val.getMonth() + 1;
+				M = M > 12 ? 1 : M;
+				var D = val.getDate();
+				var h = val.getHours();
+				var m = val.getMinutes();
+				h = h < 10 ? "0" + h : h;
+				m = m < 10 ? "0" + m : m;
+				return M + "-" + D + " " + h + ":" + m;
+			}
+		}
+	}
+</script>
+
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.user-paylist {
+		header {
+			background: #222;
+			.pxrem(height, 100);
+			.clearfix();
+			color: #fff;
+			section {
+				width: 50%;
+				.pxrem(padding-left, 50);
+				box-sizing: border-box;
+				p {
+					.pxrem(font-size, 36);
+				}
+				span {
+					.pxrem(font-size, 24);
+				}
+			}
+			.time-search {
+				position: relative;
+				border-right: 1px solid #fff;
+				img {
+					position: absolute;
+					.pxrem(top, 30);
+					.pxrem(right, 10);
+					.pxrem(width, 40);
+				}
+			}
+			.info-show {
+				p {
+					color: #FF5B60;
+				}
+			}
+		}
+		.content {
+			background: #fff;
+			.pxrem(margin-top, 20);
+			&>p {
+				border-bottom: 1px solid #E9E9E9;
+				.pxrem(font-size, 28);
+				.pxrem(height, 70);
+				.pxrem(line-height, 70);
+				span {
+					display: inline-block;
+					width: 25%;
+				}
+				span:last-child {
+					width: 20%;
+				}
+				span:first-child {
+					width: 55%;
+				}
+			}
+			ul {
+				li {
+					position: relative;
+					border-bottom: 1px solid #E9E9E9;
+					.pxrem(height, 70);
+					.clearfix();
+					img {
+						position: absolute;
+						.pxrem(width, 20);
+						.pxrem(top, 30);
+						.pxrem(right, 10);
+					}
+					section {
+						.pxrem(font-size, 26);
+						width: 25%;
+						.pxrem(line-height, 70);
+					}
+					section:first-child {
+						width: 55%;
+						line-height: inherit;
+						p {
+							.pxrem(font-size, 28);
+						}
+						span {
+							.pxrem(font-size, 24);
+							color: #535353;
+						}
+					}
+					section.last{
+						.pxrem(font-size, 30);
+						width: 20%;
+					}
+				}
+			}
+		}
+		.remark {
+			.pxrem(font-size, 24);
+			color: #666;
+			.pxrem(height, 40);
+			.pxrem(line-height, 40);
+			.pxrem(margin-top, 40);
+			text-align: center;
+			img {
+				.pxrem(width, 30);
+				vertical-align: sub;
+				.pxrem(margin-right, 5);
+			}
+		}
+	}
+</style>

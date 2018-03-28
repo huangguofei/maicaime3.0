@@ -1,0 +1,47 @@
+<template>
+	<article class="statistics-chart bk-white">
+		<h3 class="padding">最近7天订单统计</h3>
+		<article id="chart" class="chart">
+
+		</article>
+	</article>
+</template>
+
+<script>
+	import echarts from "echarts"
+	export default {
+		data() {
+			return {}
+		},
+		props: [],
+		created() {
+			var dom = document.getElementById("chart");
+
+		},
+		mounted() {
+			this.initChart();
+		},
+		methods: {
+			initChart() {
+				var chartDom = document.getElementById("chart");
+				let chart = echarts.init(chartDom);
+			}
+		},
+		components: {
+
+		}
+	}
+</script>
+
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.statistics-chart {
+		h3 {
+			.pxrem(font-size, 32);
+			border-bottom: 1px solid #e9e9e9;
+		}
+		.chart {
+			.pxrem(height, 240);
+		}
+	}
+</style>

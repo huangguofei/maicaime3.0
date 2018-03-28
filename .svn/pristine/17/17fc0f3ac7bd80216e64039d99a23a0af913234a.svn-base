@@ -1,0 +1,174 @@
+<!-- 采购商列表 -->
+<template>
+	<page-layer :narData="narData" classs="back-color">
+		<el-row class="search-wrap">
+		  	 <el-col :span="3" style="margin-right:20px;">
+		  	 	<el-input v-model="queryParams.purchaserName" placeholder="采购商名称"></el-input>
+		  	 </el-col>
+		  	 <el-col :span="3" style="margin-right:20px;">
+		  	 	<el-input v-model="queryParams.mobile" placeholder="手机号码"></el-input>
+		  	 </el-col>
+		  	 <el-col :span="2">
+		  	 	<el-button style="margin-left:20px;" @click="queryInfo()">查询</el-button>
+		  	 </el-col> 
+		  	
+		</el-row>
+		<el-table
+	      :data="tableData"
+	      style="width: 100%">
+	       <el-table-column
+		      type="index"
+		      width="50">
+		    </el-table-column>
+	      <el-table-column
+	        prop="purchaserName"
+	        label="采购商名"
+	        width="180">
+	      </el-table-column>
+	      <el-table-column
+	        prop="contact"
+	        label="联系人"
+	        width="100">
+	      </el-table-column>
+	       <el-table-column
+	        prop="mobile"
+	        label="手机号码"
+	        width="130">
+	      </el-table-column>
+	       <el-table-column
+	        prop="regionName"
+	        label="概念区域"
+	        width="100">
+	      </el-table-column>
+	      <el-table-column
+	        prop="longitude"
+	        label="经度"
+	        width="120">
+	      </el-table-column>
+	       <el-table-column
+	        prop="dimension"
+	        label="纬度"
+	        width="120">
+	      </el-table-column>
+	      <el-table-column
+	        prop="address"
+	        label="地址">
+	      </el-table-column>
+	      <el-table-column
+	        prop="timeCreated"
+	        label="注册时间">
+	      </el-table-column>
+	      <el-table-column
+	        prop="statusId"
+	        label="状态"
+	        width="100">
+        	<template scope="scope">
+				<span v-if="scope.row.statusId == 5">未审核</span>
+				<span v-if="scope.row.statusId == 1">已审核</span>
+				<span v-if="scope.row.statusId == -1">已删除</span>
+				<span v-if="scope.row.statusId == 0">禁用</span>
+				<span v-if="scope.row.statusId == -5">待激活</span>
+			</template>
+
+	      </el-table-column>
+	      <el-table-column
+	        label="操作"
+	        width="200">
+	        <template scope="scope">
+	        	<el-button @click="setArea(scope.row, 0)">设置区域</el-button>
+				<el-button class="el-button-audit" v-if="scope.row.statusId == 5" @click="auditRow(scope.row)">审核</el-button>
+				<!--<el-button class="el-button-disable" v-if="scope.row.statusId == 1" @click="editRowStatus(scope.row)">禁用</el-button>
+				<el-button class="el-button-enabled" v-if="scope.row.statusId == 0" @click="editRowStatus(scope.row)">启用</el-button>-->
+			</template>
+	      </el-table-column>
+	    </el-table>
+	    <el-pagination
+	      @current-change="handleCurrentChange"
+	      :current-page.sync="pagings.current"
+	      :page-size="pagings.size"
+	      layout="total, prev, pager, next"
+	      :total="pagings.total">
+	    </el-pagination>
+	    <CUSTOMERSETAREA :areaDialog="areaDialog" :submitClick="editArea" ref="setArea"></CUSTOMERSETAREA>
+	</page-layer>
+</template>
+<script>
+	import CUSTOMERPURCHASER from "action/customer/purchaser"
+	import CUSTOMERSETAREA from "components/customer/set-area"
+	import pageLayer from "components/common/page-layer"
+    export default {
+      data() {
+        return {
+    	  narData : [
+    	  	{
+    	  		name : "采购商列表",
+    	  		router : ""
+    	  	}
+    	  ],
+          queryParams : {
+          		purchaserName : "",
+          		mobile : "",
+          },
+          tableData: [],
+          pagings : {
+          	current : 1,
+          	size : 10,
+          	pages : 1,
+          	total : 0
+          },
+          areaDialog : {
+          		title : "设置区域",
+          		dialogShow : false,
+          		type : 0
+          },
+          editRowInfo : {},
+        }
+      },
+      created() {
+      		CUSTOMERPURCHASER.getPurchaserList(this);
+      },
+      components : {
+      		CUSTOMERSETAREA,
+      		pageLayer
+      },
+      methods : {
+      		queryInfo() {
+      			CUSTOMERPURCHASER.getPurchaserList(this);
+      		},
+      		auditRow(row) {
+      			var type = 1;/*审核*/
+      			this.setArea(row, type);
+      		},
+      		editRowStatus(row) {
+      			var statusId = row.statusId, str = "", _that = this;
+      			if(statusId == 5) {
+      				str = "此操作审核该行";
+      			} else if(statusId == 1) {
+      				str = "此操作禁用该行";
+      			} else if(statusId == 0) {
+      				str = "此操作启用该行";
+      			}
+      			_that.$confirm(str + ', 是否继续?', '提示', {
+		          confirmButtonText: '确定',
+		          cancelButtonText: '取消',
+		          type: 'warning'
+		        }).then(() => {
+		          	CUSTOMERPURCHASER.updatePurchaserStatus(_that, row);
+		        });
+      		},
+      		handleCurrentChange(value) {
+				this.pagings.current = value;
+				CUSTOMERPURCHASER.getPurchaserList(this);
+			},
+			setArea(row, type) {
+				this.editRowInfo = row;
+				this.areaDialog.type = type;
+				this.areaDialog.dialogShow = true;
+				this.$refs.setArea.editFormData(row);
+			},
+			editArea(regionId) {
+				CUSTOMERPURCHASER.bindReginAction(this, regionId);
+			}
+      }
+    }
+  </script>

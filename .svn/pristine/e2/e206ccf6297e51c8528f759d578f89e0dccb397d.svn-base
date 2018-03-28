@@ -1,0 +1,51 @@
+/**
+ * author hgf 
+ * day    2017-11-2
+ * 个人中心模块接口
+ */
+import https from "httpurl/https"
+/*获取个人信息*/
+export const userAPI = {
+	/*个人信息*/
+	userAPI: (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/user/supplierOwnInfo", v)),
+	/*个人详情信息*/
+	userDetailAPI : (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/user/detail", v)),
+}
+
+/*获取订单数量*/
+export const orderAPI = {
+	/*订单列表*/
+	orderNumAPI: (...v) => https.commAjax(cJs.apiDataReturnParams("get", "/order/getCountByStatus", v)),
+
+}
+
+/*提现模块*/
+export const depositAPI = {
+	/*提现记录列表*/
+	depositListAPI: (...v) => https.commAjax(cJs.apiDataReturnParams("get", "/wallet/getWithdrawList", v)),
+	/*提现详情*/
+	depositDetailsAPI: (...v) => https.commAjax(cJs.apiDataReturnParams("get", "/wallet/getWithdrawInfo", v)),
+	/*申请提现*/
+	depositApplyAPI: (...v) => https.commAjax(cJs.apiDataReturnParams("get", "/wallet/withdrawDeposit", v)),
+
+}
+
+/*限时活动*/
+export const activitiesAPI= {
+	/*获取活动种类列表*/
+	getActivitiesKindListAPI: (...v) => https.commAjax(cJs.apiDataReturnParams("get", "/feature_area/enterableList", v)),
+	/*获取限时特价详情*/
+	getActivitiesDetailsAPI:(...v) => https.commAjax(cJs.apiDataReturnParams("get", "/feature_area/ms/details", v)),
+	/*参加活动发布产品*/
+	joinActivityAPI:(...v) => https.commAjax(cJs.apiDataReturnParams("post", "/feature_area/ms/joinProd", v)),
+	/*下架产品*/
+	removeShopAPI:(...v) => https.commAjax(cJs.apiDataReturnParams("get", "/feature_area/ms/changeProdStatus", v)),
+}
+
+/*销售排行*/
+export const salesBankAPI = {
+	/*客户购买排行*/
+	custRankAPI : (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/sale-rank/cust-rank-list", v)),
+	/*菜品销售排行*/
+	prodRankAPI : (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/sale-rank/prod-rank-list", v)),
+}

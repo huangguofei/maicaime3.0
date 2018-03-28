@@ -1,0 +1,142 @@
+<template>
+	<article class="page-layer user-paylist">
+		<header class="padding">
+			<section class="pull-left time-search">
+				<p>2017.08.30</p>
+				<span>(当天)</span>
+				<img src="../../images/register_bottom.png" />
+			</section>
+			<section class="pull-right info-show">
+				<span>支出：</span>
+				<p>¥1564.09</p>
+			</section>
+		</header>
+		<article class="content">
+			<p class="title padding"><span>订单信息</span><span>付款时间</span><span>金额</span></p>
+			<ul>
+				<li class="padding">
+					<section class="pull-left">
+						<p>小飞飞啥都有</p>
+						<span>订单号：201708371</span>
+					</section>
+					<section class="pull-left">
+						09.04 15:40
+					</section>
+					<section class="pull-left">
+						¥188.50
+					</section>
+					<img src="../../images/home_jifen_arrow.png" />
+				</li>
+			</ul>
+		</article>
+		<p class="remark"><img src="../../images/home_shuaihuo_rule.png" />订单已配送，但没有纳入收入记录</p>
+	</article>
+</template>
+
+<script>
+</script>
+
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.user-paylist {
+		header {
+			background: #222;
+			.pxrem(height, 100);
+			.clearfix();
+			color: #fff;
+			section {
+				width: 50%;
+				.pxrem(padding-left, 50);
+				box-sizing: border-box;
+				p {
+					.pxrem(font-size, 36);
+				}
+				span {
+					.pxrem(font-size, 24);
+				}
+			}
+			.time-search {
+				position: relative;
+				border-right: 1px solid #fff;
+				img {
+					position: absolute;
+					.pxrem(top, 30);
+					.pxrem(right, 10);
+					.pxrem(width, 40);
+				}
+			}
+			.info-show {
+				p {
+					color: #FF5B60;
+				}
+			}
+		}
+		.content {
+			background: #fff;
+			.pxrem(margin-top, 20);
+			&>p {
+				border-bottom: 1px solid #E9E9E9;
+				.pxrem(font-size, 28);
+				.pxrem(height,70);
+				.pxrem(line-height,70);
+				span {
+					display: inline-block;
+					width: 30%;
+				}
+				span:last-child {
+					width: 30%;
+				}
+				span:first-child {
+					width: 40%;
+				}
+			}
+			ul{
+				li{
+					position: relative;
+					border-bottom: 1px solid #E9E9E9;
+					.pxrem(height,70);
+					.clearfix();
+					img{
+						position: absolute;
+						.pxrem(width,20);
+						.pxrem(top,30);
+						.pxrem(right,30);
+					}
+					section{
+						.pxrem(font-size, 26);
+						width: 30%;
+						.pxrem(line-height,70);
+					}
+					section:first-child{
+						width: 40%;
+						line-height: inherit;
+						p{
+							.pxrem(font-size, 28);
+						}
+						span{
+							.pxrem(font-size, 24);
+							color:#535353;
+						}
+					}
+					section:last-child{
+						.pxrem(font-size, 30);
+						width: 30%;
+					}
+				}
+			}
+		}
+		.remark{
+			.pxrem(font-size, 24);
+			color:#666;
+			.pxrem(height,40);
+			.pxrem(line-height,40);
+			.pxrem(margin-top,40);
+			text-align: center;
+			img{
+				.pxrem(width,30);
+				vertical-align: sub;
+				.pxrem(margin-right,5);
+			}
+		}
+	}
+</style>

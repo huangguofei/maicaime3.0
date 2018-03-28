@@ -1,0 +1,276 @@
+<!-- 购物车商品分类列表 -->
+<template>
+	<div class="prod-category-list">
+		<div class="c-item">
+			<div class="header">
+				<i></i>
+				<span class="name">新鲜蔬菜</span>
+			</div>
+			<div class="prod-list">
+				<div class="prod-item"  @touchstart="_touchstart($event)"  @touchmove="_touchMove($event)" @touchend="_touchEnd($event)">
+					<div class="content" :style="{transform:'translate(-'+leftSilde.moveLeft+'px,0px)'}">
+						<i class="prod-img"><img src=""></i>
+						<span class="cart-wrap">
+							<i class="minus c-i"></i>
+							<span class="num">5</span>
+							<i class="add c-i"></i>
+						</span>
+						<div class="prod-info">
+							<p class="prod-name">经典瘦猪肉</p>
+							<p class="price">¥16.8/斤</p>
+						</div>
+					</div>
+					<!-- <div class="del">
+						删除
+					</div> -->
+				</div>
+				
+			</div>
+		</div>
+
+		<div class="c-item">
+			<div class="header">
+				<i></i>
+				<span class="name">厨房用料</span>
+			</div>
+			<div class="prod-list">
+				<div class="prod-item">
+					<router-link :to="{name : 'market.detail'}">
+						<i class="prod-img"><img src=""></i>
+						<span class="cart-wrap">
+							<i class="minus c-i"></i>
+							<span class="num">5</span>
+							<i class="add c-i"></i>
+						</span>
+						<div class="prod-info">
+							<p class="prod-name">经典瘦猪肉</p>
+							<p class="price">¥14.8/斤</p>
+						</div>
+					</router-link>
+				</div>
+				<div class="prod-item">
+					<router-link :to="{name : 'market.detail'}">
+						<i class="prod-img"><img src=""></i>
+						<span class="cart-wrap">
+							<i class="minus c-i"></i>
+							<span class="num">5</span>
+							<i class="add c-i"></i>
+						</span>
+						<div class="prod-info">
+							<p class="prod-name">经典瘦猪肉</p>
+							<p class="price">¥14.8/斤</p>
+						</div>
+					</router-link>
+				</div>
+				<div class="prod-item">
+					<router-link :to="{name : 'market.detail'}">
+						<i class="prod-img"><img src=""></i>
+						<span class="cart-wrap">
+							<i class="minus c-i"></i>
+							<span class="num">5</span>
+							<i class="add c-i"></i>
+						</span>
+						<div class="prod-info">
+							<p class="prod-name">经典瘦猪肉</p>
+							<p class="price">¥14.8/斤</p>
+						</div>
+					</router-link>
+				</div>
+			</div>
+		</div>
+		<div class="c-item">
+			<div class="header">
+				<i></i>
+				<span class="name">厨房用料</span>
+			</div>
+			<div class="prod-list">
+				<div class="prod-item">
+					<router-link :to="{name : 'market.detail'}">
+						<i class="prod-img"><img src=""></i>
+						<span class="cart-wrap">
+							<i class="minus c-i"></i>
+							<span class="num">5</span>
+							<i class="add c-i"></i>
+						</span>
+						<div class="prod-info">
+							<p class="prod-name">经典瘦猪肉</p>
+							<p class="price">¥14.8/斤</p>
+						</div>
+					</router-link>
+				</div>
+				<div class="prod-item">
+					<router-link :to="{name : 'market.detail'}">
+						<i class="prod-img"><img src=""></i>
+						<span class="cart-wrap">
+							<i class="minus c-i"></i>
+							<span class="num">5</span>
+							<i class="add c-i"></i>
+						</span>
+						<div class="prod-info">
+							<p class="prod-name">经典瘦猪肉</p>
+							<p class="price">¥14.8/斤</p>
+						</div>
+					</router-link>
+				</div>
+				<div class="prod-item">
+					<router-link :to="{name : 'market.detail'}">
+						<i class="prod-img"><img src=""></i>
+						<span class="cart-wrap">
+							<i class="minus c-i"></i>
+							<span class="num">5</span>
+							<i class="add c-i"></i>
+						</span>
+						<div class="prod-info">
+							<p class="prod-name">经典瘦猪肉</p>
+							<p class="price">¥14.8/斤</p>
+						</div>
+					</router-link>
+				</div>
+			</div>
+		</div>
+	</div>
+</template>
+<script>
+	export default{
+		data() {
+			return {
+				leftSilde : {
+					x : 0,
+					moveLeft : 0,
+				}
+			}
+		},
+		methods : {
+			_touchstart(e) {
+				e = e || event;
+				this.leftSilde.x = e.touches[0].clientX;
+				//console.log(e);
+			},
+			_touchMove(e) {
+				e = e || event;
+				var left = e.touches[0].clientX;
+				var moveLeft = this.leftSilde.x - left;
+				this.leftSilde.moveLeft = moveLeft;
+			},
+			_touchEnd(e) {
+				e = e || event;
+				this.leftSilde.moveLeft = 60;
+				//console.log(e);
+			}
+		}
+	}
+</script>
+<style lang="less">
+	@import "../../common/less/config.less";
+	.prod-category-list{
+		.c-item{
+			.header{
+				.pxrem(height,80);
+				.pxrem(line-height,80);
+				.prem(0,20);
+				padding:@prem;
+				i{
+					display: inline-block;
+					position: relative;
+					.pxrem(height,42);
+					.pxrem(width,42);
+					.pxrem(top,10);
+					border:1px solid red;
+
+				}
+			}
+			.prod-list{
+				background: #FFF;
+				
+				.prod-item{
+					position: relative;
+					.prem(20, 0);
+					padding:@prem;
+					border-bottom:0.5px solid #E9E9E9;
+					.content{
+						.prem(0,20);
+						height:100%;
+						background: #FFF;
+						padding:@prem;
+						position: relative;
+						z-index:2;
+					}
+					.del{
+						position: absolute;
+						top:0;
+						z-index:0;
+						right:0;
+						height:100%;
+						width:60px;
+						background: red;
+					}
+					.prod-img{
+						position: absolute;
+						display: inline-block;
+						.pxrem(width,130);
+						.pxrem(height,130);
+						border:0.5px solid #E5E5E5;
+						display: table-cell;
+						vertical-align: middle;
+						img{
+							max-width: 100%;
+							max-height: 100%;
+							text-align: center;
+							vertical-align: middle;
+						}
+					}
+					
+					.cart-wrap{
+						position: absolute;
+						right:0;
+						.pxrem(bottom, 20);
+						.pxrem(right, 20);
+						display: inline-block;
+						.pxrem(height, 49);
+						border:1px solid #EEEEEE;
+						.pxrem(border-radius,80);
+						.c-i{
+							float:left;
+							display: inline-block;
+							.pxrem(width, 47);
+							.pxrem(height, 47);
+							border:1px solid #1EC551;
+							border-radius: 50%;
+						}
+						.num{
+							float:left;
+							display: inline-block;
+							.pxrem(height, 47);
+							.pxrem(line-height, 47);
+							.pxrem(min-width, 60);
+							.pxrem(font-size, 31);
+							text-align:center;
+							color:#000;
+						}
+					}
+					.prod-info{
+						.pxrem(height, 130);
+						.pxrem(padding-left, 170);
+						.prod-name{
+							color:@p-t-c;
+							.pxrem(font-size, 32);
+							.pxrem(min-height, 80);
+						}
+						.price{
+							color:@p-p-c;
+							.pxrem(font-size, 36);
+						}
+						.orgin-price{
+							color:@p-o-c;
+							.pxrem(font-size, 28);
+							text-decoration:line-through;
+						}
+					}
+				}
+				.prod-item:last-child{
+					border-bottom:0;
+				}
+			}
+		}
+	}
+</style>

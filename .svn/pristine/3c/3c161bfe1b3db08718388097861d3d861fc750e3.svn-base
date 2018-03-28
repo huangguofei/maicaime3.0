@@ -1,0 +1,32 @@
+/**
+ * hgf 2017年12月8日
+ * 提现申请
+ */
+import { depositApplyAPI } from "../../api/data"
+export default {
+	/*获取提现列表*/
+	getDepositApplyAPIList(vm) {
+		for(var i in vm.queryParams) {
+			if(!vm.queryParams[i])
+				delete vm.queryParams[i];
+		}
+		depositApplyAPI.depositApplyListAPI(vm.queryParams, (result) => {
+			vm.tableData = result.resultList;
+			vm.queryParams.pageNum = result.currentPage;
+			vm.queryParams.pages = result.totalPage;
+			vm.queryParams.total = result.totalCount;
+		});
+	},
+	/*审批*/
+	depositApplyChange(vm,data) {
+		depositApplyAPI.depositApplyChangeAPI(data, (result) => {
+			if(result) {
+				vm.$message({
+					message: '操作成功！',
+					type: 'success'
+				});
+				this.getDepositApplyAPIList(vm);
+			}
+		});
+	}
+}

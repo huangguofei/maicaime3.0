@@ -1,0 +1,217 @@
+<template>
+	<page-layer :narData="narData" classs="back-color">
+		<div class="order-details padding" v-if="depositData">
+			<div class="item">
+				<p class="title">申请信息</p>
+				<el-row class="item-content padding">
+					<el-col :span="24">
+						<el-col :span="1" class="key">申请编号</el-col>
+						<el-col :span="5" class="val">{{depositData.withdrawRecordId}}</el-col>
+						<el-col :span="1" class="key">账单号</el-col>
+						<el-col :span="5" class="val">{{depositData.billId|isNull}}</el-col>
+						<el-col :span="1" class="key">申请金额</el-col>
+						<el-col :span="5" class="val">{{depositData.amount}}</el-col>
+						<el-col :span="1" class="key">实际金额</el-col>
+						<el-col :span="5" class="val">{{depositData.actualAmount|isNull}}</el-col>
+					</el-col>
+					<el-col :span="24">
+						<el-col :span="1" class="key">银行名称</el-col>
+						<el-col :span="5" class="val">{{depositData.bankName}}</el-col>
+						<el-col :span="1" class="key">银行卡号</el-col>
+						<el-col :span="5" class="val">{{depositData.cardCode}}</el-col>
+						<el-col :span="1" class="key">支行地址</el-col>
+						<el-col :span="5" class="val">{{depositData.bankAddr|isNull}}</el-col>
+						<el-col :span="1" class="key">户主姓名</el-col>
+						<el-col :span="5" class="val">{{depositData.ownerUserName}}</el-col>
+					</el-col>
+					<el-col :span="24">
+						<el-col :span="1" class="key">申请状态</el-col>
+						<el-col :span="5" class="val">{{depositData.statusText|isNull}}</el-col>
+						<el-col :span="1" class="key">申请时间</el-col>
+						<el-col :span="5" class="val">{{depositData.timeCreated}}</el-col>
+					</el-col>
+				</el-row>
+			</div>
+			<div class="item">
+				<p class="title">申请方信息</p>
+				<el-row class="item-content padding">
+					<el-col :span="24">
+						<el-col :span="1" class="key">申请方</el-col>
+						<el-col :span="5" class="val">{{depositData.merchantName}}</el-col>
+						<el-col :span="1" class="key">身份</el-col>
+						<el-col :span="5" class="val">{{depositData.merchantTypeText}}</el-col>
+						<el-col :span="1" class="key">电话</el-col>
+						<el-col :span="5" class="val">{{depositData.merchantMobile|isNull}}</el-col>
+					</el-col>
+				</el-row>
+			</div>
+			<div class="item">
+				<p class="title">日志信息</p>
+				<div class="items padding" v-for="(v,k) in depositData.operationLogs">
+					<p class="titles">处理时间：{{v.timeCreated}}</p>
+					<el-row class="item-content padding">
+						<el-col :span="24">
+							<el-col :span="1" class="key">内容</el-col>
+							<el-col :span="5" class="val">{{v.logContent}}</el-col>
+							<el-col :span="1" class="key">处理人</el-col>
+							<el-col :span="5" class="val">{{v.merchantTypeText}}</el-col>
+							<el-col :span="1" class="key">处理状态</el-col>
+							<el-col :span="5" class="val">{{v.logTitle}}</el-col>
+							<el-col :span="1" class="key">加密级别</el-col>
+							<el-col :span="5" class="val">{{v.privacyLevelText|isNull}}</el-col>
+						</el-col>
+					</el-row>
+				</div>
+			</div>
+			<div class="item">
+				<p class="title">账单详情</p>
+				<div class="items padding">
+					<p class="total">交易金额：{{tradeAmount|ms}}</p>
+					<el-table :data="billData" style="width: 100%" v-if="billData">
+						<el-table-column type="index" width="60">
+						</el-table-column>
+						<el-table-column prop="billId" label="账单号" width="190">
+						</el-table-column>
+						<el-table-column prop="refId" label="订单号">
+						</el-table-column>
+						<el-table-column prop="approachText" label="说明">
+						</el-table-column>
+						<el-table-column prop="subsidies" label="补贴">
+						</el-table-column>
+						<el-table-column prop="amount" label="交易金额">
+						</el-table-column>
+						<el-table-column prop="amountBeforeChange" label="交易前余额">
+						</el-table-column>
+						<el-table-column prop="amountAfterChange" label="交易后余额">
+						</el-table-column>
+						<el-table-column prop="tradeAmount" label="合计">
+						</el-table-column>
+						<el-table-column prop="datatime" label="账单时间">
+						</el-table-column>
+					</el-table>
+					<el-pagination @current-change="handleCurrentChange" :current-page.sync="queryParams.pageNum" :page-size="queryParams.pageSize" layout="total, prev, pager, next" :total="queryParams.total">
+					</el-pagination>
+				</div>
+			</div>
+			<div class="btn-group">
+				<el-button type="primary" @click="editStatus">推进状态</el-button>
+				<!--<el-button type="primary">修改财务备注</el-button>-->
+			</div>
+		</div>
+		<p v-else>暂无数据</p>
+		<dialogs :applyData="applyData" @offDialog="offDialog" @submit="submit" ref='dia'></dialogs>
+	</page-layer>
+</template>
+
+<script>
+	import pageLayer from "components/common/page-layer"
+	import SETTINGAREA from "actionurl/data/depositApply"
+	import billServer from "actionurl/data/bill"
+	import dialogs from "components/data/changeDepositStatus"
+	export default {
+		data() {
+			return {
+				narData: [{
+					name: "取现记录详情",
+					router: ""
+				}],
+				depositData: "",
+				withdrawRecordId: this.$route.params.id,
+				billData: [],
+				tradeAmount: "",
+				queryParams: {
+					billId: this.$route.query.billId,
+					pageNum: 1,
+					pageSize: 10,
+					pages: 1,
+					total: 0
+				},
+				applyData: {
+					isShow: false
+				},
+			}
+		},
+		created() {
+			SETTINGAREA.depositApplyDetails(this);
+			billServer.getBillDetails(this,true);
+		},
+		methods: {
+			handleCurrentChange() {
+				billServer.getBillDetails(this);
+			},
+			editStatus() {
+				this.applyData.data = this.depositData;
+				this.$refs.dia.init();
+				if(this.depositData.statusId == 2) {
+					this.$message.error('目前不能操作！');
+					return false;
+				}
+				this.applyData.isShow = true;
+			},
+			offDialog() {
+				//				this.isShowDialog = false;
+			},
+			submit(data) {
+				SETTINGAREA.depositApplyChange(this, data);
+			},
+		},
+		components: {
+			pageLayer,
+			dialogs
+		},
+		filters: {
+			isNull(val) {
+				if(!val) {
+					return "无"
+				}
+				return val;
+			}
+		}
+	}
+</script>
+
+<style lang="less" scoped>
+	@import "../../../common/less/config.less";
+	.order-details {
+		.val {
+			padding-right: 10px;
+		}
+		.item {
+			border-bottom: 1px solid #ccc;
+			padding-bottom: 10px;
+			padding-top: 10px;
+			.title {
+				font-size: 20px;
+				border-left: 5px solid @color-main;
+				padding-left: 10px;
+			}
+			.item-content {
+				font-size: 14px;
+				span {
+					display: inline-block;
+				}
+				.goods-name {
+					width: 60%;
+				}
+				.price {
+					width: 40%;
+				}
+			}
+			.titles {
+				font-size: 14px;
+				margin-bottom: 10px;
+			}
+		}
+		.item:first-child {
+			padding: 0;
+		}
+		.total {
+			font-size: 16px;
+			margin-bottom: 10px;
+		}
+		.btn-group {
+			text-align: center;
+			padding: 10px 0;
+		}
+	}
+</style>

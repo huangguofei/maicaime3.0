@@ -1,0 +1,85 @@
+/*注册 第二步*/
+<template>
+	<article class="register-form">
+		<section class="from-item">
+			<!--<img src="../../images/register_shopname.png" />-->
+			<input type="text" name="shopname" id="shopname" ref="purchaserName" v-model="purchaserName" placeholder="请输入店铺名称" />
+		</section>
+		<section class="from-item">
+			<!--<img src="../../images/register_linkman.png" />-->
+			<input type="text" name="linkman" id="linkman" ref="contact" v-model="contact" placeholder="请输入联系人" />
+		</section>
+		<section class="from-item">
+			<!--<img src="../../images/register_location.png" />-->
+			<!--<city-select></city-select>-->
+		</section>
+		<section class="from-item">
+			<!--<img src="../../images/register_linkman.png" />-->
+			<input type="text" name="shoplocation" id="shoplocation" ref="address" v-model="address" placeholder="店铺所在街道及门牌" />
+			<a href="javascript:;" @click="getlocation" class="get-location">{{locationStr}}</a>
+		</section>
+	</article>
+</template>
+
+<script>
+	import citySelect from 'components/login/city-select'
+	const timeNum=60;
+	export default{
+		data(){
+			return {
+				locationStr:"正在定位",
+				numTime:"",
+				timer:null,
+				purchaserName:"爱心屋",
+				contact:"郑爽",
+				address:"上海市中心",
+				areaId:12365,
+				longitude:11111,
+				dimension:22222,
+				cityId:11111
+			}
+		},methods:{
+			getlocation(){
+				if(!this.timer){
+					this.numTime=timeNum;
+					this.timer=setInterval(()=>{
+						console.log(this.numTime)
+						if(this.numTime>0){
+							this.numTime--;
+							this.codeStr=this.numTime+"s";
+						}else{
+							clearInterval(this.timer);
+							this.timer=null;
+							this.numTime=timeNum;
+							this.codeStr="重新获取";
+						}
+					},1000);
+				}
+			},
+			formGetFocus(index){
+				if(index){
+					this.$refs[index].focus();
+				}
+			}
+		},
+		components:{
+			citySelect
+		}
+	}
+</script>
+
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.register-form {
+		.from-item {
+			position:relative;
+			.get-location{
+				position: absolute;
+				right: 0;
+				display: inline-block;
+				color: #46C895;
+				text-align: center;
+			}
+		}
+	}
+</style>

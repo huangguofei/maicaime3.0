@@ -1,0 +1,261 @@
+<template>
+	<section class="page-modal" style="margin-top: 0;" v-if="show">
+		<div class="page-bg" @click="offPage"></div>
+		<div class="page padding">
+			<h3>修改食材数量</h3>
+			<div class="food-lists">
+				<ul class="padding" v-if="foodData.orderStatusId == 40">
+					<li v-for="(item,key) in foodData.products">
+						<div class="shop-item">
+							<section class="item-left pull-left">
+								<p class="commodity-name"><i></i><span>{{item.prodName}}</span></p>
+								<p class="price-num"><span>单价:¥{{item.skuPrice|ms}}</span></p>
+							</section>
+							<section class="item-right pull-right">
+								数量<img src="../../images/market_minus.png" @click="reduce(item)" />
+								<span class="num">
+								<input type="number" :value="item.actualQuantity.toString().indexOf('.') == -1 ? item.actualQuantity : (item.actualQuantity * 1).toFixed(1)" @change="changeNum(item, $event)" />
+								</span>
+								<img src="../../images/market_plus+.png" @click="add(item)" />
+							</section>
+						</div>
+					</li>
+				</ul>
+			</div>
+			<section class="footer" id="footer">
+				<p class="pull-left">合计：<span>¥{{foodData.totalAmount|ms}}</span></p>
+				<a href="javascript:;" class="pull-right" @click="confirmReceipt">确认修改</a>
+			</section>
+		</div>
+	</section>
+</template>
+
+<script>
+	import orderApi from "actionurl/order/order"
+	export default {
+		data() {
+			return {
+				totalAmount: 0,
+				show: false,
+			}
+		},
+		props: ['foodData'],
+		created() {
+			console.log(this.foodData)
+		},
+		mounted() {
+			var _that = this;
+			setTimeout(function() {
+				_that.show = true;
+				_that.$nextTick(function() {
+					var allHeight = window.innerHeight;
+					var footerHeight = document.getElementById("footer").offsetHeight;
+					document.getElementsByClassName("food-lists")[0].style.maxHeight = (allHeight - footerHeight - 80) + "px";
+				});
+			}, 100);
+
+		},
+		methods: {
+			offPage() {
+				this.$emit("hidePage");
+			},
+			reduce(item) {
+				if(item.actualQuantity < 1)
+					return false;
+				item.actualQuantity--;
+				/*this.$emit("reduce", item.skuPrice);*/
+				this.returnSubAmount();
+			},
+			add(item) {
+				item.actualQuantity++;
+				/*this.$emit("add", item.skuPrice);*/
+				this.returnSubAmount();
+			},
+			confirmReceipt() {
+				var d=[];
+				this.foodData.products.forEach((v,k)=>{
+					d.push({
+						orderProductId:v.orderProductId,
+						actualQuantity:v.actualQuantity
+					});
+				});
+				var option={
+					orderprductIds:JSON.stringify(d),
+					orderId:this.foodData.orderId
+				}
+				orderApi.orderEdit(this,option);
+			},
+			changeNum(item, event) {
+				item.actualQuantity = event.target.value < 0 ? 0 : event.target.value;
+				this.returnSubAmount();
+			},
+			/*计算总价*/
+			returnSubAmount() {
+				var prods = this.foodData.products;
+				var amount = 0;
+				prods.forEach((prod, index) => {
+					console.log(prod.skuPrice, prod.actualQuantity);
+					amount += prod.skuPrice * prod.actualQuantity;
+				});
+				if(amount < 0) {
+					amount = 0;
+				}
+				this.foodData.totalAmount=amount;
+//				this.$emit("practicalAmount", amount, this.foodData.discountAmount);
+			}
+		}
+	}
+</script>
+
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.food-lists {
+		overflow: auto;
+	}
+	
+	.page-modal {
+		position: fixed;
+		top: 0;
+		width: 100%;
+		height: 100%;
+		overflow: auto;
+		/*.pxrem(bottom, 99);*/
+		bottom: 0;
+		left: 0;
+		right: 0;
+		z-index: 100;
+		.page-bg {
+			background: #000;
+			opacity: 0.6;
+			position: absolute;
+			width: 100%;
+			top: 0;
+			bottom: 0;
+		}
+		.page {
+			background: #fff;
+			position: absolute;
+			bottom: 0;
+			width: 100%;
+			box-sizing: border-box;
+			h3 {
+				.pxrem(font-size, 32);
+				text-align: center;
+			}
+			ul {
+				background: #F8F8F8;
+				margin-top: .2rem;
+				margin-bottom: .2rem;
+				img {
+					.pxrem(width, 43);
+					vertical-align: middle;
+					position: relative;
+					z-index: 2;
+				}
+				img:first-child {
+					.pxrem(margin-left, 10);
+				}
+				.item-right {
+					span {
+						display: inline-block;
+						text-align: center;
+						background: #fff;
+						.pxrem(width, 117);
+						.pxrem(height, 40);
+						.pxrem(line-height, 40);
+						margin: 0 -.2rem;
+					}
+					.num {
+						display: inline-block;
+						.pxrem(height, 47);
+						.pxrem(min-width, 65);
+						input {
+							text-align: center;
+							.pxrem(width, 65);
+							border: 0;
+							.pxrem(font-size, 28);
+							.pxrem(line-height, 48);
+							color: #000;
+						}
+					}
+					color: #4A4A4A;
+				}
+			}
+		}
+		.shop-item {
+			.pxrem(margin-bottom, 26);
+			overflow: auto;
+			.item-left {
+				.commodity-name {
+					color: #151009;
+					.pxrem(height, 40);
+					.pxrem(line-height, 40);
+					.pxrem(font-size, 28);
+					.pxrem(margin-bottom, 5);
+					i {
+						background: @p-p-c;
+						vertical-align: middle;
+						display: inline-block;
+						.pxrem(width, 12);
+						.pxrem(height, 12);
+						.pxrem(border-radius, 6);
+						.pxrem(margin-right, 6);
+					}
+				}
+				.price-num {
+					.pxrem(height, 33);
+					.pxrem(line-height, 33);
+					color: #999999;
+					.pxrem(font-size, 24);
+					.pxrem(padding-left, 22);
+					span:first-child {
+						margin-right: 0.3rem;
+					}
+				}
+			}
+			.item-right {
+				.pxrem(height, 74);
+				.pxrem(line-height, 74);
+				b {
+					color: #343534;
+					.pxrem(font-size, 28);
+				}
+			}
+		}
+	}
+	
+	.footer {
+		.pxrem(font-size, 28);
+		/*.clearfix();*/
+		background: #FAFAFA;
+		.pxrem(height, 100);
+		.pxrem(line-height, 100);
+		border-top: 1px solid #F3F3F3;
+		.pxrem(padding-left, 16);
+		position: relative;
+		p {
+			span {
+				color: @p-p-c;
+			}
+		}
+		.price-info {
+			position: absolute;
+			.pxrem(bottom, 0);
+			.pxrem(left, 20);
+			color: #999999;
+			.pxrem(font-size, 20);
+			width: 90%;
+			line-height: initial;
+		}
+		a {
+			display: inline-block;
+			.pxrem(width, 250);
+			text-align: center;
+			.pxrem(font-size, 36);
+			background: @m-c;
+			color: #fff;
+			.pxrem(padding-left, 16);
+			.pxrem(padding-right, 16);
+		}
+	}
+</style>

@@ -1,0 +1,124 @@
+<!-- 注册 第二步 -->
+<template>
+	<article class="register-form">
+		<section class="from-item">
+			<img src="../../images/register_shopname.png" />
+			<input type="text" name="shopname" id="shopname" ref="purchaserName" @focus="scrollView" v-model="purchaserName" placeholder="请输入店铺名称" />
+		</section>
+		<section class="from-item">
+			<img src="../../images/register_linkman.png" />
+			<input type="text" name="linkman" id="linkman" ref="contact" @focus="scrollView" v-model="contact" placeholder="请输入联系人" />
+		</section>
+		<section class="from-item">
+			<img src="../../images/register_location.png" />
+			<article class="location-info" @click="selectCity">
+				<span>
+					{{locationData.provinceName}}
+					<img src="../../images/register_bottom.png"/>
+				</span>
+				<span>
+					{{locationData.cityName}}
+					<img src="../../images/register_bottom.png"/>
+				</span>
+				<span>
+					{{locationData.countyName}}
+					<img src="../../images/register_bottom.png"/>
+				</span>
+			</article>
+		</section>
+		<section class="from-item">
+			<img src="../../images/register_shopcode.png" />
+			<input type="text" name="shoplocation" id="shoplocation" @focus="scrollView" ref="address" v-model="address" placeholder="店铺所在街道及门牌" />
+			<!--<a href="javascript:;" @click="getlocation" class="get-location">{{locationStr}}</a>-->
+		</section>
+	</article>
+</template>
+
+<script>
+	import cityData from 'actionurl/login/login'
+	const timeNum = 60;
+	export default {
+		data() {
+			return {
+				info: [],
+				selectCityShow:false,
+				locationStr: "正在定位",
+				numTime: "",
+				timer: null,
+				purchaserName: "",
+				contact: "",
+				address: "",
+				areaId: 12365,
+				longitude: 11111,
+				dimension: 22222,
+				cityId: 11111
+			}
+		},
+		props : ["locationData"],
+		created() {
+			cityData.getCityData(this);
+		},
+		methods: {
+			getlocation() {
+				if(!this.timer) {
+					this.numTime = timeNum;
+					this.timer = setInterval(() => {
+						if(this.numTime > 0) {
+							this.numTime--;
+							this.codeStr = this.numTime + "s";
+						} else {
+							clearInterval(this.timer);
+							this.timer = null;
+							this.numTime = timeNum;
+							this.codeStr = "重新获取";
+						}
+					}, 1000);
+				}
+			},
+			formGetFocus(index) {
+				if(index) {
+					this.$refs[index].focus();
+				}
+			},
+			selectCity(){
+				this.$emit("selectCity");
+			},
+			scrollView() {
+				if(cJs.isAndroid()) {
+					this.$emit("scrollView");
+				}
+			}
+		},
+		components: {
+		}
+	}
+</script>
+
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.register-form {
+		.from-item {
+			position: relative;
+			.get-location {
+				position: absolute;
+				right: 0;
+				display: inline-block;
+				color: @m-c;
+				text-align: center;
+			}
+		}
+		.location-info {
+			display: inline-block;
+			width: calc(~"100% - 32px");
+			border: 0;
+			border-bottom: 1px solid #f0f0f0;
+			text-align: left;
+			padding: .05rem 0;
+			.pxrem(font-size, 30);
+			.pxrem(margin-left, 10);
+			span{
+				margin: 0 .05rem;
+			}
+		}
+	}
+</style>

@@ -1,0 +1,21 @@
+/**
+ * author hgf 
+ * day    2017-9-25
+ * 公共模块接口
+ */
+import https from "../axios/https"
+export default {
+	/*获取所有省市县数据*/
+	provicesAPI: (...v) => https.commAjax({
+		method: "post",
+		url: "/area/getProvices",
+		success: v[0],
+		error: v[1]
+	}),
+	/*上传图片*/
+	upImageAPI : (...v) => {
+		var apiData = cJs.apiDataReturnParams("post", "/image/upload", v);
+		apiData.type = "image";
+		https.commAjax(apiData);
+	}
+}

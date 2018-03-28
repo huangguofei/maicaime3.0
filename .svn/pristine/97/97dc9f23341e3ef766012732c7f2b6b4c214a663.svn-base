@@ -1,0 +1,29 @@
+<template>
+	<article class="err">
+		<img src="../../images/err.png" />
+		<h3>{{msg}}功能暂未开放，请耐心等待</h3>
+	</article>
+</template>
+
+<script>
+	export default {
+		data(){
+			return {
+				
+			}
+		},
+		props: ["msg"]
+	}
+</script>
+
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.err {
+		vertical-align: middle;
+		text-align: center;
+		img {
+			width: 40%;
+			margin-top: 10px;
+		}
+	}
+</style>

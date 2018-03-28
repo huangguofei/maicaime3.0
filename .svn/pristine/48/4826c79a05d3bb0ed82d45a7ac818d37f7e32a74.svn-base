@@ -1,0 +1,59 @@
+<template>
+	<article class="order-item">
+		<loading v-if="!isLoad"></loading>
+		<order-list-view v-else ref="orderList"  @updateData="updatePageData" :no-show-num="option.prodQuantity"></order-list-view>
+	</article>
+</template>
+
+<script>
+	import orderListView from 'components/order/order-list'
+	import orderApi from 'actionurl/order/order'
+	import loading from 'components/common/loading'
+	import { mapGetters } from 'vuex'
+	export default {
+		data() {
+			return {
+				orderList:[],
+				isLoad:false,
+				option : {
+		          	pageNum : 1,
+		          	size : 10,
+		          	pages : 1,
+		          	total : 0,
+		          	prodQuantity : 2,
+		          	orderStatus : 100
+	            },
+			}
+		},
+		computed : {
+			...mapGetters([
+				"orderType",
+				"pageNum"
+			])
+		},
+		components: {
+			orderListView,loading
+		},
+		created() {
+			if(this.option.orderStatus != this.orderType) {
+				orderApi.getOrderListData(this);
+				this.$store.commit("RECORD_LAST_SCROLL_TOP", 0);
+			} else {
+				this.isLoad = true;
+				this.option.pageNum = this.pageNum;
+			}
+		},
+		methods: {
+			updatePageData() {
+				orderApi.getOrderListData(this,(count) => {
+					this.$refs.orderList.pullingUpPage(count);
+				});
+			}
+		}
+	}
+</script>
+<style lang="less" scoped>
+.order-item{
+	height:100%;
+}
+</style>

@@ -1,0 +1,93 @@
+<template>
+	<section class="item padding">
+		<img v-if="index==0" class="rank-icon pull-left" src="../../images/mine_rank_1@2x.png" />
+		<img v-else-if="index==1" class="rank-icon pull-left" src="../../images/mine_rank_2@2x.png" />
+		<img v-else-if="index==2" class="rank-icon pull-left" src="../../images/mine_rank_3@2x.png" />
+		<span v-else class="rank-num pull-left">{{index+1}}</span>
+		<img :src="listData.prodImage" class="item-img pull-left" v-if="listData.prodImage && rankType==1" />
+		<img :src="listData.prodImage" class="item-img pull-left" v-else-if="listData.shopImage && rankType==2" />
+		<img class="item-img pull-left" src="../../images/user-default.png" v-else/>
+		<section class="item-info pull-left">
+			<h3 v-if="rankType == 1">{{listData.prodName}}</h3>
+			<h3 v-if="rankType == 2">{{listData.shopName}}</h3>
+			<!-- <span>{{rankType==1?"菜品金额：¥":rankType==2?"交易量：":"订单编号："}}
+				{{listData.totalAmount.toFixed(2)}}
+			</span> -->
+			<span v-if="rankType==1">菜品金额：¥{{listData.totalAmount.toFixed(2)}}</span>
+			<span v-if="rankType == 2">交易量：{{listData.tradeTimes}}</span>
+		</section>
+		<section class="item-price pull-right">
+			<span v-if="rankType==3">已结算</span>
+			<p v-if="rankType==1">{{listData.totalNum}}件</p>
+			<p v-if="rankType==2">¥{{listData.totalAmount.toFixed(2)}}</p>
+		</section>
+	</section>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+
+			}
+		},
+		props: ["listData", "index", "rankType"]
+	}
+</script>
+
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.item {
+		.clearfix();
+		.pxrem(height, 140);
+		border-bottom: 1px solid #E5E5E5;
+		box-sizing: border-box;
+		.rank-num {
+			.pxrem(width, 54);
+			.pxrem(height, 54);
+			.pxrem(line-height, 54);
+			text-align:center;
+			.pxrem(border-radius, 27);
+			background: #3084F2;
+			color: #fff;
+			.pxrem(font-size, 32);
+		}
+		.rank-icon {
+			.pxrem(width, 55);
+			.pxrem(margin-top, 15);
+		}
+		.item-img {
+			.pxrem(width, 100);
+			.pxrem(height, 100);
+			.pxrem(border-radius, 50);
+			.pxrem(margin-left, 20);
+			.pxrem(margin-right, 10);
+		}
+		.item-info {
+			h3 {
+				.pxrem(font-size, 32);
+				.pxrem(margin-bottom, 5);
+			}
+			span {
+				.pxrem(font-size, 24);
+				color: #999;
+			}
+		}
+		.item-price {
+			position: relative;
+			p {
+				.pxrem(line-height, 118);
+				.pxrem(font-size, 46);
+				i {
+					.pxrem(font-size, 28);
+					font-style: normal;
+				}
+			}
+			span {
+				position: absolute;
+				color:#3084F2;
+				.pxrem(font-size, 24);
+			}
+		}
+	}
+</style>

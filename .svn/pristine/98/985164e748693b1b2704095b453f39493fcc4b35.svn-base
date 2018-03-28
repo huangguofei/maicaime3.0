@@ -1,0 +1,141 @@
+<!-- 商品列表 -->
+<template>
+	<div class="page-layer">
+		<el-breadcrumb separator="/">
+			<el-breadcrumb-item>当前位置</el-breadcrumb-item>
+			<el-breadcrumb-item>商品管理</el-breadcrumb-item>
+			<el-breadcrumb-item>商品分类</el-breadcrumb-item>
+			<el-breadcrumb-item>分类列表</el-breadcrumb-item>
+		</el-breadcrumb>
+		<el-row class="search-wrap">
+		  	 <el-col :span="3">
+		  	 	<el-input v-model="keydown" placeholder="请输入内容"></el-input>
+		  	 </el-col>
+		  	 <el-col :span="2">
+		  	 	<el-button style="margin-left:20px;" @click="queryInfo()">查询</el-button>
+		  	 </el-col>
+		  	 <el-col :span="2" style="float:right;text-align:right;">
+		  	 	<el-button style="margin-left:20px;" @click="addStairCategory()" class="btn-add">添加一级分类</el-button>
+		  	 </el-col>
+		</el-row>
+		<!-- 商品分类列表 -->
+		<el-tree :data="treeData" node-key="categoryId" :props="defaultProps" :render-content="renderContent" class="tree-category"></el-tree>
+		<!-- 编辑分类信息 -->
+		<EDITCATEGORYINFO :editInfo="editInfo" :submitClick="submitCategoryInfo" ref="editCategory"></EDITCATEGORYINFO>
+	</div>
+</template>
+<script>
+	import PRODUCTCATEGORY from "../../../action/product/category"
+	import EDITCATEGORYINFO from "../../../components/product/edit-category-info"
+	export default{
+		data() {
+			return{
+				keydown : "",
+				treeData : [],
+				defaultProps: {
+		          children: 'children',
+		          label: 'categoryName'
+		        },
+				editInfo : {
+					title : "",
+					dialogShow : false
+				}
+			}
+		},
+		created() {
+			PRODUCTCATEGORY.getCategoryList(this);
+		},
+		components : {
+			EDITCATEGORYINFO
+		},
+		methods : {
+			queryInfo() {
+
+			},
+			/*添加一级*/
+			addStairCategory() {
+				var _that = this;
+				var info = _that.editInfo;
+				info.title = "添加一级分类";
+				info.dialogShow = true;
+			},
+			/*提交分类信息*/
+			submitCategoryInfo(info) {
+				PRODUCTCATEGORY.saveCategoryInfo(this, info);
+			},
+			deleteCategoryMenu( node, data, store ) {
+				var id = data.categoryId, _that = this;
+				_that.$confirm('此操作将删除该分类, 是否继续?', '提示', {
+			          confirmButtonText: '确定',
+			          cancelButtonText: '取消',
+			          type: 'warning'
+		        }).then(() => {
+			          var _removeRow = () => {
+							store.remove(data);
+				      }
+					  PRODUCTCATEGORY.deleteCategoryRow(this, id, _removeRow);
+		        });
+			},
+			editCategoryInfo(node, data, store) {
+				var _that = this;
+				var info = _that.editInfo;
+				info.title = "编辑分类";
+				info.dialogShow = true;
+				_that.$refs.editCategory.editFormData(data);
+			},
+			addChildCategory(node, data, store) {
+				var _that = this;
+				var info = _that.editInfo;
+				info.title = "["+data.categoryName+"] 添加二级分类";
+				info.dialogShow = true;
+			},
+			renderContent(h, { node, data, store }) {
+				var level = node.level, _that = this;
+				if(level == 1) {
+			      	var del = h("el-button",{attrs : {size : "mini"}, on : {
+			      				click : function(event) {
+			      					event.stopPropagation();
+			      					_that.deleteCategoryMenu(node, data, store);
+			      				}
+			      			}},"删除");
+			      	var edit = h("el-button",{attrs : {size : "mini"}, on : {
+			      				click : function(event) {
+			      					event.stopPropagation();
+			      					_that.editCategoryInfo(node, data, store);
+			      				}
+			      			}},"编辑");
+			      	var add = h("el-button",{attrs : {size : "mini"}, on : {
+			      				click : function(event) {
+			      					event.stopPropagation();
+			      					_that.addChildCategory(node, data, store);
+			      				}
+			      			}},"添加子分类");
+					 return h("span", [
+		      			h("span", node.label),
+		      			h("span", {attrs : {class : "tree-event-menu"}}, [
+		      					del,
+				      			,edit
+				      			,add
+		      				])
+		      			
+		      		]);
+				}
+
+			}
+		}
+	}
+</script>
+<style lang="less">
+	.tree-category{
+		.tree-event-menu{
+			display: none;
+			float:right;
+			margin-right:20px;
+		}
+		.el-tree-node__content:hover{
+			.tree-event-menu{
+				display: inline-block;
+			}
+		}
+	}
+</style>

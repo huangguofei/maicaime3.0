@@ -1,0 +1,94 @@
+<!-- 市场 -->
+<template>
+	<div class="page-layer market-index-page footer-page">
+		<header class="search-wrap">
+			<div class="s-content">搜索您想要找的食材</div>
+		</header>
+		<PRODMENU :categoryData="categoryData" :setSelectInfo="getSelectInfo"></PRODMENU>
+		<PRODLIST :prodData="prodData"></PRODLIST>
+		<FOOTERNAR :active="2"></FOOTERNAR>
+		<p class="cart-info">
+			<router-link :to="{name : 'often.cart'}">
+				<span class="num">10</span>
+			</router-link>
+		</p>
+	</div>
+</template>
+<script>
+	import FOOTERNAR from "components/common/footer-nar"
+	import PRODMENU from "components/market/prod-menu"
+	import PRODLIST from "components/market/prod-list"
+	import MARKETACTION from "actionurl/market/market"
+	export default{
+		data() {
+			return {
+				categoryData : [],
+				prodData : []
+			}
+		},
+		components : {
+			PRODMENU,
+			FOOTERNAR,
+			PRODLIST
+		},
+		created() {
+			MARKETACTION.getCateGoryList(this);
+		},
+		methods : {
+			getSelectInfo(info) {
+				MARKETACTION.getProdList(this, info);
+			}
+		}
+	}
+</script>
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.market-index-page{
+		.search-wrap{
+			.pxrem(height, 80);
+			background: #222222;
+			.pxrem(padding-top, 16);
+			.s-content{
+				.pxrem(height, 58);
+				.pxrem(line-height, 58);
+				.pxrem(text-indent, 58);
+				width:90%;
+				margin:auto;
+				color:#AAAAAA;
+				.pxrem(font-size, 26);
+				background: rgba(255, 255, 255, 0.17) url(../../images/home_search.png) no-repeat 5px 4px;
+				.prem(40);
+				background-size: auto @prem;
+
+			}
+		}
+		.cart-info{
+			position: fixed;
+			.pxrem(bottom, 120);
+			.pxrem(left, 20);
+			display: inline-block;
+			.pxrem(width, 90);
+			.pxrem(height, 90);
+			background: url(../../images/market_shoppingcar.png) no-repeat;
+			background-size: cover;
+			border-radius: 50%;
+			a{
+				display: block;
+				width: 100%;
+				height:100%;
+			}
+			.num{
+				position: absolute;
+				display: inline-block;
+				.pxrem(top, -25);
+				.pxrem(right, -30);
+				.pxrem(font-size, 20);
+				background: #F74B2F;
+				.prem(0, 10);
+				padding:@prem;
+				color:#FFF;
+				.pxrem(border-radius, 40);
+			}
+		}
+	}
+</style>

@@ -1,0 +1,187 @@
+<template>
+	<article class="order-list padding">
+		<section v-for="(item,key) in orderData">
+			<header class="padding" @click="selectOrder(item)">
+				<div class="pull-left">
+					<span class="select_radio" :class="{active:item.isSelect}" v-if="item.orderStatusId==40"></span>
+					<img src="../../images/order_icon.png" />
+					<span>{{item.purchaserName}}</span>
+				</div>
+				<span class="order-status pull-right">{{item.orderStatusText}}</span>
+			</header>
+			<section class="shop-list padding" @click="orderDateils(item)">
+				<div class="shop-item" v-for="(val,key) in item.products">
+					<section class="item-left pull-left">
+						<p class="commodity-name"><i></i><span>{{val.prodName}}</span></p>
+						<p class="price-num"><span>单价:¥{{val.skuPrice}}</span><span>数量:{{val.actualQuantity}}</span></p>
+					</section>
+					<section class="item-right pull-right">
+						<b>¥{{val.totalAmount}}</b>
+						<!--<img src="../../images/order_details_tele.png" />-->
+					</section>
+				</div>
+				<p class="remark" v-show="item.skuCount>noShowNum">(还有{{item.skuCount-noShowNum}}件食材)</p>
+			</section>
+			<footer class="padding">
+				<p class="pull-left">配送时间：<span>{{item.deliveryEndTime}}</span>
+				</p>
+				<span class='pull-right'>小计：<b>¥{{item.payableAmount}}</b></span>
+			</footer>
+		</section>
+	</article>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+				btnStr: '确认付款'
+			}
+		},
+		props: ['orderData', 'noShowNum'],
+		created() {
+		},
+		methods: {
+			orderDateils(item) {
+				this.$router.push({
+					name: "order.detail",
+					params: {
+						id: item.orderId
+					},query:{
+						noShowNum:(item.skuCount-this.noShowNum)
+					}
+				})
+			},selectOrder(val){
+				val.isSelect=!val.isSelect;
+				this.$emit("select");
+			}
+		}
+	}
+</script>
+
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.order-list {
+		/*.pxrem(margin-top, 20);*/
+		&>section {
+			.pxrem(margin-top, 20)
+		}
+		header {
+			background: #fff;
+			.rem(50);
+			.pxrem(font-size, 32);
+			.pxrem(height, 64);
+			.pxrem(line-height, 64);
+			img {
+				/*.pxrem(width,50);*/
+				width: @rem;
+				border-radius: @rem/2;
+				vertical-align: middle;
+			}
+			.order-status {
+				.pxrem(font-size, 28);
+				color: @m-c;
+			}
+		}
+		.shop-list {
+			background:#F8F8F8;
+			.shop-item {
+				.pxrem(margin-bottom, 26);
+				overflow: auto;
+				.item-left {
+					.commodity-name {
+						color: #151009;
+						.pxrem(height, 40);
+						.pxrem(line-height, 40);
+						.pxrem(font-size, 28);
+						.pxrem(margin-bottom, 5);
+						i {
+							background: @m-c;
+							display: inline-block;
+							.pxrem(width, 12);
+							.pxrem(height, 12);
+							.pxrem(border-radius, 6);
+							.pxrem(margin-right, 6);
+						}
+					}
+					.price-num {
+						.pxrem(height, 33);
+						.pxrem(line-height, 33);
+						color: #999999;
+						.pxrem(font-size, 24);
+						.pxrem(padding-left, 22);
+						span:first-child {
+							margin-right: 0.3rem;
+						}
+					}
+				}
+				.item-right {
+					.pxrem(height, 74);
+					.pxrem(line-height, 74);
+					b {
+						color: #343534;
+						.pxrem(font-size, 28);
+					}
+					img {
+						.pxrem(width, 50);
+					}
+				}
+			}
+			.remark {
+				color: #343534;
+				text-align: center;
+				.pxrem(font-size, 24);
+			}
+		}
+		footer {
+			.pxrem(height, 64);
+			.pxrem(line-height, 64);
+			background: #fff;
+			.pxrem(font-size, 28);
+			p {
+				color: #000;
+				span {
+					.pxrem(font-size, 28);
+					color: @ass-c;
+				}
+			}
+			input {
+				.pxrem(width, 150);
+				.pxrem(height, 58);
+				.pxrem(margin-left, 12);
+				text-align: center;
+				border: 1px solid @m-c;
+				.pxrem(font-size, 28);
+			}
+			.order-btn {
+				background: @m-c;
+				color: #fff;
+			}
+			.order-btns {
+				background: #fff;
+				color: @m-c;
+			}
+			span {
+				color: #4a4a4a;
+				.pxrem(font-size, 24);
+				b {
+					color: #000;
+					.pxrem(font-size, 32);
+				}
+			}
+		}
+		.select_radio {
+			display: inline-block;
+			.pxrem(width, 32);
+			.pxrem(height, 32);
+			border: 1px solid #a4a4a4;
+			.pxrem(border-radius, 16);
+			vertical-align: sub;
+		}
+		.active {
+			background: url(../../images/order_check.png) no-repeat -1px -1px;
+			background-size: 120% auto;
+			border-color: #3084F2;
+		}
+	}
+</style>

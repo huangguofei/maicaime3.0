@@ -1,0 +1,37 @@
+<template>
+	<div class="page-layers">
+		<div class="layer-content">
+			<slot></slot>
+		</div>
+	</div>
+</template>
+
+<script>
+</script>
+
+<style lang="less" scoped>
+	.page-layers {
+		height: 100%;
+		margin: 0 0 0 20px;
+		padding: 20px;
+	}
+	
+	.layer-content {
+		height: 100%;
+		overflow: auto;
+	}
+	
+	@media screen and (max-height: 768px) {
+		/*.layer-content {
+			height: calc(100vh-32px);
+		}*/
+	}
+	
+	.back-color {
+		background: #FFF;
+	}
+	
+	.padd {
+		padding: 20px;
+	}
+</style>

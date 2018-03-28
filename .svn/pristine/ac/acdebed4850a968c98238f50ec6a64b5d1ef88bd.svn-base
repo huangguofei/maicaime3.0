@@ -1,0 +1,14 @@
+/**
+ * author pzh 
+ * day    2017-9-27
+ * 搜索业务接口
+ */
+ import {searchAPI} from "apiurl/index"
+ export default{
+ 	/*获取关键字列表*/
+ 	getKeyDownList(vm) {
+ 		searchAPI.searchKeyWordAPI((result) => {
+ 			vm.searchList = result
+		});
+ 	}
+ }

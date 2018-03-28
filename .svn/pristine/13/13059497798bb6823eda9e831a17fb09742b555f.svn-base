@@ -1,0 +1,20 @@
+/**
+ * pzh 2017年12月11日
+ * 账单
+ */
+import { billAPI } from "../../api/data"
+export default {
+	/*获取账单列表*/
+	getcheckList(vm) {
+		for(var i in vm.queryParams) {
+			if(!vm.queryParams[i])
+				delete vm.queryParams[i];
+		}
+		billAPI.billListAPI(vm.queryParams, (result) => {
+			vm.tableData = result.resultList;
+			vm.queryParams.pageNum = result.currentPage;
+			vm.queryParams.pages = result.totalPage;
+			vm.queryParams.total = result.totalCount;
+		});
+	}
+}

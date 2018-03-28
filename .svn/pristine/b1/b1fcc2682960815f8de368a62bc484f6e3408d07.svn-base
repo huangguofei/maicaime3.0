@@ -1,0 +1,14 @@
+/**
+ * author pzh 
+ * day    2017-11-8
+ * 积分业务接口
+ */
+import {integralAPI} from "apiurl/index"
+export default{
+	/*余额*/
+	getBalanceInfo(vm) {
+		integralAPI.balanceAPI((result) => {
+
+		});
+	}
+}

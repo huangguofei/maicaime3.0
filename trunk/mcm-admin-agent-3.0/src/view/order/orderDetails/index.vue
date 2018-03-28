@@ -1,0 +1,144 @@
+<template>
+	<page-layer :narData="narData" classs="back-color">
+		<router-link :to="{name:'order.list',query:{page:page}}" class="back-list padding">返回列表</router-link>
+		<div class="order-details padding" v-if="orderData">
+			<div class="item">
+				<p class="title">订单信息</p>
+				<el-row class="item-content padding">
+					<el-col :span="24">
+						<el-col :span="1" class="key">订单编号</el-col>
+						<el-col :span="5" class="val">{{orderData.orderId}}</el-col>
+						<el-col :span="1" class="key">订单类型</el-col>
+						<el-col :span="5" class="val">{{orderData.orderTypeText}}</el-col>
+						<el-col :span="1" class="key">订单状态</el-col>
+						<el-col :span="5" class="val">{{orderData.orderStatusText|isNull}}</el-col>
+						<el-col :span="1" class="key">实际金额</el-col>
+						<el-col :span="5" class="val">{{orderData.payableAmount|isNull}}</el-col>
+					</el-col>
+					<el-col :span="24">
+						<el-col :span="1" class="key">合计金额</el-col>
+						<el-col :span="5" class="val">{{orderData.totalAmount|isNull}}</el-col>
+						<el-col :span="1" class="key">支付类型</el-col>
+						<el-col :span="5" class="val">{{orderData.payTypeText|isNull}}</el-col>
+						<el-col :span="1" class="key">取货号</el-col>
+						<el-col :span="5" class="val">{{orderData.extraData.articleNumber|isNull}}</el-col>
+						<el-col :span="1" class="key">创建时间</el-col>
+						<el-col :span="5" class="val">{{orderData.timeCreated|isNull}}</el-col>
+					</el-col>
+				</el-row>
+			</div>
+			<div class="item">
+				<p class="title">配送信息</p>
+				<el-row class="item-content padding">
+					<el-col :span="24">
+						<el-col :span="1" class="key">收货人</el-col>
+						<el-col :span="5" class="val">{{orderData.deliveryWayId==300?orderData.extraData.stationName:orderData.receiverName}}</el-col>
+						<el-col :span="1" class="key">收货地址</el-col>
+						<el-col :span="5" class="val">{{orderData.receiverAddr||"无"}}</el-col>
+						<el-col :span="1" class="key">收货电话</el-col>
+						<el-col :span="5" class="val">{{orderData.deliveryWayId==300?orderData.extraData.stationMobile:orderData.receiverMobile|isNull}}</el-col>
+						<el-col :span="1" class="key">配送时间</el-col>
+						<el-col :span="5" class="val">{{orderData.deliveryTimeText|isNull}}</el-col>
+					</el-col>
+				</el-row>
+			</div>
+			<div class="item">
+				<p class="title">商品信息</p>
+				<div class="items padding" v-for="(v,k) in orderData.products">
+					<p class="titles">供应商：{{v.supplierName}}</p>
+					<el-table :data="v.products" style="width: 100%">
+						<el-table-column type="index" width="60">
+						</el-table-column>
+						<el-table-column prop="prodName" label="食材名称">
+						</el-table-column>
+						<el-table-column prop="actualQuantity" label="食材数量">
+						</el-table-column>
+						<el-table-column prop="skuPrice" label="食材单价">
+						</el-table-column>
+						<el-table-column prop="totalAmount" label="合计">
+						</el-table-column>
+					</el-table>
+				</div>
+
+			</div>
+		</div>
+		<p v-else>暂无数据</p>
+	</page-layer>
+</template>
+
+<script>
+	import pageLayer from "components/common/page-layer"
+	import orderServer from "action/order/order"
+	export default {
+		data() {
+			return {
+				narData: [{
+					name: "订单详情",
+					router: ""
+				}],
+				orderData: '',
+				orderId: this.$route.params.id,
+				page:this.$route.query.page,
+			}
+		},
+		created() {
+			orderServer.getOrderDetails(this);
+		},
+		methods: {
+
+		},
+		components: {
+			pageLayer
+		},
+		filters: {
+			isNull(val) {
+				if(!val) {
+					return "无"
+				}
+				return val;
+			}
+		}
+	}
+</script>
+
+<style lang="less" scoped>
+	@import "../../../common/less/config.less";
+	.back-list {
+		display: block;
+		color:@color-main;
+		font-size:18px;
+		padding-bottom:0;
+	}
+	
+	.order-details {
+		.item {
+			border-bottom: 1px solid #ccc;
+			padding-bottom: 10px;
+			padding-top: 10px;
+			.title {
+				font-size: 20px;
+				border-left: 5px solid @color-main;
+				padding-left: 10px;
+			}
+			.item-content {
+				font-size: 14px;
+				span {
+					display: inline-block;
+				}
+				.goods-name {
+					width: 60%;
+				}
+				.price {
+					width: 40%;
+				}
+			}
+			.titles {
+				font-size: 14px;
+				margin-bottom: 10px;
+			}
+		}
+		.item:first-child {
+			padding: 0;
+		}
+	}
+</style>

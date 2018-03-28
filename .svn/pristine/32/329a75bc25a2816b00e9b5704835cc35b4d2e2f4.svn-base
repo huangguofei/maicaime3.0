@@ -1,0 +1,51 @@
+/**
+ * hgf 2017年11月6日18:03:51
+ */
+import { integralAPI } from "../../api/marketing"
+import { supplierAPI } from "../../api/customer"
+export default {
+	/*获取积分列表*/
+	getIntegralList(vm) {
+		integralAPI.integralListAPI((result) => {
+			if(result == "206") { //是否是首次开通
+				vm.open();
+				return;
+			}
+			vm.tableData = result.resultList;
+			vm.pagings.current = result.currentPage;
+			vm.pagings.pages = result.totalPage;
+			vm.pagings.total = result.totalCount;
+		});
+	},
+	/*新增积分*/
+	integralAdd(vm) {
+		integralAPI.integralAddAPI(vm.form, (result) => {
+			vm.updata();
+			vm.editDialogInfo.showDialog = false;
+		});
+	},
+	/*开通积分商城*/
+	openIntegral(vm) {
+		integralAPI.integralOpenAPI((result) => {
+			vm.$message({
+				message: '恭喜你，成功开通积分商城',
+				type: 'success'
+			});
+			this.getIntegralList(vm);
+		});
+	},
+	/*获取供应商列表*/
+	getSupplierList(vm) {
+		supplierAPI.supplierListAPI((result) => {
+			vm.supplierData = result.resultList;
+		});
+	},
+	/*获取供应商下面的商品*/
+	getProductList(vm) {
+		integralAPI.getSupplierProductAPI({
+			supplierId: vm.form.supplierId
+		}, (result) => {
+			vm.productData = result.resultList;
+		});
+	}
+}

@@ -1,0 +1,87 @@
+<!-- 底部导航菜单 -->
+<template>
+	<div class="footer-wrap">
+		<div class="content">
+			<div class="f-item" :class="active == 1 ? 'f-active' : ''">
+				<router-link :to="{name : 'mcm.purchaser.index.index'}">
+					<i class="i-icon"></i>
+					<p class="nar-name">首页</p>
+				</router-link>
+			</div>
+			<div class="f-item" :class="active == 2 ? 'f-active' : ''">
+				<router-link :to="{name : 'market.index'}">
+					<i class="i-icon"></i>
+					<p class="nar-name">市场</p>
+				</router-link>
+			</div>
+			<div class="f-item" :class="active == 3 ? 'f-active' : ''">
+				<router-link :to="{name : 'mcm.purchaser.order.index'}">
+					<i class="i-icon"></i>
+					<p class="nar-name">订单</p>
+				</router-link>
+			</div>
+			<div class="f-item" :class="active == 4 ? 'f-active' : ''">
+				<router-link :to="{name : 'mcm.purchaser.often.index'}">
+					<i class="i-icon"></i>
+					<p class="nar-name">常用清单</p>
+				</router-link>
+			</div>
+			<div class="f-item" :class="active == 5 ? 'f-active' : ''">
+				<router-link :to="{name : 'mcm.purchaser.user.index'}">
+					<i class="i-icon"></i>
+					<p class="nar-name">我的</p>
+				</router-link>
+			</div>
+		</div>
+	</div>
+</template>
+<script>
+	export default{
+		data() {
+			return{
+
+			}
+		},
+		props : ["active"],
+		created () {
+			console.log(this.active);
+		}
+	}
+</script>
+<style lang="less">
+	@import "../../common/less/config.less";
+	.footer-wrap{
+		position: fixed;
+		width:100%;
+		bottom:0;
+		left:0;
+		border-top:1px solid #eee;
+		background: #FFF;
+		.pxrem(height, 97);
+		.content{
+			width:100%;
+			height:100%;
+		}
+		.f-item{
+			width:20%;
+			height:100%;
+			float:left;
+			text-align: center;
+			.i-icon{
+				display: inline-block;
+				.pxrem(width, 28);
+				.pxrem(height, 28);
+				.pxrem(margin-top,5)
+			}
+			.nar-name{
+				color:@f-font-color;
+				.pxrem(font-size, 20);
+			}
+		}
+		.f-active{
+			.nar-name{
+				color:@f-active-color;
+			}
+		}
+	}
+</style>

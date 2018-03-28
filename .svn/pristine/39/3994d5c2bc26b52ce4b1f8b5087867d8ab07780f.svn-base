@@ -1,0 +1,38 @@
+<template>
+	<article class="order-item">
+		<order-list-view :order-data="orderList" :no-show-num="option.prodQuantity"></order-list-view>
+	</article>
+</template>
+
+<script>
+	import orderListView from 'components/order/order-list'
+	import orderApi from 'actionurl/order/order'
+	export default {
+		data() {
+			return {
+				orderList:[],
+				option:{
+					orderStatus:"",
+					prodQuantity:2,
+					pageNum:1,
+					pageSize:10
+				},
+				totalPage:"",
+				currentPage:1
+			}
+		},
+		components: {
+			orderListView
+		},
+		created() {
+			orderApi.getOrderListData(this);
+		},
+		methods: {
+
+		}
+	}
+</script>
+
+<style lang="less">
+
+</style>

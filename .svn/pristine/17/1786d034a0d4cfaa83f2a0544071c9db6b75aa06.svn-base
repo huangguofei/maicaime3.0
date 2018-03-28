@@ -1,0 +1,12 @@
+/**
+ * author pzh
+ * day    2017-9-29
+ * 食材模块接口
+ */
+ import https from "httpurl/https"
+ export const foodAPI = {
+ 	/*分类*/
+	categoryAPI : (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/catogory/hierarchyList", v)),
+	/*分类商品*/
+	categoryProdAPI : (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/product/list", v)),
+ }

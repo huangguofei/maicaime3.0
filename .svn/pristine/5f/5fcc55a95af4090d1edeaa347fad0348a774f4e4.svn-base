@@ -1,0 +1,310 @@
+<template>
+	<article class="order-details">
+		<header class="padding order-status bk-white border-bottom radius-bottom">
+			<section class="relative">
+				<h3 class="text-center">{{orderDetailsInfo.orderStatusText=='待确认'?'待收货':orderDetailsInfo.orderStatusText}}<img src="../../images/order_right.png"></h3>
+				<span class="style1">{{orderDetailsInfo.operationLog?orderDetailsInfo.operationLog.timeCreatedText:""}}</span>
+			</section>
+			<section class="text-center style1">{{orderDetailsInfo.operationLog?orderDetailsInfo.operationLog.privacyLevelText:""}}
+			</section>
+		</header>
+		<section class="padding bk-white delivery-info border-bottom">
+			<p><img src="../../images/list_order_time.png">配送时间：{{orderDetailsInfo.deliveryEndTime}}
+				<span class="pull-right">{{orderDetailsInfo.deliveryWayText}}</span></p>
+			<p>缺货处理：{{orderDetailsInfo.stockoutTypeText+orderDetailsInfo.stockoutContact+orderDetailsInfo.stockoutNumber}}</p>
+		</section>
+		<section class="btn-group padding gap bk-white radius-top">
+			<a class="cancel-order" :class="{disabled:orderStatus!=20}" id="" @click="cancelOrder()">取消订单</a>
+			<a class="print-order" id="">打印订单</a>
+			<a class="again-shop" id="">再次购买</a>
+		</section>
+		<food-list :foodData="orderDetailsInfo" :noShowNum="noShowNum" v-if="orderDetailsInfo.orderStatusId != 20"></food-list>
+		<food-list v-for="(val,key) in orderDetailsInfo.products" :foodData="val" :noShowNum="noShowNum" v-if="orderDetailsInfo.orderStatusId == 20"></food-list>
+		<section class="order-info gap">
+			<div class="padding bk-white radius-bottom border-bottom">
+				<p><span>订单编号</span>{{orderDetailsInfo.orderId}}</p>
+				<p><span>下单时间</span>{{orderDetailsInfo.timeCreated}}</p>
+				<p><span>接单时间</span>{{orderDetailsInfo.timeSubmited}}</p>
+				<p><span>订单备注</span>{{orderDetailsInfo.purchaserRemark}}</p>
+			</div>
+			<p class="invoice bk-white padding radius-top"><span>发票类型</span>{{orderDetailsInfo.invoiceTypeText}}</p>
+		</section>
+		<section class="price-info">
+			<div class="padding bk-white radius-bottom border-bottom">
+				<p>食材总额<span class="pull-right">¥{{orderDetailsInfo.payableAmount}}</span></p>
+				<p>配送费<span class="pull-right">¥0</span></p>
+				<p>优惠金额<span class="pull-right">¥{{orderDetailsInfo.discountAmount}}</span></p>
+			</div>
+			<p class="price-pay bk-white padding radius-top">实付款:<span class="pull-right">¥{{orderDetailsInfo.totalAmount}}</span></p>
+		</section>
+		
+		<verify-food-list :foodData="orderDetailsInfo" v-show="isShowPage" @hidePage="offPage" @reduce="reduce" @add="add"></verify-food-list>
+		<footer class="">
+			<p class="pull-left">合计：<span>¥{{orderDetailsInfo.totalAmount}}</span></p>
+			<a v-if="orderDetailsInfo.orderStatusId==40" href="javascript:;" class="pull-right" @click="confirmReceipt">确认收货</a>
+			<a v-if="orderDetailsInfo.orderStatusId==20" href="javascript:;" class="pull-right" @click="pay">付款</a>
+		</footer>
+		<pay-ment :payShow="payShow" :totalAmount="totalAmount" :submitPay="submitPay"></pay-ment>
+	</article>
+</template>
+
+<script>
+	import orderApi from "actionurl/order/order"
+	import payMent from 'components/common/payment-type'
+	import commonAction from 'actionurl/common/common'
+	import foodList from 'components/order/food-list'
+	import verifyFoodList from 'components/order/verify-food-list'
+	export default {
+		data() {
+			return {
+				orderDetailsInfo: "",
+				orderId: this.$route.params.id,
+				orderStatus: this.$route.query.status,
+				noShowNum: this.$route.query.noShowNum,
+				isShowPage: false,
+				totalAmount: "",
+				payShow: false
+			}
+		},
+		filters: {
+
+		},
+		created() {
+			orderApi.getOrderDetails(this);
+		},
+		methods: {
+			pay() {
+				this.payShow = true;
+				this.totalAmount = orderDetailsInfo.totalAmount;
+			},
+			submitPay() {
+				commonAction.payByBalance(this);
+			},
+			offPage() {
+				this.isShowPage = false;
+			},
+			confirmReceipt() {
+				if(this.isShowPage) {
+					orderApi.orderConfirmReceipt(this);
+				}
+				this.isShowPage = true;
+			},
+			reduce(item) {
+				this.orderDetailsInfo.totalAmount =this.Subtr(this.orderDetailsInfo.totalAmount,item);
+				console.log(item + "->" + this.orderDetailsInfo.totalAmount)
+			},
+			add(item) {
+				this.orderDetailsInfo.totalAmount = (this.orderDetailsInfo.totalAmount * 100 + item * 100) / 100;;
+				console.log(item + "->" + this.orderDetailsInfo.totalAmount)
+			},
+			cancelOrder() {
+				if(this.orderStatus == 20) {
+					orderApi.orderCancel(this);
+				}
+			},
+			Subtr(arg1, arg2) {
+				var r1, r2, m, n;
+				try {
+					r1 = arg1.toString().split(".")[1].length
+				} catch(e) {
+					r1 = 0
+				}
+				try {
+					r2 = arg2.toString().split(".")[1].length
+				} catch(e) {
+					r2 = 0
+				}
+				m = Math.pow(10, Math.max(r1, r2));
+				n = (r1 >= r2) ? r1 : r2;
+				return((arg1 * m - arg2 * m) / m).toFixed(n);
+			}
+		},
+		components: {
+			payMent,
+			foodList,
+			verifyFoodList
+		}
+	}
+</script>
+
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.order-details {
+		.pxrem(padding-bottom, 120);
+		.bk-white {
+			background: #fff;
+		}
+		.style1 {
+			color: #666;
+			.pxrem(font-size, 28);
+		}
+		.border-bottom:after {
+			content: "";
+			display: block;
+			margin: 0 auto;
+			height: 0;
+			position: relative;
+			top: 10px;
+			border-bottom: 2px dashed #e9e9e9;
+		}
+		.radius-top {
+			border-radius: .2rem .2rem 0 0;
+		}
+		.radius-bottom {
+			border-radius: 0 0 .2rem .2rem;
+		}
+		.gap {
+			margin-bottom: .15rem;
+		}
+		.order-status {
+			section {
+				span {
+					position: absolute;
+					top: 0;
+					.pxrem(right, 16);
+				}
+			}
+			section:first-child {
+				.pxrem(line-height, 80);
+				.pxrem(height, 80);
+			}
+			h3 {
+				color: @m-c;
+				text-align: center;
+				.pxrem(font-size, 36);
+				img {
+					.pxrem(width, 33);
+					/*.pxrem(margin-left, 5);*/
+					vertical-align: middle;
+				}
+			}
+		}
+		.delivery-info {
+			border-radius: .2rem;
+			p {
+				.pxrem(margin-bottom, 10);
+				.pxrem(font-size, 28);
+				color: #222;
+				img {
+					.pxrem(width, 30);
+					.pxrem(margin-right, 20);
+					vertical-align: bottom;
+				}
+				span {
+					color:@m-c;
+				}
+			}
+			p:last-child {
+				.pxrem(padding-left, 50);
+			}
+		}
+		.btn-group {
+			text-align: center;
+			a {
+				width: 23%;
+				display: inline-block;
+				text-align: center;
+				.pxrem(height, 60);
+				.pxrem(line-height, 60);
+				.pxrem(font-size, 28);
+				.pxrem(border-radius, 5);
+				color: #222;
+				border: 1px #D7D7D7 solid;
+				margin: 0 1%;
+				background: #fff;
+			}
+			a.disabled {
+				color: #D7D7D7;
+				border-color: #D7D7D7;
+			}
+			a:last-child {
+				color: #fff;
+				background: @m-c;
+				border: 0;
+			}
+		}
+		.shop-details {
+			header {
+				.clearfix();
+				img {
+					.pxrem(width, 50);
+					.pxrem(margin-right, 10);
+					vertical-align: middle;
+				}
+				h3 {
+					.pxrem(font-size, 32);
+				}
+			}
+			ul {
+				padding-bottom: 0;
+			}
+			.look-more {
+				text-align: center;
+				img {
+					.pxrem(width, 50);
+					vertical-align: middle;
+				}
+			}
+		}
+		.order-info {
+			p {
+				.pxrem(font-size, 28);
+				.pxrem(line-height, 50);
+				span {
+					color: #999;
+					.pxrem(margin-right, 40);
+				}
+			}
+			.invoice {
+				.pxrem(height, 30);
+				.pxrem(line-height, 30);
+			}
+		}
+		.price-info {
+			p {
+				.pxrem(font-size, 28);
+				color: #999;
+				.pxrem(line-height, 50);
+				span {
+					.pxrem(font-size, 32);
+					color: #000;
+				}
+			}
+			.price-pay {
+				.pxrem(height, 30);
+				.pxrem(line-height, 30);
+				span {
+					color: @p-p-c;
+				}
+			}
+		}
+		footer {
+			.pxrem(font-size, 28);
+			/*.clearfix();*/
+			background: #FAFAFA;
+			position: fixed;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			.pxrem(height, 100);
+			.pxrem(line-height, 100);
+			border-top: 1px solid #F3F3F3;
+			.pxrem(padding-left, 16);
+			p {
+				span {
+					color: @p-p-c;
+				}
+			}
+			a {
+				display: inline-block;
+				.pxrem(width, 250);
+				text-align: center;
+				.pxrem(font-size, 36);
+				background: @m-c;
+				color: #fff;
+				.pxrem(padding-left, 16);
+				.pxrem(padding-right, 16);
+			}
+		}
+	}
+</style>

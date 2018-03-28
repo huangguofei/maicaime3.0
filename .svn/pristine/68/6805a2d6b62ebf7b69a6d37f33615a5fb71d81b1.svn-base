@@ -1,0 +1,32 @@
+/**
+*  author pzh
+*  day  2017-9-13
+*  我的模块路由配置
+*/
+const indexView = r => require.ensure([], () => r(require('../view/user/index')), 'Index')
+const activitiesListView = r => require.ensure([], () => r(require('../view/user/user-activitiesList')), 'Index')
+const activitiesAddView = r => require.ensure([], () => r(require('../view/user/user-activitiesAdd')), 'Index')
+const editFoodView = r => require.ensure([], () => r(require('../view/user/user-editfood')), 'Index')
+const router = [
+	{
+		name : "user.index",
+		path : "/user/",
+		component : indexView
+	},{
+		name : "user.activitiesList",
+		path : "/activitiesList/",
+		component : activitiesListView
+	},{
+		name : "user.activitiesAdd",
+		path : "/activitiesAdd/",
+		component : activitiesAddView
+	},{
+		name : "user.editFood",
+		path : "/editFood/",
+		component : editFoodView
+	}
+]
+
+export default{
+	router
+}

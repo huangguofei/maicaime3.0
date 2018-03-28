@@ -1,0 +1,429 @@
+<template>
+	<article class="page-layer">
+		<div class=" order-details padding" :class="{padding_bottom:orderData.statusId!=100}" v-if="orderData.statusText">
+			<header class="padding order-status bk-white border-bottom">
+				<section class="relative">
+					<h3 class="text-center">{{orderData.statusText}}
+						<img src="../../images/order_details_arrow.png">
+					</h3>
+					<span class="style1">{{orderData.operationLog.timeCreatedText}}</span>
+				</section>
+				<section class="text-center style1">{{orderData.operationLog.logTitle}}
+				</section>
+			</header>
+			<section class="border-bottom radius-left radius-right">
+				<div class="padding bk-white linkman-info ">
+					<img src="../../images/order_details_address.png" class="pull-left" />
+					<section class="pull-left">
+						<h4>{{orderData.receiverName}} {{orderData.receiverMobile}}</h4>
+						<p>地址：{{orderData.receiverAddr}}</p>
+					</section>
+					<img src="../../images/map.png" class="pull-right" @click="err" />
+				</div>
+			</section>
+			<section class="border-bottom radius-left radius-right">
+				<div class="padding bk-white delivery-time ">
+					<img src="../../images/order_details_time.png" />
+					<span class="">配送时间：{{orderData.deliveryTimeText}}</span>
+				</div>
+				
+			</section>
+			<section class="radius-left radius-right item-bottom">
+				<div class="btn-group padding bk-white">
+					<section class="pull-left">取货号：<span>{{orderData.articleNumber}}</span></section>
+					<section class="pull-left">
+						<a href="javascript:;" @click="bindCode" v-if="orderData.qrCodeId == ''" ><img src="../../images/or-code.png" />
+							关联二维码
+						</a>
+						<a href="javascript:;" @click="lookCode" v-else><img src="../../images/or-code.png" />
+							查看二维码
+						</a>
+
+					</section>
+				</div>
+				
+			</section>
+			<section class="shop-details gap" v-for="(val,index) in orderData.list">
+				<header class="padding bk-white">
+					<h3 class="pull-left"><img src="../../images/order_icon.png" />{{val.supplierName}}<a :href="'tel:'+val.supplierMobile" ><img src="../../images/phone.png"/></a></h3>
+					<p v-if="val.statusId==20" class="sure-btn pull-right" @click="sureTo(val)">确认送达</p>
+					<span v-else class="pull-right">{{val.statusText}}</span>
+				</header>
+				<ul class="padding">
+					<li v-for="(item,key) in val.prods" :class="{hide:key>1&&val.isSelect}">
+						<div class="shop-item">
+							<section class="item-left pull-left"><i></i><span>{{item.prodName}}</span>
+							</section>
+							<section class="item-right pull-right">
+								<b>x{{item.actualQuantity}}</b>
+							</section>
+						</div>
+					</li>
+					
+				</ul>
+				<p class="view-more" v-if="val.prods.length>2&&val.isSelect" @click=lookMore(val)>查看更多{{val.prods.length-2}}件食材</p>
+				<p class="view-more" v-if="val.prods.length>2&&!val.isSelect" @click=lookMore(val)>(收起)</p>
+			</section>
+			<section class="order-info gap">
+				<div class="padding bk-white">
+					<p><span>订单编号</span>{{orderData.deliveryOrderId}}</p>
+					<p><span>下单时间</span>{{orderData.operationLog.timeCreated}}</p>
+					<p><span>配送时间</span>{{orderData.deliveryTimeText}}</p>
+					<p><span>送达时间</span>{{orderData.deliveryTimeText}}</p>
+				</div>
+			</section>
+			<footer>
+				<p class="pull-left">合计：<span>{{orderData.list.length}}家供应商</span></p>
+				<a v-if="orderData.statusId==20" href="javascript:;" class="pull-right affirm" @click="confirmReceipt">全部已送达</a>
+				<a v-else-if="orderData.statusId==30" href="javascript:;" class="pull-right affirm" @click="lookCode">出示取件二维码</a>
+				<a v-else-if="orderData.statusId==40" href="javascript:;" class="pull-right affirm" @click="linkMan">联系配送员</a>
+			</footer>
+		</div>
+		<loading v-else></loading>
+		<CREATECODE :codeUrl="codeUrl" v-if="codeShow" @closeDialog="closeDialog"></CREATECODE>
+	</article>
+</template>
+
+<script>
+	import orderApi from "actionurl/order/order"
+	import commonAction from "actionurl/common/common"
+	import CREATECODE from "components/common/create-code"
+	import loading from 'components/common/loading'
+	import { mapGetters } from 'vuex'
+	export default {
+		data() {
+			return {
+				orderData: "",
+				orderId: this.$route.params.id,
+				contentHtml : "",
+				dialogShow : false,
+				codeUrl : "",
+				codeShow : false,
+			}
+		},
+		computed: {
+			...mapGetters({
+				thatUrl: "thatUrl"
+			})
+		},
+		created() {
+			this.contentHtml = `
+				<input id="codeVal" type="text" style="height:35px;
+				border:1px solid #eee;text-indent:5px;" placeholder="二维码值"/>
+			`;
+			orderApi.getOrderDetails(this);
+		},
+		methods: {
+			confirmReceipt() {
+				orderApi.orderConfirmGoto(this,"all");
+			},sureTo(data){
+				orderApi.orderConfirmGoto(this,data.subOrderId);
+			},linkMan(){
+				window.location.href="tel:"+this.orderData.stationMobile;
+			},
+			bindCode() {
+				var _that = this;
+				if(cJs.isWeiXin()) {
+					var params = {
+						url: this.thatUrl || window.location.href
+					}
+					commonAction.getJsApiInfo(params, (result) => {
+						cJs.weixinConfig(result);
+						setTimeout(function() {
+							cJs.wxScanQRCode(1, (result) => {
+								var resultStr = result.resultStr;
+								if(resultStr.indexOf("dynamic|") < 0) {
+									cJs.message("无效二维码!");
+									return false;
+								}
+								orderApi.bingCodeOrder(_that, deliveryOrderId, resultStr.split("|")[1]);
+							});
+						}, 20);
+					});
+				} else {
+					cJs.message("只支持微信扫一扫！");
+				}
+			},
+			affirmDialog() {
+				/*var deliveryOrderId = this.orderData.deliveryOrderId;
+				var codeVal = document.getElementById("codeVal").value;
+				if(codeVal == "") {
+					cJs.message("请输入二维码值！");
+					return false;
+				}
+				orderApi.bingCodeOrder(this, deliveryOrderId, codeVal);*/
+			},
+			offDialog() {
+
+			},
+			cancelDialog() {
+				this.dialogShow = false;
+			},lookMore(data){
+				data.isSelect=!data.isSelect;
+			},
+			/*查看二维码*/
+			lookCode() {
+				var qrCodeId = this.orderData.qrCodeId;
+				this.codeUrl = "/api/qr_code/text/show?text=dynamic%7C"+qrCodeId;
+				this.codeShow = true;
+			},
+			closeDialog() {
+				this.codeShow = false;
+			},err(){
+				cJs.message("此功能暂未开发！")
+			}
+		},
+		components: {
+			CREATECODE,loading
+		}
+	}
+</script>
+
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.padding_bottom {
+		.pxrem(padding-bottom, 110);
+	}
+	
+	.order-details {
+		.bk-white {
+			background: #fff;
+		}
+		.style1 {
+			color: #666;
+			.pxrem(font-size, 28);
+		}
+		.border-bottom{
+			position: relative;
+			border-bottom: 1px dashed #e9e9e9;
+
+		}
+		.item-bottom{
+			position: relative;
+		}
+		.gap {
+			margin-bottom: .15rem;
+		}
+		.order-status {
+			section {
+				span {
+					position: absolute;
+					top: 0;
+					.pxrem(right, 16);
+				}
+			}
+			section:first-child {
+				.pxrem(line-height, 80);
+				.pxrem(height, 80);
+			}
+			h3 {
+				color: #000;
+				text-align: center;
+				.pxrem(font-size, 36);
+				img {
+					.pxrem(width, 14);
+					.pxrem(margin-left, 13);
+				}
+			}
+		}
+		.linkman-info {
+			.clearfix();
+			img {
+				.pxrem(width, 30);
+				.pxrem(margin-top, 20);
+			}
+			img:last-child {
+				.pxrem(width, 72);
+			}
+			section {
+				.pxrem(margin-left, 20);
+				h4 {
+					.pxrem(font-size, 32);
+					.pxrem(margin-bottom, 10);
+				}
+				p {
+					.pxrem(font-size, 26);
+					color: #4a4a4a;
+				}
+			}
+		}
+		.delivery-time {
+			img {
+				.pxrem(width, 30);
+				.pxrem(margin-right, 20);
+				vertical-align: middle;
+			}
+			span {
+				.pxrem(font-size, 28);
+			}
+		}
+		.btn-group {
+			.clearfix();
+			section {
+				width: 50%;
+				text-align: center;
+				margin: 0 auto;
+				color: #000;
+				.pxrem(height, 70);
+				.pxrem(line-height, 70);
+				position: relative;
+				span {
+					.pxrem(font-size, 38);
+					color: #000;
+				}
+				img {
+					.pxrem(width, 30);
+					vertical-align: sub;
+					.pxrem(margin-right, 5);
+				}
+				a {
+					display: inline-block;
+					border: 1px solid #E9E9E9;
+					.pxrem(border-radius, 6);
+					color: #000;
+					.pxrem(height, 70);
+					.pxrem(line-height, 70);
+					.pxrem(padding-left, 20);
+					.pxrem(padding-right, 20);
+				}
+			}
+			section:first-child:after {
+				content: "";
+				width: 1px;
+				border-left: 1px solid #cecece;
+				position: absolute;
+				right: -1px;
+				top: 10%;
+				height: 80%;
+			}
+		}
+		.shop-details {
+			margin-top: .15rem;
+			background: #F8F8F8;
+			header {
+				.clearfix();
+				h3 {
+					.pxrem(font-size, 32);
+					img {
+						.pxrem(width, 50);
+						vertical-align: middle;
+						.pxrem(margin-right, 10);
+					}
+					a {
+						img {
+							.pxrem(margin-left, 10);
+						}
+					}
+				}
+				span {
+					.pxrem(font-size, 28);
+					color: #999;
+				}
+				.sure-btn {
+					color: @m-c;
+					.pxrem(padding-left, 20);
+					.pxrem(padding-right, 20);
+					.pxrem(height, 56);
+					.pxrem(line-height, 56);
+					.pxrem(border-radius, 6);
+					border: 1px solid @m-c;
+				}
+			}
+			ul {
+				padding-bottom: 0;
+				/*background: #F8F8F8;*/
+				li {
+					.pxrem(margin-bottom, 10);
+				}
+			}
+			.view-more {
+				text-align: center;
+				color: #343534;
+				.pxrem(font-size, 24);
+			}
+		}
+		.order-info {
+			p {
+				.pxrem(font-size, 28);
+				.pxrem(line-height, 50);
+				span {
+					color: #999;
+					.pxrem(margin-right, 40);
+				}
+			}
+		}
+		.shop-item {
+			overflow: auto;
+			.item-left {
+				color: #151009;
+				.pxrem(height, 40);
+				.pxrem(line-height, 40);
+				.pxrem(font-size, 28);
+				.pxrem(margin-bottom, 5);
+				i {
+					background: @d-price;
+					vertical-align: middle;
+					display: inline-block;
+					.pxrem(width, 12);
+					.pxrem(height, 12);
+					border-radius: 100%;
+					border: 1px solid @d-price;
+					.pxrem(margin-right, 6);
+				}
+			}
+			.item-right {
+				b {
+					color: #343534;
+					.pxrem(font-size, 28);
+				}
+			}
+		}
+		.borderRadius{
+			content: "";
+			position: absolute;
+			.pxrem(top,-16);
+			.pxrem(width,16);
+			.pxrem(height,16);
+			background: #F3F3F3;
+			border-radius: 50%;
+		}
+		.radius-left:after {
+			.borderRadius;
+			.pxrem(left,-15);
+		}
+		.radius-right:before {
+			.borderRadius;
+			.pxrem(right,-15);
+		}
+
+		footer {
+			/*.clearfix();*/
+			background: #FAFAFA;
+			position: fixed;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			.pxrem(height, 100);
+			.pxrem(line-height, 100);
+			border-top: 1px solid #F3F3F3;
+			.pxrem(padding-left, 16);
+			box-shadow: .1rem 0 .1rem #ccc;
+			p {
+				.pxrem(font-size, 28);
+				span {
+					.pxrem(font-size, 32);
+					color: @d-price;
+				}
+			}
+			a {
+				.pxrem(font-size, 32);
+				color: #fff;
+				.pxrem(padding-left, 56);
+				.pxrem(padding-right, 56);
+			}
+			.affirm {
+				background: @m-c;
+			}
+		}
+	}
+</style>

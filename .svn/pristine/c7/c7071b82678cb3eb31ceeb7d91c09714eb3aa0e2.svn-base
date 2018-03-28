@@ -1,0 +1,14 @@
+/**
+ * hgf 2017年11月1日17:18:53
+ */
+import { selectAPI } from "../../api/login"
+export default {
+	/*选择站点*/
+	selectStation(vm, data) {
+		selectAPI.selectStationAPI(data, (result) => {
+			vm.$router.push({
+				name: "index.index"
+			});
+		});
+	}
+}

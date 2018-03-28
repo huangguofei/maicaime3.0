@@ -1,0 +1,77 @@
+<template>
+	<el-dialog :title="editDialogInfo.title" :visible.sync="editDialogInfo.showDialog"   width="30%">
+		<el-row>
+			<el-col :span="4">
+				<label style="height: 36px; line-height: 36px;">关键字：</label>
+			</el-col>
+			<el-col :span="10">
+				<el-input v-model="input" placeholder="请输入要添加的关键字"></el-input>
+			</el-col>
+			
+		</el-row>
+		<br/>
+		<el-row>
+			<el-col :span="4">
+				<label style="height: 36px; line-height: 36px;">排序：</label>
+			</el-col>
+			<el-col :span="10">
+				 <el-input-number v-model="index"  :min="0" label="描述文字"></el-input-number>
+			</el-col>
+		</el-row>
+		<div slot="footer" class="dialog-footer">
+			<el-button @click="editDialogInfo.showDialog = false">取 消</el-button>
+			<el-button type="primary" @click="sureBtn">确 定</el-button>
+		</div>
+	</el-dialog>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+				input: "",
+				id: "",
+				index: "",
+			}
+		},
+		props: ['editDialogInfo'],
+		methods: {
+			sureBtn: function() {
+				if(this.input) {
+					var data = {};
+					if(this.id) {
+						data.keywordName = this.input;
+						data.keywordId = this.id;
+						this.$emit("submitEdit", [data, "edit"]);
+					} else {
+						data.keywordName = this.input;
+						data.orderIndex = this.index;
+						this.$emit("submitEdit", [data, "new"]);
+					}
+					this.editDialogInfo.showDialog = false;
+					this.input = "";
+					this.id = "";
+					this.index = "";
+				} else {
+					Message("请输入关键字！");
+					return false;
+				}
+			},
+			watchData: function(type, val) {
+				if(type == "new") {
+					this.input = "";
+					this.id = "";
+					this.index = "";
+					return false;
+				}
+				this.input = val.keywordName;
+				this.id = val.keywordId;
+				this.index = val.orderIndex;
+			}
+		}
+	}
+</script>
+
+<style>
+
+</style>

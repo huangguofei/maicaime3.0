@@ -1,0 +1,13 @@
+import Vue from 'vue'
+import Router from './router/router'
+import ElementUI from 'element-ui'
+import 'element-ui/lib/theme-default/index.css'
+
+import CommonLess from './common/less/common.less'
+Vue.use(ElementUI)
+
+
+
+
+
+

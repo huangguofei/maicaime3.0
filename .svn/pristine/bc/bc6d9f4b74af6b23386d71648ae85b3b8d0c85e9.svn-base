@@ -1,0 +1,39 @@
+/**
+ * author pzh 
+ * day    2017-9-27
+ * 分类业务接口
+ */
+import {categoryAPI} from "apiurl/index"
+export default{
+	/*获取二级分类*/
+	getSubCateById(vm) {
+		var id = vm.$route.params.id, _that = this;
+		if(!id) {
+			cJs.message("未找到食材分类！");
+			return false;
+		}
+		var params = {
+			parentCategoryId : id
+		}
+		categoryAPI.prodListAPI(params,(result) => {
+			vm.categoryData = result;
+			var first = result[0];
+			if(first) {
+				_that.getProdsById(vm, first.categoryId);
+			}
+		});
+	},
+	/*根据分类Id取商品*/
+	getProdsById(vm, id) {
+		if(!id) {
+			cJs.message("未找到食材分类！");
+			return false;
+		}
+		var params = {
+			subCategoryId : id
+		}
+		categoryAPI.prodsByCategoryIdAPI(params,(result) => {
+			vm.prodData = result.resultList;
+		})
+	}
+}

@@ -1,0 +1,65 @@
+<template>
+	<article class="order-item">
+		<scroll 
+			:pullingDown="true" 
+			:pullUpLoad="true"
+			 @pullingUp="onPullingUp"
+			 ref="scroll"
+			v-if="orderList.length > 0">
+			<order-list-view :order-data="orderList" ></order-list-view>
+		</scroll>
+	</article>
+</template>
+
+<script>
+	import orderListView from 'components/order/order-list'
+	import orderApi from 'actionurl/order/order'
+	import scroll from "components/common/scroll"
+	export default {
+		data() {
+			return {
+				orderList: [],
+				pagings : {
+		          	current : 1,
+		          	size : 10,
+		          	pages : 1,
+		          	total : 0
+	            },
+			}
+		},
+		components: {
+			orderListView,
+			scroll
+		},
+		created() {
+			orderApi.getOrderListData(this);
+		},
+		methods: {
+			pageChange() {
+				if(this.option.pageNum <= totalPage) {
+					this.option.pageNum++;
+					orderApi.getOrderListData(this);
+				}
+			},
+			onPullingUp() {
+				var _that = this;
+				setTimeout(() => {
+					orderApi.getOrderListData(_that,(count) => {
+						if(count >= _that.pagings.size) {
+							_that.$refs.scroll.forceUpdate();
+						} else {
+							setTimeout(() => {
+								_that.$refs.scroll.forceUpdate(true);
+							}, 20);
+						}
+						
+					});
+				}, 500);
+			}
+		}
+	}
+</script>
+
+<style lang="less">
+
+</style>

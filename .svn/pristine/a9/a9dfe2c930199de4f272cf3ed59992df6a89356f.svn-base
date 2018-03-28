@@ -1,0 +1,158 @@
+<template>
+	<article class="page-layer add-bankcard">
+		<header class="padding">添加银行卡</header>
+		<article class="form padding bk-white">
+			<section class="item">
+				<span>持卡人</span>
+				<input type="text" class="card-name" v-model="bankCardData.ownerUserName" value="" />
+			</section>
+			<section class="item">
+				<span>银行卡号</span>
+				<input type="text" class="card-num" v-model="bankCardData.cardCode" maxlength="19" />
+			</section>
+			<section class="item">
+				<span>卡类型</span>
+				<select class="card-type" v-model="bankCardData.bankName">
+					<option value="招商银行">招商银行</option>
+					<option value="中国工商银行">中国工商银行</option>
+					<option value="中国农业银行">中国农业银行</option>
+					<option value="中国银行">中国银行</option>
+					<option value="中国建设银行">中国建设银行</option>
+					<option value="交通银行">交通银行</option>
+					<option value="中信银行">中信银行</option>
+					<option value="光大银行">光大银行</option>
+					<option value="华夏银行">华夏银行</option>
+					<option value="中国民生银行">中国民生银行</option>
+					<option value="平安银行">平安银行</option>
+					<option value="城市商业银行">城市商业银行</option>
+					<option value="城市信用合作社">城市信用合作社</option>
+					<option value="广东发展银行">广东发展银行</option>
+					<option value="农村合作银行">农村合作银行</option>
+					<option value="农村商业银行">农村商业银行</option>
+					<option value="农村信用合作社">农村信用合作社</option>
+					<option value="浙商银行">浙商银行</option>
+					<option value="浙江商业银行">浙江商业银行</option>
+					<option value="渣打银行">渣打银行</option>
+					<option value="福建兴业银行">福建兴业银行</option>
+				</select>
+			</section>
+			<section class="item">
+				<span>开户行地址</span>
+				<input type="text" class="card-address" v-model="bankCardData.bankAddr" value="" />
+			</section>
+		</article>
+		<button type="button" @click="submit" class="btn">确定</button>
+	</article>
+</template>
+
+<script>
+	import server from "actionurl/user/bankCard"
+	export default {
+		data() {
+			return {
+				bankCardData: {
+					ownerUserName: "",
+					cardCode: "",
+					bankName: "招商银行",
+					bankAddr: ""
+				}
+			}
+		},
+		props: [],
+		created() {
+
+		},
+		methods: {
+			submit() {
+				if(!this.bankCardData.ownerUserName) {
+					cJs.message("持卡人姓名不能为空！");
+					return;
+				}
+				if(!this.bankCardData.cardCode) {
+					cJs.message("银行卡号不能为空！");
+					return;
+				}
+				if(!this.cardNumberVerify(this.bankCardData.cardCode)) {
+					return;
+				}
+				if(!this.bankCardData.bankAddr) {
+					cJs.message("发卡行地址不能为空！");
+					return;
+				}
+				server.addBankCard(this);
+			},
+			cardNumberVerify(bankno) {　
+				if(bankno == "") {　　
+					cJs.message("请填写银行卡号");
+					return false;
+				}
+				if(bankno.length < 16 || bankno.length > 19) {
+					cJs.message("银行卡号长度必须在16到19之间");
+					return false;
+				}
+				var num = /^\d*$/; //全数字
+				if(!num.exec(bankno)) {
+					cJs.message("银行卡号必须全为数字");
+					return false;
+				}
+				//开头6位
+				var strBin = "10,18,30,35,37,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,58,60,62,65,68,69,84,87,88,94,95,98,99";
+				if(strBin.indexOf(bankno.substring(0, 2)) == -1) {
+					cJs.message("银行卡号开头6位不符合规范");
+					return false;
+				}
+//				//Luhm校验（新）
+//				if(!luhmCheck(bankno))
+//					return false;
+				return true;
+			}
+		},
+		compoments: {
+
+		}
+	}
+</script>
+
+<style lang="less" scoped>
+	@import "../../../common/less/config.less";
+	.add-bankcard {
+		header {
+			.pxrem(font-size, 28);
+		}
+		.form {
+			.item {
+				.clearfix();
+				border-bottom: 1px solid #EEE;
+				.pxrem(height, 100);
+				.pxrem(line-height, 100);
+				.pxrem(font-size, 32);
+				span {
+					display: inline-block;
+					float: left;
+					.pxrem(margin-right, 20);
+				}
+				input,
+				select {
+					float: right;
+					width: 70%;
+					display: block;
+					.pxrem(height, 100);
+					.pxrem(line-height, 100);
+					border: 0;
+					/*text-align: right;*/
+					.pxrem(font-size, 32);
+				}
+			}
+		}
+		.btn {
+			width: 70%;
+			display: block;
+			margin: .3rem auto;
+			.pxrem(height, 80);
+			.pxrem(line-height, 80);
+			.pxrem(border-radius, 8);
+			color: #fff;
+			background: @m-c;
+		}
+	}
+</style>

@@ -1,0 +1,33 @@
+<template>
+	<div class="page-layer">
+		主页面
+		<button @click="show()">点击我</button>
+		<FOOTERNAR :active="1"></FOOTERNAR>
+	</div>
+</template>
+<script>
+	import FOOTERNAR from "../../components/common/footer-nar"
+	export default{
+		data() {
+			return {
+
+			}
+		},
+		components : {
+			FOOTERNAR
+		},
+		created() {
+			this.$router.push({
+				name : "order.index.new"
+			});
+		},
+		methods : {
+			show() {
+				cJs.message("错误信息");
+			}
+		}
+	}
+</script>
+<style lang="less" scope>
+	
+</style>

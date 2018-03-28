@@ -1,0 +1,64 @@
+<template>
+	<article class="order-item">
+		<order-list-view 
+			v-if="orderList.length > 0" 
+			ref="orderList" 
+			:order-data="orderList" 
+			@updateData="updatePageData"  
+			:no-show-num="option.prodQuantity"></order-list-view>
+	</article>
+</template>
+
+<script>
+	import orderListView from 'components/order/order-list'
+	import commonAction from 'actionurl/common/common'
+	import orderApi from 'actionurl/order/order'
+	export default {
+		data() {
+			return {
+				orderList:[],
+				option:{
+					status:"20,30",
+					prodQuantity:2,
+					pageNum:1,
+					pageSize:10
+				},
+				totalPage:"",
+				currentPage:1
+			}
+		},
+		components: {
+			orderListView
+		},
+		created() {
+			orderApi.getOrderListData(this);
+			if(cJs.isWeiXin() && !window.wxSignature){
+				var params = {
+					url : window.location.href
+				}
+				commonAction.getJsApiInfo(params, (result) => {
+					window.wxSignature = true;
+					setTimeout(function() {
+						cJs.weixinConfig(result);
+					}, 20);
+				});
+			}
+		},
+		mounted() {
+
+		},
+		methods: {
+			updatePageData() {
+				orderApi.getOrderListData(this,(count) => {
+					this.$refs.orderList.pullingUpPage(count);
+				});
+			}
+		}
+	}
+</script>
+
+<style lang="less" scoped>
+	.order-item{
+		height:100%;
+	}
+</style>

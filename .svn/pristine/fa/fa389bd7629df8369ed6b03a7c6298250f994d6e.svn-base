@@ -1,0 +1,29 @@
+<div class="goods-page" id="goodsPage">
+    <div class="bg-layer"></div>
+     <div class="goods-info">
+        <div class="header">
+            <a href="javascript:void(0)" class="close common-icon-1" onclick="common.closeGoods()"></a>
+            <a class="logo" href="/web/view/index"><img src="../../images/logo.png" /></a>
+        </div>
+        <div class="content-wrap">
+            <div class="container" >
+                  <div class="prod-wrap" >
+                      <ul class="prod-list">
+                         <!--  <li class="p-item">
+                          <a href="/wap/view/detail?productId=2b714ec53f6146c49ff8ac6508727c08">
+                            <div class="pro-img">
+                            <img src="../../images/4.png">
+                            
+                            </div>
+                            <p class="en">XIHU<br/>LONGJING</p>
+                              <p class="zh">西湖龙井</p>
+                           </a>
+                        </li> -->
+                       
+                      </ul>
+                      <div style="clear:both;"></div>
+                  </div>
+            </div>
+        </div>
+      </div>
+  </div>

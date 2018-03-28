@@ -1,0 +1,179 @@
+<template>
+	<article class="page-layer padding">
+		<article class="food-details bk-white padding">
+			<img class="pull-left" :src="foodData.skuImage" />
+			<section class="food-info pull-left">
+				<p class="food-name">{{foodData.skuName}}</p>
+				<p class="food-price">¥{{foodData.offerPrice}}</p>
+			</section>
+		</article>
+		<article class="food-edit bk-white padding">
+			<article class="form hr">
+				<h2>活动设置</h2>
+				<section class="form-item">
+					<span>活动价格：</span>
+					<input type="number" id="price" v-model="price" placeholder="¥输入该商品参与活动价格" />
+				</section>
+				<!-- <section class="form-item">
+					<span>设置库存：</span>
+					<input type="text" id="price" v-model="repertory" placeholder="输入参与活动的商品数量" />
+				</section> -->
+			</article>
+			<article class="set-num">
+				<span class="pull-left">限购数量：</span>
+				<section class="food-num pull-right">
+					<img src="../../images/Group 2 Copy 2@2x.png" @click="changeNum('reduce')" />
+					<input type="number" oninput="if(value.length>3)value=value.slice(0,3)" v-model="num" @change="numVerify" />
+					<img src="../../images/Group 2 Copy1@2x.png" @click="changeNum('add')" />
+				</section>
+			</article>
+		</article>
+		<section class="btn-confim" @click="addFood">确定</section>
+	</article>
+</template>
+
+<script>
+	import postServer from "actionurl/user/userActivity"
+	export default {
+		data() {
+			return {
+				foodData: JSON.parse(window.localStorage.getItem("foodData")),
+				num: 1,
+				price: "",
+				repertory: 99,
+				activityId:this.$route.query.id
+			}
+		},
+		created() {
+		},
+		methods: {
+			changeNum(type) {
+				if(type == "add") {
+					this.num++;
+				} else {
+					if(this.num > 1) {
+						this.num--;
+					} else {
+						cJs.message("数量不能再少啦！");
+					}
+				}
+			},
+			numVerify() {
+				if(this.num < 1) {
+					this.num=1;
+				}
+			},
+			addFood(){
+				if(!this.price) {
+					cJs.message("活动价格不能为空");
+					return false;
+				} else if(this.price == 0) {
+					cJs.message("活动价格必须大于0");
+					return false;
+				}else if(!cJs.checkPrice(this.price)) {
+					cJs.message("活动价格格式错误,只能保留两位小数");
+					return false;
+				}
+				postServer.postActivityFood(this);
+			}
+		}
+	}
+</script>
+
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.page-layer {
+		box-sizing: border-box;
+	}
+	
+	.bk-white {
+		background: #fff;
+	}
+	
+	.food-details {
+		.clearfix();
+		.pxrem(margin-bottom, 20);
+		img {
+			.pxrem(width, 120);
+			.pxrem(height, 120);
+			.pxrem(margin-right, 20);
+		}
+		.food-name {
+			.pxrem(font-size, 28);
+		}
+		.food-price {
+			.pxrem(margin-top, 25);
+			.pxrem(font-size, 36);
+			color: #F98A0C;
+		}
+	}
+	
+	.food-edit {
+		.form {
+			h2 {
+				.pxrem(font-size, 32);
+				.pxrem(margin-bottom, 20);
+			}
+			.form-item {
+				.pxrem(height, 80);
+				.pxrem(line-height, 80);
+				border: 1px solid #D7D7D7;
+				.pxrem(margin-bottom, 15);
+				.pxrem(padding-left, 10);
+				.pxrem(border-radius, 5);
+				span {
+					.pxrem(font-size, 28);
+				}
+				input {
+					border: 0;
+					outline: none;
+				}
+			}
+		}
+		.set-num {
+			.clearfix();
+			span {
+				.pxrem(font-size, 32);
+				display: inline-block;
+				.pxrem(height, 140);
+				.pxrem(line-height, 140);
+			}
+			.food-num {
+				text-align: right;
+				img {
+					.pxrem(width, 40);
+					position: relative;
+					vertical-align: middle;
+				}
+				img:first-child {
+					.pxrem(left, 55);
+				}
+				img:last-child {
+					.pxrem(right, 55);
+				}
+				input {
+					text-align: center;
+					.pxrem(width, 180);
+					.pxrem(height, 50);
+					border: 1px solid #EEEEEE;
+					.pxrem(border-radius, 24);
+					.pxrem(padding-left, 50);
+					.pxrem(padding-right, 50);
+					box-sizing: border-box;
+					.pxrem(margin-top, 40);
+				}
+			}
+		}
+	}
+	
+	.btn-confim {
+		.pxrem(margin-top, 60);
+		background: @m-c;
+		color: #fff;
+		.pxrem(font-size, 32);
+		.pxrem(border-radius, 8);
+		text-align: center;
+		.pxrem(height, 80);
+		.pxrem(line-height, 80);
+	}
+</style>

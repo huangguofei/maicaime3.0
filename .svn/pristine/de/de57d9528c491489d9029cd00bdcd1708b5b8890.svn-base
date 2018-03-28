@@ -1,0 +1,180 @@
+<template>
+	<article class="page-layer deposit-details">
+		<article class="content padding bk-white">
+			<section class="item">
+				<span class="title">提现金额</span>
+				<span class="val">¥{{depositData.amount|ms}}</span>
+			</section>
+			<section class="item">
+				<span class="title">商户类型</span>
+				<span class="val">{{depositData.merchantTypeText}}</span>
+			</section>
+
+			<section class="item">
+				<span class="title">提现结果：</span>
+				<span class="val">{{depositData.statusText}}</span>
+			</section>
+			<section class="item">
+				<span class="title">提现银行：</span>
+				<span class="val">{{depositData.bankName}}</span>
+			</section>
+			<section class="item">
+				<span class="title">银行账号：</span>
+				<span class="val">**** **** **** **** {{depositData.cardCode.substring(depositData.cardCode.length-4,depositData.cardCode.length)}}</span>
+			</section>
+			<section class="item">
+				<span class="title">&#12288;持卡人：</span>
+				<span class="val">{{depositData.ownerUserName}}</span>
+			</section>
+			<section class="item">
+				<span class="title">提现单号：</span>
+				<span class="val">{{depositData.billId}}</span>
+			</section>
+			<section class="item">
+				<span class="title">提交时间：</span>
+				<span class="val">{{depositData.timeCreated}}</span>
+			</section>
+			<section class="item">
+				<span class="title">备&#12288;&#12288;注：</span>
+				<span class="val">{{depositData.userNote}}</span>
+			</section>
+		</article>
+		<article class="log bk-white padding">
+			<h2>提现日志</h2>
+			<section class="log-item" v-for="(v,k) in depositData.operationLogs">
+				<p>{{v.logTitle}}</p>
+				<p>{{v.logContent}}</p>
+				<p>{{v.privacyLevelText}}</p>
+				<p>处理方：{{v.merchantTypeText}}</p>
+				<p>处理时间：{{v.timeCreated}}</p>
+			</section>
+		</article>
+		<button type="button" class="btn" @click="showChangeCard" v-if="depositData.statusId==-1">{{btnTxt}}</button>
+		<dia :title="diaData.title" :contentHtml="diaData.contentHtml" @affirm="affirm" @offDialog="offDialog" v-if="isChangeCard"></dia>
+	</article>
+</template>
+
+<script>
+	import depositServer from 'actionurl/user/deposit'
+	import cardServer from "actionurl/user/bankCard"
+	import dia from "components/common/dialog"
+	export default {
+		data() {
+			return {
+				depositData: "",
+				id: this.$route.params.id,
+				isChangeCard: false,
+				btnTxt: "更换银行卡",
+				diaData: {
+					title: "更换银行卡",
+					contentHtml: ""
+				}
+			}
+		},
+		created() {
+			depositServer.getDepositDetails(this);
+		},
+		methods: {
+			showChangeCard() {
+				this.isChangeCard = !this.isChangeCard;
+			},
+			affirm() {
+				var dom = document.getElementById("cardList");
+				depositServer.changeCard(this, dom.value);
+			},
+			getCardList() {
+				var _that = this;
+				if(this.depositData.statusId == -1) {
+					cardServer.getBankCardList(this, function(data) {
+						if(data) {
+							var str = "<select id='cardList'>";
+							data.forEach((v, k) => {
+								var defaultStr = k == 0 ? "selected='selected'" : "";
+								str += `<option ${defaultStr} value="${v.cardId}">${v.bankName}</option>`
+							});
+							str += "</select>";
+							_that.diaData.contentHtml = str;
+						}
+					});
+				}
+			},
+			offDialog() {
+				if(document.getElementById("cardList").value) {
+					this.isChangeCard = false;
+				}else{
+					cJs.message("请选择的银行卡！");
+				}
+			}
+		},
+		components: {
+			dia
+		}
+	}
+</script>
+
+<style lang="less">
+	@import "../../../common/less/config.less";
+	.deposit-details {
+		.content {
+			.item {
+				.pxrem(font-size, 28);
+				color: #2C3139;
+				.pxrem(height, 50);
+				.pxrem(line-height, 50);
+				span {
+					display: inline-block;
+				}
+				.val {
+					float: right;
+				}
+			}
+			.item:first-child {
+				.pxrem(height, 150);
+				.pxrem(line-height, 150);
+				border-bottom: 1px solid #EEEEEE;
+				.pxrem(margin-bottom, 20);
+				.title {
+					.pxrem(font-size, 32);
+				}
+				.val {
+					.pxrem(font-size, 38);
+					color: #1EC551;
+				}
+			}
+		}
+		.log {
+			.pxrem(margin-top, 20);
+			h2 {
+				.pxrem(font-size, 28);
+				border-bottom: 1px solid #eee;
+				.pxrem(height, 80);
+				.pxrem(line-height, 80);
+			}
+			.log-item {
+				border-bottom: 1px solid #eee;
+				.pxrem(padding-top, 10);
+				.pxrem(padding-bottom, 10);
+				p {
+					.pxrem(line-height, 50);
+				}
+			}
+		}
+		.btn {
+			display: block;
+			.pxrem(font-size, 36);
+			width: 90%;
+			margin: .4rem auto;
+			.pxrem(height, 80);
+			.pxrem(line-height, 80);
+			text-align: center;
+			.pxrem(border-radius, 6);
+			background: @m-c;
+			color: #fff;
+		}
+		#cardList {
+			width: 100%;
+			.pxrem(height, 80);
+			.pxrem(font-size, 36);
+		}
+	}
+</style>

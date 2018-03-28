@@ -1,0 +1,107 @@
+<!-- 付款方式 -->
+<template>
+<div class="payment-type" @click="$parent.payShow = false" v-if="payShow">
+	<div class="type-info">
+		<header>付款方式</header>
+		<div class="pay-list">
+			<div class="p-item">
+				<i class="p-icon"></i>
+				<div class="p-con">
+					<p class="header">余额支付</p>
+					<p class="value">可用余额：¥4500.00</p>
+				</div>
+				<i class="check-active"></i>
+			</div>
+		</div>
+		<footer>
+			<button @click="returnSubmitPay()">确定支付¥{{(totalAmount * 1).toFixed(2)}}</button>
+		</footer>
+	</div>
+</div>
+</template>
+<script>
+	export default{
+		props : ["totalAmount", "payShow", "submitPay"],
+		methods : {
+			returnSubmitPay() {
+				this.submitPay();
+			}
+		}
+	}
+</script>
+<style lang="less" scoped>
+@import "../../common/less/config.less";
+.payment-type{
+	position: fixed;
+	top:0;
+	left:0;
+	width:100%;
+	height:100%;
+	background: rgba(0, 0, 0, 0.5);
+	.type-info{
+		background: #FFF;
+		position: absolute;
+		width:100%;
+		bottom:0;
+		header{
+			.pxrem(height, 100);
+			.pxrem(line-height, 100);
+			.pxrem(font-size,32);
+			text-align: center;
+			border-bottom:1px solid #E9E9E9;
+		}
+		.pay-list{
+			.prem(-4,20);
+			padding:@prem;
+			.p-item{
+				.prem(20,-4);
+				padding:@prem;
+				position: relative;
+				.p-icon{
+					display: inline-block;
+					.pxrem(width,80);
+					.pxrem(height,80);
+					position: absolute;
+					background: url(../../images/list_order_pay_yue.png) no-repeat;
+					background-size:cover;
+				}
+				.check-active{
+					display: inline-block;
+					position: absolute;
+					right:0;
+					.pxrem(top,45);
+					.pxrem(width,34);
+					.pxrem(height,34);
+					background: url(../../images/order_value_tick.png) no-repeat;
+					background-size:cover;
+				}
+				.p-con{
+					position: relative;
+					.pxrem(padding-left,100);
+				}
+				.header{
+					.pxrem(font-size,32);
+				}
+				.value{
+					.pxrem(font-size,24);
+					color:#666666;
+				}
+			}
+		}
+		footer{
+			.prem(20);
+			padding:@prem;
+			button{
+				width:100%;
+				border:0;
+				background: @m-c;
+				color:#FFF;
+				.pxrem(font-size,36);
+				.pxrem(height,88);
+				.pxrem(line-height,88);
+				.pxrem(border-radius,8);
+			}
+		}
+	}
+}
+</style>

@@ -1,0 +1,260 @@
+<template>
+	<article class="order-item">
+		<section class="search-nav padding bk-white" ref="head">
+			<section class="">
+				<a href="javascript:;" @click="changeSearch(1)" :class="{active:searchIndex==1}">数量
+					<img v-if="searchIndex!=1" src="../../images/order_arrow.png">
+					<img v-else-if="searchIndex==1&&option.sortDirection==0" src="../../images/order_arrowhighlight.png">
+					<img v-else-if="searchIndex==1&&option.sortDirection==1" src="../../images/top.png">
+				</a>
+				<a href="javascript:;" @click="changeSearch(2)" :class="{active:searchIndex==2}">{{searchMode=="order"?"时间":"名称"}}
+					<img v-if="searchIndex!=2" src="../../images/order_arrow.png">
+					<img v-else-if="searchIndex==2&&option.sortDirection==0" src="../../images/order_arrowhighlight.png">
+					<img v-else-if="searchIndex==2&&option.sortDirection==1" src="../../images/top.png"></a>
+				<a href="javascript:;" @click="changeSearch(3)" :class="{active:searchIndex==3}">金额
+					<img v-if="searchIndex!=3" src="../../images/order_arrow.png">
+					<img v-else-if="searchIndex==3&&option.sortDirection==0" src="../../images/order_arrowhighlight.png">
+					<img v-else-if="searchIndex==3&&option.sortDirection==1" src="../../images/top.png"></a>
+			</section>
+			<a href="javascript:;" class="pull-right" @click="changeModel()"><img src="../../images/order_exchange.png">{{searchMode=="order"?"食材模式":"订单模式"}}</a>
+		</section>
+		<div class="content" ref="content">
+			<order-list-view ref="orderList" @updateData="updatePageData" :no-show-num="option.prodQuantity" v-if="searchMode=='order'"></order-list-view>
+			<food-list-view ref="orderList"  @updateData="updatePageData" :no-show-num="option.prodQuantity" v-if="searchMode=='food'"></food-list-view>
+		</div>
+
+		<footer class="padding" ref="footer">
+			<label class="pull-left" :class="{active:isSelectAll}" @click="selectAll">
+				<span></span>
+				全选
+			</label>
+			<a href="javscript:;" class="pull-right" @click="print">打印</a>
+		</footer>
+	</article>
+</template>
+
+<script>
+	import orderListView from 'components/order/order-list'
+	import foodListView from 'components/order/food-list-view'
+	import orderApi from 'actionurl/order/order'
+	import scroll from "components/common/scroll"
+	import loading from 'components/common/loading'
+	import { mapGetters } from 'vuex'
+	export default {
+		data() {
+			return {
+				isLoad: false,
+				searchIndex: 2,
+				searchMode: "order",
+				isSelectAll: false,
+				loadStatus: true,
+				option: {
+					pageNum: 1,
+					size: 10,
+					pages: 1,
+					total: 0,
+					sortDirection: 0,
+					sortField: "",
+					orderStatusId: 40,
+					prodQuantity: 2,
+					sortDirection: 0
+				},
+			}
+		},
+		computed : {
+			...mapGetters([
+				"orderType",
+				"pageNum"
+			])
+		},
+		components: {
+			orderListView,
+			foodListView,
+			scroll,
+			loading
+		},
+		created() {
+		},
+		mounted() {
+			var footer = document.getElementById("footerWrap");
+			if(this.$refs.head && footer) {
+				const h = this.$refs.head.getBoundingClientRect().height;
+				const f = this.$refs.footer.getBoundingClientRect().height;
+				var height = footer.offsetHeight ? footer.offsetHeight : 0;
+				this.$refs.content.style.height = (document.body.clientHeight - h - f - height - 30) + "px";
+			}
+			this.getData();
+		},
+		methods: {
+			changeSearch(index) { /*切换搜索条件*/
+				if(this.searchIndex == index) {
+					if(this.option.sortDirection == 1)
+						this.option.sortDirection = 0;
+					else
+						this.option.sortDirection = 1;
+				} else {
+					this.searchIndex = index;
+				}
+				this.option.pageNum = 1;
+				this.crearOrderList();
+				this.prodList = [];
+				this.getData("load");
+			},
+			selectAll() {
+				this.isSelectAll = !this.isSelectAll;
+				if(this.isSelectAll) {
+					if(this.searchMode == "order")
+						this.orderList.forEach((val, key) => {
+							val.isSelect = true;
+						});
+					else {
+						this.prodList.forEach((val, key) => {
+							val.isSelect = true;
+						});
+					}
+				} else if(this.searchMode == "order") {
+					this.orderList.forEach((val, key) => {
+						val.isSelect = false;
+					});
+				} else {
+					this.prodList.forEach((val, key) => {
+						val.isSelect = false;
+					});
+				}
+
+			},
+			getSearchData() {
+				if(this.searchIndex == 1) { //数量
+					this.option.sortField = "skuCount";
+				} else if(this.searchIndex == 2) { //时间
+					if(this.searchMode == "food")
+						this.option.sortField = "purchaserName";
+					else
+						this.option.sortField = "";
+				} else { //金额
+					this.option.sortField = "totalAmount";
+				}
+			},
+			changeModel() { /*切换显示模式*/
+				if(this.searchMode == "order") {
+					this.searchMode = "food";
+					this.prodList = [];
+				} else {
+					this.searchMode = "order";
+				}
+				this.isSelectAll = false;
+				this.option.pageNum = 1;
+				this.crearOrderList();
+				if(this.orderList.length == 0 || this.prodList.length == 0)
+					this.getData("load");
+			},
+			getData(type) {
+				this.getSearchData();
+				if(type == "load") {
+					this.$store.commit("SELECT_ORDER_TYPE", 0);
+				}
+				if(this.option.orderStatusId != this.orderType) {
+					orderApi.getOrderListData(this);
+					this.$store.commit("RECORD_LAST_SCROLL_TOP", 0);
+				} else {
+					this.isLoad = true;
+					this.option.pageNum = this.pageNum;
+				}
+			},
+			clickSetInterval() {
+
+			},
+			updatePageData() {
+				orderApi.getOrderListData(this, (count) => {
+					this.$refs.orderList.pullingUpPage(count);
+				});
+			},
+			crearOrderList() {
+				this.orderList = [];
+			},
+			print() {
+				cJs.message("暂未开通打印功能");
+			}
+		}
+	}
+</script>
+
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.bk-white {
+		background: #fff;
+	}
+	
+	.order-item {
+		.content {}
+	}
+	
+	footer {
+		position: fixed;
+		.pxrem(bottom, 97);
+		width: 100%;
+		box-sizing: border-box;
+		.clearfix();
+		background: #fafafa;
+		.pxrem(height, 90);
+		.pxrem(line-height, 58);
+		.pxrem(font-size, 28);
+		span {
+			display: inline-block;
+			.pxrem(width, 32);
+			.pxrem(height, 32);
+			border: 1px solid #a4a4a4;
+			.pxrem(border-radius, 16);
+			vertical-align: sub;
+		}
+		a {
+			border: 1px solid @m-c;
+			display: inline-block;
+			.pxrem(width, 160);
+			.pxrem(height, 56);
+			color: @m-c;
+			text-align: center;
+		}
+	}
+	
+	.active {
+		span {
+			background: url(../../images/order_check.png)no-repeat -1px -1px;
+			background-size: 120% auto;
+			border-color: #3084F2;
+		}
+	}
+	
+	.search-nav {
+		text-align: center;
+		section {
+			display: inline-block;
+			width: calc(~"100% - 1.5rem");
+			a {
+				color: #222222;
+				width: 29%;
+				background: #eee;
+				margin: 0 .05rem;
+				img {
+					.pxrem(width, 14);
+				}
+			}
+			.active {
+				color: @m-c;
+			}
+		}
+		a {
+			.pxrem(font-size, 28);
+			.pxrem(line-height, 56);
+			.pxrem(height, 56);
+			display: inline-block;
+			width: 1.5rem;
+			color: @m-c;
+			.pxrem(border-radius, 8);
+			img {
+				.pxrem(width, 30);
+				vertical-align: middle;
+			}
+		}
+	}
+</style>

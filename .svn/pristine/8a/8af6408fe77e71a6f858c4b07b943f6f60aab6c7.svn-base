@@ -1,0 +1,122 @@
+<!-- 区域列表 -->
+<template>
+	<page-layer :narData="narData" classs="back-color">
+		
+		<el-row class="search-wrap">
+		  	 <el-col :span="3" style="margin-right:20px;">
+		  	 	<el-input v-model="queryParams.regionName" placeholder="区域名称"></el-input>
+		  	 </el-col>
+		  	 <el-col :span="2">
+		  	 	<el-button style="margin-left:20px;" @click="queryInfo()">查询</el-button>
+		  	 </el-col> 
+		  	<el-col :span="2" style="float:right">
+		  	 	<el-button  @click="addArea()" class="btn-add">添加区域</el-button>
+		  	 </el-col>
+		</el-row>
+		<el-table
+	      :data="tableData"
+	      style="width: 100%">
+	       <el-table-column
+		      type="index"
+		      width="50">
+		    </el-table-column>
+		    <el-table-column
+	        prop="regionId"
+	        label="regionId"
+	        width="320">
+	      </el-table-column>
+	      <el-table-column
+	        prop="regionName"
+	        label="区域名称"
+	        width="180">
+	      </el-table-column>
+     		<el-table-column
+	        prop="description"
+	        label="描述"
+	        >
+	      </el-table-column>
+	      <el-table-column
+	        label="操作"
+	        width="180">
+	        <template scope="scope">
+				<el-button @click="editAreaInfo(scope.row, scope.$index)">编辑</el-button> 
+				<el-button class="el-button-del" @click="delRow(scope.row)">删除</el-button> 
+			</template>
+	      </el-table-column>
+	    </el-table>
+	   <pagination :pagings="queryParams" :totalCount="totalCount" @changePageSize="changePageSize"></pagination>
+	    <EDITAREAINFO :editInfo="editInfo" :submitClick="submitAreaInfo" ref="areaInfo"></EDITAREAINFO>
+	</page-layer>
+</template>
+<script>
+	import SETTINGAREA from "action/setting/area"
+	import EDITAREAINFO from "components/setting/edit-area-info"
+	import pageLayer from "components/common/page-layer"
+	import pagination from "components/common/pagination"
+    export default {
+      data() {
+        return {
+          narData : [
+    	  	{
+    	  		name : "配送管理列表",
+    	  		router : ""
+    	  	}
+    	  ],
+          queryParams : {
+          		regionName : "",
+          		pageSize : 10,
+ 				pageNum : 1,
+          },
+          tableData: [],
+          totalCount : 0,
+          editInfo : {
+			title : "",
+			dialogShow : false
+		  },
+        }
+      },
+      created() {
+      		SETTINGAREA.getAreaList(this);
+      },
+      components : {
+      		EDITAREAINFO,
+      		pageLayer,
+      		pagination
+      },
+      methods : {
+      		queryInfo() {
+      			SETTINGAREA.getAreaList(this);
+      		},
+      		addArea() {
+      			var info = this.editInfo;
+      			info.title = "添加区域"
+      			info.dialogShow = true;
+      			this.$refs.areaInfo.resetForm();
+      		},
+      		editAreaInfo(row, index) {
+      			var info = this.editInfo;
+      			info.title = "编辑区域"
+      			info.dialogShow = true;
+      			var RowData = JSON.stringify(row);
+      			this.$refs.areaInfo.editFormData(JSON.parse(RowData));
+      		},
+      		changePageSize() {
+				SETTINGAREA.getAreaList(this);
+			},
+			/*提交区域信息*/
+			submitAreaInfo(info) {
+				SETTINGAREA.saveAreaInfo(this, info);
+			},
+			delRow(row) {
+				var _that = this;
+				_that.$confirm('此操作删除本行数据, 是否继续?', '提示', {
+		          confirmButtonText: '确定',
+		          cancelButtonText: '取消',
+		          type: 'warning'
+		        }).then(() => {
+		          	SETTINGAREA.deleteAreaRow(_that, row.regionId);
+		        });
+			}
+      }
+    }
+  </script>

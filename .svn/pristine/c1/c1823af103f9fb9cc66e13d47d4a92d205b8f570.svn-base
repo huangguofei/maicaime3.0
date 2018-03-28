@@ -1,0 +1,139 @@
+<!-- 设置区域和分类 -->
+<template>
+	<el-dialog :title="areaDialog.title" :visible.sync="areaDialog.dialogShow" size="tiny"  :close-on-click-modal="false" class="set-area-category">
+		<el-steps :space="480" :active="stepActive" finish-status="success">
+		  <el-step title="设置区域"></el-step>
+		  <el-step title="编辑分类"></el-step>
+		</el-steps>	
+		<div class="step step-1" v-show="stepActive == 1">
+			<span v-if="areaData.length">
+	          <el-checkbox-group v-model="selectArea">
+	            <el-checkbox :label="a.regionId" :key="a.regionId" v-for="a in areaData">{{a.regionName}}</el-checkbox>
+	          </el-checkbox-group>
+	      </span>
+		</div>	
+		<div class="step step-2" v-show="stepActive == 2">
+			<div class="areas">
+				<label>已选中的区域：</label>
+				<label class="name" v-for="s in selectAreaInfo">{{s.regionName}}</label>
+			</div>
+			<el-tree
+			  :data="categoryTree"
+			  show-checkbox
+			  default-expand-all
+			  node-key="categoryId"
+			  ref="tree"
+			  highlight-current
+			  :props="defaultProps">
+			</el-tree>
+
+		</div>
+		<span slot="footer" class="dialog-footer">
+			<el-button type="primary" @click="stepNext" v-show="stepActive == 1">下一步</el-button>
+		    <el-button @click="stepTop" v-show="stepActive == 2">上一步</el-button>
+		    <el-button type="primary" @click="submitForm('ruleForm')" v-show="stepActive == 2">确 定</el-button>
+		  </span>
+	</el-dialog>
+</template>
+<script>
+	import SETTINGAREA from "action/setting/area"
+	import CUSTOMERSUPPLIER from "action/customer/supplier"
+	export default {
+		data() {
+			return {
+				areaData: [],
+				selectArea: [],
+				stepActive : 1,
+				selectAreaInfo : [],
+				categoryTree : [],
+		        defaultProps: {
+		          children: 'subCategoryList',
+		          label: 'categoryName'
+		        },
+			};
+		},
+		props: ["areaDialog", "submitClick", "editRowInfo"],
+		created() {
+			SETTINGAREA.getAllAreaInfo(this);
+			CUSTOMERSUPPLIER.getAllCategory(this);
+		},
+		methods: {
+			submitForm(formName) {
+				var _that = this, params = {}, treeActive = _that.$refs.tree.getCheckedNodes();
+				if(treeActive.length == 0) {
+					_that.$message("请勾选分类");
+					return false;
+				}
+				params.supplierId = this.editRowInfo.supplierId;
+				params.newRegionIdStr = _that.selectArea.toString();
+				var nodes =  _that.writeTreeSlectItem(treeActive);
+				params.newCategoryIdStr = nodes.toString();
+				_that.submitClick(params);
+			},
+			editFormData(formData) {
+				this.stepActive = 1;
+				this.selectArea=[];
+				if(!formData) return false;
+				var _that = this;
+				_that.areaData.forEach((v, k) => {
+					formData.suppierRegionItemBOList.forEach((m, i) => {
+						if(m.regionId == v.regionId) {
+							_that.selectArea.push(v.regionId);
+						}
+					});
+				});
+			},
+			stepNext() {
+				if(!this.selectArea) {
+					this.$message("请选择区域");
+					return false;
+				}
+				//记录选中的区域
+				this.selectAreaInfo = [];
+				this.areaData.forEach((item) => {
+					var regionId =  item.regionId;
+					this.selectArea.forEach((key) => {
+						if(regionId == key) {
+							this.selectAreaInfo.push(item);
+						}
+					});
+				});
+				CUSTOMERSUPPLIER.getTreeByAreaId(this, this.selectArea.toString());
+				this.stepActive = 2;
+			},
+			stepTop() {
+				this.stepActive = 1;
+			},
+			/*读取树形二级选中项*/
+			writeTreeSlectItem(trees) {
+				var twoItems = [];
+				trees.forEach((item) => {
+					if(item.parentCategoryId) {
+						twoItems.push(item.categoryId);
+					}
+				});
+				return twoItems;
+			}
+
+		}
+	};
+</script>
+<style lang="less">
+	.set-area-category{
+		.step{
+			margin-top:10px;
+		}
+		.areas{
+			margin-bottom: 20px;
+			.name{
+				margin-right:20px;
+				color:#46CD72;
+			}
+		}
+		.el-dialog__body{
+			max-height:500px;
+			overflow: auto;
+		}
+	}
+	
+</style>

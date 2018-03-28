@@ -1,0 +1,202 @@
+<!-- 食材列表 -->
+<template>
+	<div class="prod-list">
+		<div class="prod-item">
+			<router-link :to="{name : 'market.detail'}">
+				<i class="prod-img"><img src="../../images/home_vagetable.png"></i>
+				<i class="often often-active"></i>
+				<span class="cart-wrap cart-active">
+					<i class="minus c-i"></i>
+					<span class="num">5</span>
+					<i class="add c-i"></i>
+				</span>
+				<div class="prod-info">
+					<p class="prod-name">经典瘦猪肉</p>
+					<p class="price">¥14.8/斤</p>
+					<span class="orgin-price">¥16.0</span>
+				</div>
+			</router-link>
+		</div>
+		<div class="prod-item">
+			<a href="">
+				<i class="prod-img"><img src="../../images/home_vagetable.png"></i>
+				<i class="often often-active"></i>
+				<span class="cart-wrap cart-active">
+					<i class="minus c-i"></i>
+					<span class="num">5</span>
+					<i class="add c-i"></i>
+				</span>
+				<div class="prod-info">
+					<p class="prod-name">经典瘦猪肉</p>
+					<p class="price">¥14.8/斤</p>
+					<span class="orgin-price">¥16.0</span>
+				</div>
+			</a>
+		</div>
+		<div class="prod-item">
+			<a href="">
+				<i class="prod-img"><img src="../../images/home_vagetable.png"></i>
+				<i class="often"></i>
+				<span class="cart-wrap cart-active">
+					<i class="minus c-i"></i>
+					<span class="num">5</span>
+					<i class="add c-i"></i>
+				</span>
+				<div class="prod-info">
+					<p class="prod-name">经典瘦猪肉</p>
+					<p class="price">¥14.8/斤</p>
+					<span class="orgin-price">¥16.0</span>
+				</div>
+			</a>
+		</div>
+		<div class="prod-item">
+			<a href="">
+				<i class="prod-img"><img src="../../images/home_vagetable.png"></i>
+				<i class="often"></i>
+				<span class="cart-wrap cart-active">
+					<i class="minus c-i"></i>
+					<span class="num">5</span>
+					<i class="add c-i"></i>
+				</span>
+				<div class="prod-info">
+					<p class="prod-name">经典瘦猪肉</p>
+					<p class="price">¥14.8/斤</p>
+					<span class="orgin-price">¥16.0</span>
+				</div>
+			</a>
+		</div>
+		<div class="prod-item">
+			<a href="">
+				<i class="prod-img"><img src="../../images/home_vagetable.png"></i>
+				<i class="often"></i>
+				<span class="cart-wrap cart-active">
+					<i class="minus c-i"></i>
+					<span class="num">5</span>
+					<i class="add c-i"></i>
+				</span>
+				<div class="prod-info">
+					<p class="prod-name">经典瘦猪肉</p>
+					<p class="price">¥14.8/斤</p>
+					<span class="orgin-price">¥16.0</span>
+				</div>
+			</a>
+		</div>
+		<div class="prod-item">
+			<a href="">
+				<i class="prod-img"><img src="../../images/home_vagetable.png"></i>
+				<i class="often"></i>
+				<span class="cart-wrap cart-active">
+					<i class="minus c-i"></i>
+					<span class="num">5</span>
+					<i class="add c-i"></i>
+				</span>
+				<div class="prod-info">
+					<p class="prod-name">经典瘦猪肉</p>
+					<p class="price">¥14.8/斤</p>
+					<span class="orgin-price">¥16.0</span>
+				</div>
+			</a>
+		</div>
+	</div>
+</template>
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.prod-list{
+		background: #FFF;
+		.prem(0,20);
+		padding:@prem;
+		.prod-item{
+			position: relative;
+			.prem(20, 0);
+			padding:@prem;
+			border-bottom:0.5px solid #E9E9E9;
+			.prod-img{
+				position: absolute;
+				display: inline-block;
+				.pxrem(width,150);
+				.pxrem(height,150);
+				border:0.5px solid #E5E5E5;
+				display: table-cell;
+				vertical-align: middle;
+				img{
+					max-width: 100%;
+					max-height: 100%;
+					text-align: center;
+					vertical-align: middle;
+				}
+			}
+			.often{
+				position: absolute;
+				right:0;
+				display: inline-block;
+				.pxrem(width, 53);
+				.pxrem(height, 46);
+				background: url(../../images/market_heart.png) no-repeat;
+				background-size:cover;
+			}
+			.often-active{
+				background: url(../../images/market_hearthighlight.png) no-repeat;
+				background-size:cover;
+			}
+			.cart-wrap{
+				position: absolute;
+				right:0;
+				.pxrem(bottom, 20);
+				display: inline-block;
+				.pxrem(height, 49);
+				.c-i{
+					float:left;
+					display: inline-block;
+					.pxrem(width, 47);
+					.pxrem(height, 47);
+					border-radius: 50%;
+					margin-top:0.5px;
+				}
+				.num{
+					float:left;
+					display: inline-block;
+					.pxrem(height, 47);
+					.pxrem(line-height, 47);
+					.pxrem(min-width, 60);
+					text-align:center;
+					.pxrem(font-size, 31);
+					text-align:center;
+					color:#000;
+				}
+				.minus{
+					background: url(../../images/market_minus.png) no-repeat;
+					background-size: cover;
+				}
+				.add{
+					background: url(../../images/market_plus.png) no-repeat;
+					background-size: cover;
+				}
+			}
+			.cart-active{
+				border:1px solid #EEEEEE;
+				.pxrem(border-radius,80);
+			}
+			.prod-info{
+				.pxrem(height, 150);
+				.pxrem(padding-left, 170);
+				.prod-name{
+					color:@p-t-c;
+					.pxrem(font-size, 32);
+					.pxrem(min-height, 60);
+				}
+				.price{
+					color:@p-p-c;
+					.pxrem(font-size, 36);
+				}
+				.orgin-price{
+					color:@p-o-c;
+					.pxrem(font-size, 28);
+					text-decoration:line-through;
+				}
+			}
+		}
+		.prod-item:last-child{
+			border-bottom:0;
+		}
+	}
+</style>

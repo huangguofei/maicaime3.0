@@ -1,0 +1,62 @@
+<!-- 编辑商品分类信息 -->
+<template>
+	<el-dialog
+		  :title="editInfo.title"
+		  :visible.sync="editInfo.dialogShow"
+		  size="tiny"
+		  :close-on-click-modal="false"
+		  >
+		  <el-form :model="ruleForm" :rules="rules" ref="ruleForm">
+				<el-form-item label="分类名称" label-width="120px" prop="categoryName">
+					<el-input v-model="ruleForm.categoryName" auto-complete="off" placeholder="分类名称"></el-input>
+				</el-form-item>
+				<el-form-item label="是否禁用" label-width="120px">
+					<el-radio-group v-model="ruleForm.commonStatusEnum">
+						<el-radio label="1">否</el-radio>
+						<el-radio label="0">是</el-radio>
+					</el-radio-group>
+				</el-form-item>
+				<el-form-item label="排序" label-width="120px">
+					<el-input v-model="ruleForm.orderIndex" auto-complete="off" placeholder="序号"></el-input>
+				</el-form-item>
+		  </el-form>
+		  <span slot="footer" class="dialog-footer">
+		    <el-button @click="editInfo.dialogShow = false">取 消</el-button>
+		    <el-button type="primary" @click="submitForm('ruleForm')">确 定</el-button>
+		  </span>
+	</el-dialog>
+</template>
+<script>
+  export default {
+    data() {
+      return {
+        dialogVisible: true,
+        ruleForm : {
+        	categoryName : "",
+        	parentCategoryId : "",
+        	commonStatusEnum : "1",
+        	orderIndex : 0
+        },
+        rules: {
+        	 categoryName: [
+	            { required: true, message: '请输入分类名称', trigger: 'blur' }
+	         ],
+        }
+      };
+    },
+    props : ["editInfo", "submitClick"],
+    methods: {
+      	submitForm(formName) {
+      		var _that = this;
+      		_that.$refs[formName].validate((valid) => {
+	          if (valid) {
+	          		_that.submitClick(_that.ruleForm);
+	          } else {
+	           		console.log('error submit!!');
+	            	return false;
+	          }
+	        });
+      	}
+    }
+  };
+</script>

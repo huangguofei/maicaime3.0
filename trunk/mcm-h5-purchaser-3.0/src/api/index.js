@@ -1,0 +1,52 @@
+/**
+ * author pzh
+ * day    2017-11-2
+ * 主页模块接口
+ */
+ import https from "httpurl/https"
+/*首页*/
+ export const indexAPI = {
+ 	/*首页数据*/
+ 	homeDataAPI : (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/home/homeData", v)),
+ 	/*首页推荐食材*/
+ 	homeProdAPI : (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/product/getHotRecommendProduct", v)),
+ }
+
+ /*分类*/
+ export const categoryAPI = {
+ 	/*二级分类*/
+ 	prodListAPI : (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/category/selectSubCategory", v)),
+ 	/*根据二级分类查询出商品*/
+ 	prodsByCategoryIdAPI : (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/product/getProductBySubCategory", v)),
+ }
+
+ /*限时抢购*/
+ export const promptAPI = {
+ 	/*限时特价"系列"详情里的产品品类列表*/
+ 	categoryListAPI : (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/ms/prodCategoryList", v)),
+ 	/*产品*/
+ 	propListAPI : (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/ms/prodList", v)),
+ 	/*详情*/
+ 	promptDetailInfoAPI : (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/ms/info", v)),
+
+ }
+
+ /*搜索*/
+ export const searchAPI = {
+	/*关键字*/
+	searchKeyWordAPI : (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/search/keyword-list", v)),
+	/*搜索下拉*/
+	searchSuggestAPI : (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/search/product/suggest", v)), 
+	/*商品搜索*/
+	searchProductAPI : (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/search/product", v)), 
+	/*根据id查询出完整的商品信息*/
+	prodListByProdIdsAPI : (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/market/getProductListByProductIds", v)),
+ }
+
+ /*积分商城*/
+ export const integralAPI = {
+ 	/*余额*/
+	balanceAPI : (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/integral/integralHistory", v)),
+	/*商品*/
+	prodListAPI : (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/integral/getIntegralMallProdList", v)),
+ }

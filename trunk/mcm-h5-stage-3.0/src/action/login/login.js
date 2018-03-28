@@ -1,0 +1,59 @@
+/**
+ * author hgf 
+ * day    2017-9-25
+ * 登录注册
+ */
+import serverAPI from "apiurl/login"
+import cityApi from "apiurl/public"
+export default {
+	/*获取站点列表数据*/
+	getCityData(vm) {
+		cityApi.provicesAPI((result) => {
+			vm.info = result;
+		});
+	},
+	login(vm,data) {
+		var _that = this;
+		serverAPI.loginAPI(data,(result) => {
+			if(result.merchantBOList.length > 1) {
+				cJs.delCookie("stage-user-info");
+				vm.shopList = result.merchantBOList;
+				vm.isSelectShop = true;
+			} else {
+				_that.writeUserInfoCookie(result);
+				setTimeout(function() {
+					vm.$router.push({name : "order.index.new"});
+				});
+				
+			}
+			
+		});
+	},
+	register(vm){
+		serverAPI.registerAPI(vm.registerData,(result)=>{
+			vm.$router.push({name : "login.index"});
+		});
+	},
+	selectShop(vm, id) {
+		var params = {}, _that = this;
+		params = vm.userInfo;
+		params.merchantId = id;
+		serverAPI.loginAPI(params, (result) => {
+			_that.writeUserInfoCookie(result);
+			setTimeout(function() {
+				vm.$router.push({name : "order.index.new"});
+			});
+		});
+	},
+	writeUserInfoCookie(result) {
+		var userInfo = {
+			userName: result.userName,
+			mobile: result.mobile,
+			token: result.token
+		}
+		cJs.delCookie("stage-user-info");
+		cJs.setCookie("stage-user-info", "");
+		cJs.setCookie("stage-user-info", JSON.stringify(userInfo));
+	}
+
+}

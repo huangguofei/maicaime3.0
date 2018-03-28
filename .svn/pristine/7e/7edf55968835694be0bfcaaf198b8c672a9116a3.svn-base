@@ -1,0 +1,175 @@
+<!-- 商品列表 -->
+<template>
+	<page-layer :narData="narData" classs="back-color padd">
+
+		<el-row class="search-wrap">
+			<el-col :span="2" style="">
+				<el-button @click="addStairCategory()" class="btn-add">添加一级分类</el-button>
+			</el-col>
+		</el-row>
+		<!-- 商品分类列表 -->
+		<el-tree :data="treeData" node-key="categoryId" :props="defaultProps" :render-content="renderContent" default-expand-all="true" class="tree-category"></el-tree>
+		<!-- 编辑分类信息 -->
+		<EDITCATEGORYINFO :editInfo="editInfo" :submitClick="submitCategoryInfo" ref="editCategory"></EDITCATEGORYINFO>
+	</page-layer>
+</template>
+<script>
+	import PRODUCTCATEGORY from "actionurl/product/category"
+	import EDITCATEGORYINFO from "components/product/edit-category-info"
+	import pageLayer from "components/common/page-layer"
+	export default {
+		data() {
+			return {
+				narData: [{
+						name: "商品分类",
+					}
+
+				],
+				keydown: "",
+				treeData: [],
+				defaultProps: {
+					children: 'subCategoryList',
+					label: 'categoryName'
+				},
+				editInfo: {
+					title: "",
+					dialogShow: false
+				}
+			}
+		},
+		created() {
+			PRODUCTCATEGORY.getCategoryList(this);
+		},
+		components: {
+			EDITCATEGORYINFO,
+			pageLayer
+		},
+		methods: {
+			queryInfo() {
+
+			},
+			/*添加一级*/
+			addStairCategory() {
+				var _that = this;
+				var info = _that.editInfo;
+				info.title = "添加一级分类";
+				info.dialogShow = true;
+				this.$refs.editCategory.resetForm();
+			},
+			/*提交分类信息*/
+			submitCategoryInfo(info) {
+				PRODUCTCATEGORY.saveCategoryInfo(this, info);
+			},
+			deleteCategoryMenu(node, data, store) {
+				var id = data.categoryId,
+					_that = this;
+				_that.$confirm('此操作将删除该分类, 是否继续?', '提示', {
+					confirmButtonText: '确定',
+					cancelButtonText: '取消',
+					type: 'warning'
+				}).then(() => {
+					var _removeRow = () => {
+						store.remove(data);
+					}
+					PRODUCTCATEGORY.deleteCategoryRow(this, id, _removeRow);
+				});
+			},
+			editCategoryInfo(node, data, store) {
+				var _that = this;
+				var info = _that.editInfo;
+				info.title = "编辑分类";
+				info.dialogShow = true;
+				_that.$refs.editCategory.editFormData(data);
+			},
+			addChildCategory(node, data, store) {
+				var _that = this;
+				var info = _that.editInfo;
+				info.title = "[" + data.categoryName + "] 添加二级分类";
+				info.dialogShow = true;
+				_that.$refs.editCategory.resetForm(data.categoryId);
+//				_that.$refs.editCategory.writeParentCategoryId(data.categoryId);
+			},
+			renderContent(h, {
+				node,
+				data,
+				store
+			}) {
+				var level = node.level,
+					_that = this;
+				var del = h("el-button", {
+					attrs: {
+						size: "mini"
+					},
+					on: {
+						click: function(event) {
+							event.stopPropagation();
+							_that.deleteCategoryMenu(node, data, store);
+						}
+					}
+				}, "删除");
+				var edit = h("el-button", {
+					attrs: {
+						size: "mini"
+					},
+					on: {
+						click: function(event) {
+							event.stopPropagation();
+							_that.editCategoryInfo(node, data, store);
+						}
+					}
+				}, "编辑");
+				var add = h("el-button", {
+					attrs: {
+						size: "mini"
+					},
+					on: {
+						click: function(event) {
+							event.stopPropagation();
+							_that.addChildCategory(node, data, store);
+						}
+					}
+				}, "添加子分类");
+				if(level == 1) {
+					return h("span", [
+						h("span", node.label),
+						h("span", {
+							attrs: {
+								class: "tree-event-menu"
+							}
+						}, [
+							del, , edit, add
+						])
+
+					]);
+				} else if(level == 2) {
+					return h("span", [
+						h("span", node.label),
+						h("span", {
+							attrs: {
+								class: "tree-event-menu"
+							}
+						}, [
+							del, , edit
+						])
+
+					]);
+				}
+
+			}
+		}
+	}
+</script>
+<style lang="less">
+	.tree-category {
+		.tree-event-menu {
+			display: none;
+			float: right;
+			margin-right: 20px;
+		}
+		.el-tree-node__content:hover {
+			.tree-event-menu {
+				display: inline-block;
+			}
+		}
+	}
+</style>

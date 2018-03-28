@@ -1,0 +1,123 @@
+<!-- 图片上传 -->
+<template>
+	<page-layer :narData="narData" classs="back-color">
+		<el-row class="search-wrap">
+		  	 <el-col :span="2" >
+		  	 	<el-upload
+						  class="avatar-uploader"
+						  action="/agent/admin/image/upload"
+						  :show-file-list="false"
+						   name= "imgFile"
+						   :multiple="true"
+						  :on-success="handleAvatarSuccess"
+						  v-loading.body="loading"
+						  :before-upload="beforeAvatarUpload">
+						   <el-button size="small" type="primary">点击上传</el-button>
+					</el-upload>
+		  
+		  	 </el-col>
+		</el-row>
+		<el-table
+	      :data="tableData"
+	      style="width: 100%">
+	       <el-table-column
+		      type="index"
+		      width="50">
+		    </el-table-column>
+	     
+	      <el-table-column
+	        label="商品图片"
+	        >
+	        <template scope="scope">
+					<span class="prod-img">
+						<img :src="scope.row.imgSrc">
+					</span>
+				</template>
+	      </el-table-column>
+	      <el-table-column
+	        prop="imgSrc"
+	        label="图片地址"
+	        >
+	      </el-table-column>
+	      <el-table-column
+	        label="操作"
+	        width="200">
+	        <template scope="scope">
+	        	<el-button :data-clipboard-text="scope.row.imgSrc" size="small" class="btn-copy">复制</el-button> 
+			</template>
+	      </el-table-column>
+	    </el-table>
+
+    	
+	</page-layer>
+</template>
+<script>
+	import pageLayer from "components/common/page-layer"
+	import clipboard from "clipboard"
+    export default {
+      data() {
+        return {
+         narData : [
+    	  	{
+    	  		name : "素材列表",
+    	  		router : "goods.material.list"
+    	  	},
+    	  	{
+    	  		name : "上传图片",
+    	  		router : "goods.material.img.upload"
+    	  	}
+    	  ],
+          tableData: [],
+          loading : false
+        }
+      },
+      watch: {
+      	tableData : function() {
+      		var _that = this;
+      		var copys = new clipboard('.btn-copy');
+      		copys.on('success', function(e) {
+			    _that.$message("复制成功");
+			    e.clearSelection();
+			});
+
+			copys.on('error', function(e) {
+			   _that.$message("复制失败，请手动复制");
+			});
+      	}
+      },
+      components : {
+      		pageLayer
+      },
+      methods : {
+			handleAvatarSuccess(res, file) {
+				var img = res.data;
+				this.tableData.push({"imgSrc" : img});
+				this.loading = false;
+			},
+			beforeAvatarUpload(file) {
+				if(cJs.upLoadImgSize(file)) {
+					this.loading = true;
+					return true;
+				}
+				return false;
+			},
+			copyImgSrc(src) {
+				cJs.copyToClipboard(src);
+			}
+      }
+}
+  </script>
+
+  <style lang="less" scoped>
+  	.prod-img{
+  		display: table-cell;
+  		width:80px;
+  		height:80px;
+  		vertical-align: middle;
+  		img{
+  			max-width: 100%;
+  			max-height: 100%;
+  			vertical-align: middle;
+  		}
+  	}
+  </style>

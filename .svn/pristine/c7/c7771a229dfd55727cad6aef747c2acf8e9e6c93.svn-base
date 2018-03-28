@@ -1,0 +1,280 @@
+<!-- 食材列表-列表模式 -->
+<template>
+	<div class="prod-list" >
+		<scroll 
+			:listenScroll="true"
+			:listenBeforeScroll = "true"
+			@scroll="scroll"
+			@beforeScrollStart="beforeScrollStart"
+			:probeType="3"
+			ref="prodScroll"
+			>
+			 <div class="con" ref="formList">
+					<div class="c-item" v-for="c in categoryProdData" ref="prodItem" v-if="!c.delItem">
+						<header>
+							<span class="category-name">{{c.categoryBO.categoryName}}</span>
+						</header>
+						<section>
+							<div class="p-item" v-for="p in c.supplierProductItemBOList" v-if="p.skuStatusId != -1">
+								<div class="img f-l">
+									<img :src="p.skuImage" />
+								</div>
+								<div class="p-info f-l">
+									<p class="name">
+										<span>{{p.skuName}}</span>
+										<img src="../../images/food_xiajia.png" class="prod_down" v-if="p.skuStatusId == 0"  />
+									</p>
+
+								</div>
+								<div class="event f-r">
+									<a href="javascript:;" v-if="type" @click="editFood(p)">选择</a>
+									<p class="price-wrap" v-else>
+										<span class="icon" v-if="p.offerPrice">¥</span>
+										<input type="number" class="text-input" :value="p.offerPrice | offerPriceFilter" @change="upadteSkuPrice(p, $event)" placeholder="未报价" />
+									</p>
+								</div>
+							</div>
+						</section>
+					</div>
+				</div>
+		</scroll>
+	</div>
+</template>
+<script>
+	import scroll from "components/common/scroll"
+	import loading from "components/common/loading"
+	import goodsNotData from "components/common/goods-not-data"
+	export default {
+		data() {
+			return{
+				scrollY : 0,
+				itemHeight : [],
+				itemBottom : []
+			}
+		},
+		props: ["categoryProdData", "submitEditorPrice", "type"],
+		filters: {
+			offerPriceFilter: function(value) {
+				if(value == 0) {
+					value = ""
+				} else {
+					value = (value * 1).toFixed(2);
+				}
+				return value;
+			}
+		},
+		components : {
+			scroll
+		},
+		mounted() {
+			this.calculateItemHeight();
+			
+		},
+		methods: {
+			upadteSkuPrice(prod, event) {
+				var value = event.target.value;
+
+				if(value != 0 && value != "" && !cJs.checkPrice(value)) {
+					cJs.message("输入正确金额！");
+					return false;
+				}
+				prod.offerPrice = value;
+				this.submitEditorPrice(prod);
+			},
+			editFood(data){
+				window.localStorage.setItem("foodData",JSON.stringify(data));
+				this.$router.push({
+					path:'/editFood/',
+					query:{
+						id:this.type
+					}
+				})
+			},
+			scroll(pos) {
+				var y = Math.abs(pos.y);
+				var items = this.itemBottom;
+				if(items.length) {
+					items.map((item, key) => {
+						if((item.bottom - item.height - 30) < y  && y < item.bottom) {
+							this.$emit("scrollCategory", key);
+						}
+					})
+				}
+			},
+			calculateItemHeight() {
+				var _that = this;
+				setTimeout(() => {
+					var items = this.$refs.prodItem;
+					if(items) {
+						items.map((item, key) => {
+							let h = item.clientHeight;
+							_that.itemHeight.push(h);
+						});
+						var heights = this.itemHeight;
+						if(heights.length) {
+							heights.map((item, key) => {
+								var h = 0;
+								for(var i = 0; i < key ; i ++) {
+									h += heights[i] + 15;
+								}
+								h += item;
+								_that.itemBottom.push({
+									height : item,
+									bottom : h
+								});
+							});
+						}
+					}
+				}, 500);
+			},
+			scrollToElement(index) {
+				 this.$refs.prodScroll.scrollToElement(this.$refs.prodItem[index], 0)
+			},
+			updateScroll() {
+				setTimeout(() => {
+					this.$refs.prodScroll.refresh();
+				}, 500);
+			},
+			beforeScrollStart() {
+				let inputList = this.$refs.formList.querySelectorAll('.text-input');
+		        inputList.forEach((item) => {
+		           item.blur()
+		        })
+			}
+		}
+	}
+</script>
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.prod-list {
+		height:100%;
+		.c-item {
+			background: #FFF;
+			.pxrem(margin-bottom, 20);
+		}
+		header {
+			.pxrem(height, 70);
+			.pxrem(line-height, 70);
+			.pxrem(font-size, 28);
+			.prem(-4, 20);
+			padding: @prem;
+			border-bottom: 1px solid #d7d7d7;
+		}
+		section {
+			.prem(-4, 20);
+			padding: @prem;
+			.p-item {
+				.prem(20, -4);
+				padding: @prem;
+				.f-l {
+					float: left;
+				}
+				.f-r {
+					float: right;
+				}
+				.img {
+					.pxrem(width, 60);
+					.pxrem(height, 60);
+					border: 1px solid #EEEEEE;
+					border-radius: 50%;
+					text-align: center;
+					display: table-cell;
+					vertical-align: middle;
+					overflow: hidden;
+					img {
+						max-width: 100%;
+						height: 100%;
+						vertical-align: middle;
+					}
+				}
+				.p-info {
+					.pxrem(padding-left, 10);
+					.name {
+						.pxrem(font-size, 28);
+						.pxrem(margin-top, 10);
+						position: relative;
+						span{
+							display: inline-block;
+							.pxrem(max-width, 450);
+							.pxrem(height, 50);
+							text-overflow:ellipsis;
+							white-space:nowrap;
+							overflow: hidden;
+						}
+						/*overflow: hidden;*/
+						.prod_down{
+							position: relative;
+							.pxrem(width, 60);
+							.pxrem(top, -20);
+							.pxrem(margin-left, 5);
+						}
+					}
+					.out-mes {
+						display: inline-block;
+						.prem(2, 10);
+						padding: @prem;
+						.pxrem(line-height, 38);
+						.pxrem(font-size, 20);
+						background: @m-c;
+						color: #FFF;
+						text-align: center;
+						.pxrem(border-radius, 5);
+					}
+				}
+				.event {
+					.price-wrap {
+						position: relative;
+						.pxrem(width, 130);
+						.pxrem(height, 50);
+						border: 1px solid #d7d7d7;
+						.pxrem(border-radius, 5);
+						.pxrem(line-height, 55);
+						.icon {
+							position: absolute;
+							.pxrem(font-size, 28);
+							.pxrem(left, 3);
+						}
+						input {
+							.pxrem(width, 120);
+							.pxrem(height, 40);
+							border: 0;
+							.pxrem(text-indent, 24);
+							.pxrem(font-size, 28);
+						}
+					}
+					a{
+						display: inline-block;
+						.pxrem(height,50);
+						.pxrem(line-height,50);
+						.pxrem(font-size,28);
+						background: @m-c;
+						.pxrem(border-radius,5);
+						color: #fff;
+						text-align: center;
+						.pxrem(width,100);
+					}
+					.sold {
+						background: @m-c;
+						border: 0;
+						color: #FFF;
+						.pxrem(width, 130);
+						.pxrem(height, 56);
+						text-align: center;
+						.pxrem(font-size, 24);
+						.pxrem(border-radius, 6);
+						.pxrem(margin-top, 8);
+					}
+				}
+			}
+			.p-item:last-child {
+				border-bottom: 0;
+			}
+			.p-item:after {
+				.clearFloat;
+			}
+		}
+		.no-data {
+			text-align: center;
+		}
+	}
+</style>

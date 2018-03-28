@@ -1,0 +1,11 @@
+/**
+ * hgf 2017年11月3日16:19:16
+ */
+import https from "../axios/https"
+/*活动商品*/
+export const activityGoodsAPI = {
+	/*获取活动商品列表*/
+	getActivityGoodsAPI: (...v) => https.commAjax(cJs.apiDataReturnParams("get", "/feature_area/ms/applyList", v)),
+	/*审核活动食材*/
+	auditActivityGoodsAPI: (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/feature_area/ms/auditProd", v)),
+}

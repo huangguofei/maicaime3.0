@@ -1,0 +1,157 @@
+<!-- 添加食材 -->
+<template>
+<div class="page-layer add-food-page">
+	<div class="f-content">
+		<section>
+			<div class="f-item">
+				<header>
+					食材基本信息
+				</header>
+				<div class="form-wrap">
+					<div class="form-item">
+						<label>食材名称:</label>
+						<input type="text" placeholder="输入食材名称" class="f-ctrl"/>
+					</div>
+					<div class="form-item">
+						<label>销量单位:</label>
+						<select  placeholder="设置销量单位"  class="f-ctrl">
+							<option>设置销量单位</option>
+						</select>
+					</div>
+				</div>
+			</div>
+			<div class="f-item">
+				<header>
+					选择食材分类
+				</header>
+				<div class="form-wrap">
+					<div class="form-item f-l">
+						<select  class="f-ctrl">
+							<option>肉类</option>
+						</select>
+					</div>
+					<div class="form-item f-l f-r">
+						<select  class="f-ctrl">
+							<option>牛肉</option>
+						</select>
+					</div>
+				</div>
+			</div>
+			<div class="f-item">
+				<header>
+					上传食材图片
+				</header>
+				<div class="form-wrap">
+					<div class="form-item f-img">
+						<span>+</span>
+						<p>添加照片</p>
+					</div>
+				</div>
+			</div>
+		</section>
+		<footer>
+			<div class="con">
+					<button class="btn-confim">确定添加</button>
+			</div>
+			
+		</footer>
+		
+	</div>
+
+</div>
+</template>
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.add-food-page{
+		.f-content{
+			.prem(20);
+			padding:@prem;
+			section{
+				background: #FFF;
+				.prem(20);
+				padding:@prem;
+			}
+			.f-item{
+				border-bottom:1px dashed #E9E9E9;
+				header{
+					.pxrem(font-size,32);
+					.pxrem(height,80);
+					.pxrem(line-height,80);
+				}
+				.form-wrap{
+					.form-item{
+						width:100%;
+						.pxrem(height, 80);
+						.pxrem(line-height, 80);
+						border:1px solid #D7D7D7;
+						.pxrem(border-radius, 5);
+						.pxrem(margin-bottom, 20);
+						.pxrem(text-indent, 20);
+						.pxrem(font-size, 28);
+					}
+					.f-ctrl{
+						.pxrem(width, 480);
+						.pxrem(height, 60);
+						.pxrem(font-size, 28);
+						border:0;
+					}
+					.f-l{
+						float:left;
+						width:46%;
+						.f-ctrl{
+							.pxrem(width, 240);
+						}
+					}
+					.f-r{
+						float:right;
+					}
+					.f-img{
+						.pxrem(width, 140);
+						.pxrem(height, 140);
+						.pxrem(border-radius, 8);
+						text-align: center;
+						.pxrem(text-indent, -4);
+						span{
+							display: inline-block;
+							text-align: center;
+							.pxrem(width, 140);
+							.pxrem(font-size,70);
+						}
+						p{
+							.pxrem(font-size,24);
+							.pxrem(margin-top,-40);
+						}
+					}
+				}
+				.form-wrap:after{
+					.clearFloat;
+				}
+				
+			}
+			.f-item:last-child{
+				border:0;
+			}
+			footer{
+				position: absolute;
+				.pxrem(bottom, 20);
+				width:100%;
+				left:0;
+				.con{
+					.prem(-4,20);
+					padding:@prem;
+				}
+				.btn-confim{
+					background: @m-c;
+					width:100%;
+					.pxrem(height, 80);
+					.pxrem(line-height, 80);
+					color:#FFF;
+					border:0;
+					.pxrem(border-radius,8);
+					.pxrem(font-size, 32);
+				}
+			}
+			
+		}
+	}
+</style>

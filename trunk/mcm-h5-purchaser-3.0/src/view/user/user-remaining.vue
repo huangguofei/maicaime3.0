@@ -1,0 +1,325 @@
+<template>
+	<article class="page-layer user-integral">
+		<section class="bg"></section>
+		<article class="user-main padding">
+			<article class="user-header item padding">
+				<p class=""><img src="../../images/user-money-back.png" />我的余额</p>
+				<h3><i>¥</i>{{(balance * 1).toFixed(2)}}</h3>
+				<router-link to="/remainingDetails/" class="rule">
+					余额明细 >>
+				</router-link>
+			</article>
+			<article class="user-conten">
+				<h2 class="padding">———— <img src="../../images/user-titles.png"/>优惠充值 ————</h2>
+				<p class="price padding">
+					<input type="number" v-model="amount" @change="changeAmout" />
+				</p>
+				<article class="items">
+					<section class="padding" :class="selectIndex == key ? 'action':''"  v-for="(a, key) in activityList"
+						 v-if="a.marketingStatusId != -1"
+						 @click="selectActivity(a, key)">
+						<h3>¥{{(a.preconditionAmount * 1).toFixed(2)}}</h3>
+						<span>{{a.name}}</span>
+						<img src="../../images/recharge-not-icon.png" class="not-start" v-if="a.marketingStatusId == 0" />
+					</section>
+				</article>
+			</article>
+			 <article class="user-recharge padding" >
+				<h4>当前充值金额可获得以下额外优惠：</h4>
+				<p v-for="d in discountsList"><i></i>{{d.title}} X {{d.productNumber}}</p>
+				<p v-if="!discountsList.length">无</p>
+			</article>
+			<article class="footer" @click="submitForm">
+				立即充值
+			</article>
+		</article>
+		<!-- <recharge-pay
+			 :payAmount="amount"
+			 @closePay="closePay"
+			 v-if="payShow">
+		</recharge-pay> -->
+	</article>
+</template>
+
+<script>
+import balanceAction from "actionurl/user/balance"
+import commonAction from "actionurl/common/common"
+export default{
+	data(){
+		return{
+			activityList : [],
+			amount : 0,
+			specialOfferId: "",
+			selectIndex : -1,
+			discountsList : [],
+			balance : 0,
+			payShow : false,
+			alipayCon : ""
+		}
+	},
+	created() {
+		commonAction.getBalanceInfo(this);
+		balanceAction.getActivityList(this);
+	},
+	mounted() {
+		localStorage.removeItem("orderId");
+	},
+	components : {
+	},
+	methods : {
+		selectActivity(item, key) {
+			if(item.marketingStatusId == 0) {
+				return false;
+			}
+			if(this.selectIndex == key) {
+				this.selectIndex = -1;
+				this.discountsList = [];
+			} else {
+				this.selectIndex = key;
+				this.discountsList = item.list;
+				if(this.amount < item.preconditionAmount) {
+					this.amount = item.preconditionAmount;
+				}
+			}
+			
+		},
+		submitForm() {
+			if(this.amount == 0) {
+				cJs.message("充值金额不能为空或0元");
+				return false;
+			} else if(!cJs.checkPrice(this.amount)) {
+				cJs.message("输入正确金额！");
+				return false;
+			}
+			if(this.selectIndex >= 0) {
+				var item = this.activityList[this.selectIndex];
+				this.specialOfferId = item.specialOfferId;
+			} else {
+				this.specialOfferId = "";
+			}
+			//this.payShow = true;
+			/*balanceAction.saveRechargeAmount(this);*/
+			cJs.isWeiXin() ? commonAction.getWeixinParams(this) : commonAction.getAlipayParams(this);
+		},
+		changeAmout() {
+			var item = this.activityList[this.selectIndex];
+			var amount = this.amount;
+			if(amount == 0) {
+				cJs.message("充值金额不能为空或0元");
+				return false;
+			} 
+			/*if(this.selectIndex >= 0 && amount < item.preconditionAmount) {
+				cJs.message("当前充值金额低于充值送券金额，不支持送券!");
+				return;
+			}*/
+			var aprice = 0;
+			this.activityList.forEach((item, index) => {
+				if(amount >= item.preconditionAmount && aprice <= item.preconditionAmount) {
+					aprice = item.preconditionAmount;
+					this.selectIndex = index;
+					this.discountsList = item.list;
+				}
+			});
+
+		}
+	}
+}
+</script>
+
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.bg {
+		position: fixed;
+		top: 0;
+		width: 100%;
+		background: #19191E;
+		.pxrem(height, 130);
+		z-index: -1;
+	}
+	
+	.user-main {
+		.item {
+			background: #fff;
+			.pxrem(margin-bottom, 20);
+			.header {
+				border-bottom: 1px solid #E5E5E5;
+			}
+		}
+		.user-header {
+			position: relative;
+			.pxrem(height, 220);
+			.pxrem(padding, 40);
+			box-sizing: border-box;
+			background: #F9AB0C;
+			.pxrem(border-radius, 10);
+			color: #fff;
+			p {
+				.pxrem(font-size, 28);
+				img {
+					.pxrem(width, 35);
+					.pxrem(margin-right, 5);
+					vertical-align: bottom;
+				}
+			}
+			h3 {
+				.pxrem(font-size, 70);
+				.pxrem(text-indent, 40);
+				i {
+					font-style: initial;
+					.pxrem(font-size, 40);
+					position: relative;
+					.pxrem(top, -30);
+				}
+			}
+			.rule {
+				position: absolute;
+				right: 0;
+				.pxrem(top, 75);
+				.pxrem(height, 60);
+				.pxrem(line-height, 60);
+				.pxrem(font-size, 26);
+				background: #FBD480;
+				.pxrem(border-top-left-radius, 28);
+				.pxrem(border-bottom-left-radius, 28);
+				color: #C4870A;
+				.pxrem(padding-left, 20);
+				.pxrem(padding-right, 20);
+			}
+		}
+		.user-conten {
+			background: #fff;
+			.pxrem(border-top-left-radius, 16);
+			.pxrem(border-top-right-radius, 16);
+			border-bottom: 1px dashed #D7D7D7;
+			position: relative;
+			.common() {
+				content: "";
+				display: inline-block;
+				.pxrem(width, 20);
+				.pxrem(height, 20);
+				.pxrem(border-radius, 10);
+				position: absolute;
+				background: @m-back;
+				.pxrem(bottom, -15);
+			}
+			&:before {
+				.common();
+				.pxrem(left, -15);
+			}
+			&:after {
+				.common();
+				.pxrem(right, -15);
+			}
+			h2 {
+				text-align: center;
+				.pxrem(font-size, 36);
+				vertical-align: middle;
+				img {
+					.pxrem(width, 40);
+					.pxrem(margin-right, 10);
+					vertical-align: bottom;
+				}
+			}
+			.price {
+				width: 90%;
+				margin: 0 auto;
+				.pxrem(border-radius, 8);
+				border: 1px solid #F0F0F0;
+				text-align: center;
+				input{
+					width:100%;
+					.pxrem(height, 52);
+					.pxrem(font-size, 48);
+					border:0;
+					text-align: center;
+				}
+			}
+			.items {
+				width: 100%;
+				margin: .1rem auto;
+				text-align: center;
+				justify-content: space-between;
+				position: relative;
+				.not-start{
+					position: absolute;
+					.pxrem(width, 80);
+					top:0;
+					right:0;
+				}
+				section {
+					color: #1EC551;
+					position: relative;
+					width: 23%;
+					margin:2% 2.3%;
+					float: left;
+					.pxrem(border-radius, 8);
+					border: 1px solid #F0F0F0;
+					overflow: hidden;
+					p {
+						.pxrem(font-size, 56);
+					}
+					span {
+						.pxrem(font-size, 22);
+					}
+					i {
+						display: none;
+						position: absolute;
+						.pxrem(top, -15);
+						.pxrem(right, -60);
+						.pxrem(font-size, 20);
+						.pxrem(width, 150);
+						.pxrem(height, 60);
+						.pxrem(line-height, 80);
+						color: #fff;
+						transform: rotate(45deg);
+						font-style: initial;
+						background: #FF5B60;
+					}
+				}
+				&:after{
+					.clearFloat;
+				}
+			}
+			.action {
+				background: #1EC551;
+				color: #fff!important;
+				i {
+					display: block!important;
+				}
+			}
+		}
+		.user-recharge {
+			background: #fff;
+			.pxrem(border-bottom-left-radius, 16);
+			.pxrem(border-bottom-right-radius, 16);
+			h4 {
+				.pxrem(font-size, 32);
+				.pxrem(margin-bottom, 16);
+			}
+			p {
+				.pxrem(font-size, 28);
+				color: #666;
+				.pxrem(margin-bottom, 10);
+				i {
+					display: inline-block;
+					.pxrem(width, 12);
+					.pxrem(height, 12);
+					background: #1EC551;
+					.pxrem(border-radius, 6);
+					.pxrem(margin-right, 10);
+				}
+			}
+		}
+	}
+	
+	.footer {
+		.pxrem(margin-top, 50);
+		background: @btn-color;
+		.pxrem(border-radius, 8);
+		text-align: center;
+		.pxrem(font-size, 36);
+		color: #fff;
+		.pxrem(height, 80);
+		.pxrem(line-height, 80);
+	}
+</style>

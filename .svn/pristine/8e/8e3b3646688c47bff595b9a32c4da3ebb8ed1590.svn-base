@@ -1,0 +1,176 @@
+<!-- 顶部导航 -->
+<template>
+	<el-row class="top-main-menu">
+		<el-col class="menu-item" :class="{active:menuActive('index.')}">
+			<router-link :to="{name : 'index.index'}">
+				<i class="icon"></i>
+				<p class="name">概况</p>
+			</router-link>
+		</el-col>
+		<el-col class="menu-item" :class="{active:menuActive('goods.')}">
+			<router-link :to="{name : 'goods.overview'}">
+				<i class="icon"></i>
+				<p class="name">商品</p>
+			</router-link>
+		</el-col>
+		<el-col class="menu-item" :class="{active:menuActive('order.')}">
+			<router-link :to="{name : 'order.list'}">
+				<i class="icon"></i>
+				<p class="name">订单</p>
+			</router-link>
+		</el-col>
+		<el-col class="menu-item" :class="{active:menuActive('customer.')}">
+			<router-link :to="{name : 'customer.overview'}">
+				<i class="icon"></i>
+				<p class="name">客户</p>
+			</router-link>
+		</el-col>
+		<el-col class="menu-item" :class="{active:menuActive('data.')}">
+			<router-link :to="{name : 'data.check'}">
+				<i class="icon"></i>
+				<p class="name">数据</p>
+			</router-link>
+		</el-col>
+		<el-col class="menu-item" :class="{active:menuActive('marketing.')}">
+			<router-link :to="{name : 'marketing.overview'}">
+				<i class="icon"></i>
+				<p class="name">营销</p>
+			</router-link>
+		</el-col>
+		<el-col class="menu-item" :class="{active:menuActive('setting.')}">
+			<router-link :to="{name : 'setting.overview'}">
+				<i class="icon"></i>
+				<p class="name">设置</p>
+			</router-link>
+		</el-col>
+	</el-row>
+</template>
+<script>
+	export default {
+		methods: {
+			menuActive(name) {
+				var routeName = this.$route.name;
+				if(routeName.indexOf(name) >= 0) {
+					return true;
+				}
+				return false;
+			}
+		}
+	}
+</script>
+<style lang="less">
+	@import "../../common/less/config.less";
+	.top-main-menu {
+		@h: 70px;
+		height: @h;
+		background: @back-gen;
+		.menu-item {
+			width: 184px;
+			text-align: center;
+			height: @h;
+			cursor: pointer;
+			a {
+				width: 100%;
+				height: 100%;
+				display: inline-block;
+				.name {
+					color: @color-f-gen;
+				}
+			}
+			.icon {
+				display: inline-block;
+				height: 28px;
+				width: 29.2px;
+				margin-top: 13px;
+			}
+			&:nth-child(1) {
+				.icon {
+					background: url(../../images/statistics-active.png) no-repeat;
+				}
+			}
+			&:nth-child(2) {
+				.icon {
+					background: url(../../images/prod-active.png) no-repeat;
+				}
+			}
+			&:nth-child(3) {
+				.icon {
+					background: url(../../images/order-active.png) no-repeat;
+				}
+			}
+			&:nth-child(4) {
+				.icon {
+					background: url(../../images/customer-active.png) no-repeat;
+				}
+			}
+			&:nth-child(5) {
+				.icon {
+					background: url(../../images/data-active.png) no-repeat;
+				}
+			}
+			&:nth-child(6) {
+				.icon {
+					background: url(../../images/Fill11.png) no-repeat;
+				}
+			}
+			&:nth-child(7) {
+				.icon {
+					background: url(../../images/mine_setting1.png) no-repeat;
+					background-size: cover;
+				}
+			}
+		}
+		.active {
+			background: @back-m-s-1;
+			position: relative;
+			&:nth-child(1) {
+				.icon {
+					background: url(../../images/statistics-icon.png) no-repeat;
+				}
+			}
+			&:nth-child(2) {
+				.icon {
+					background: url(../../images/prod-icon.png) no-repeat;
+				}
+			}
+			&:nth-child(3) {
+				.icon {
+					background: url(../../images/order-icon.png) no-repeat;
+				}
+			}
+			&:nth-child(4) {
+				.icon {
+					background: url(../../images/customer-icon.png) no-repeat;
+				}
+			}
+			&:nth-child(5) {
+				.icon {
+					background: url(../../images/data-icon.png) no-repeat;
+				}
+			}
+			&:nth-child(6) {
+				.icon {
+					background: url(../../images/Fill1.png) no-repeat;
+				}
+			}
+			&:nth-child(7) {
+				.icon {
+					background: url(../../images/mine_setting.png) no-repeat;
+				}
+			}
+			a {
+				.name {
+					color: #FFF;
+				}
+			}
+			&:after {
+				content: "\25BC";
+				position: absolute;
+				left: 50%;
+				bottom: -8px;
+				margin-left: -5px;
+				color: @back-m-s-1;
+			}
+		}
+	}
+</style>

@@ -1,0 +1,117 @@
+/**
+* author pzh 
+* day    2017-9-13
+* less 配置文件
+*/
+
+
+/*主色*/
+
+@m-c : #3084F2;
+
+/*辅助色*/
+
+@ass-c: #F5760E;
+
+/*一般字体颜色*/
+
+@g-f-c : #4A4A4A;
+
+/*主要字体颜色*/
+
+@m-f-c: #000000;
+
+/*二级标题字体颜色*/
+
+@h2-f-c: #151009;
+
+/*边框线条颜色*/
+
+@b-c: #E9E9E9;
+
+/*默认价格颜色*/
+
+@d-price : #F5760E;
+@p-p-c: #ccc;
+
+/*主背景色*/
+
+@m-back: #F3F3F3;
+
+/*转换rem*/
+
+@baseFontSize: 64;
+.rem(@px) {
+    @rem : (@px / 2 + 2)/ @baseFontSize * 1rem;
+}
+
+.pxrem(@name, @px) {
+    .rem(@px);
+    @{name}: @rem;
+}
+
+.prem(@px) {
+    @prem : (@px / 2 + 2)/ @baseFontSize * 1rem;
+}
+
+.prem(@px1, @px2) {
+    @prem : (@px1 / 2 + 2)/ @baseFontSize * 1rem (@px2 / 2 + 2)/ @baseFontSize * 1rem;
+}
+
+.prem(@px1, @px2, @px3) {
+    @prem : (@px1 / 2 + 2)/ @baseFontSize * 1rem (@px2 / 2 + 2)/ @baseFontSize * 1rem (@px3 / 2 + 2)/ @baseFontSize * 1rem;
+}
+
+.prem(@px1, @px2, @px3, @px4) {
+    @prem : (@px1 / 2 + 2)/ @baseFontSize * 1rem (@px2 / 2 + 2)/ @baseFontSize * 1rem (@px3 / 2 + 2)/ @baseFontSize * 1rem (@px4 / 2 + 2)/ @baseFontSize * 1rem;
+}
+
+
+/*清除浮动*/
+
+.clearFloat {
+    content: "";
+    display: block;
+    height: 0;
+    overflow: hidden;
+    *zoom: 1;
+    clear: both;
+    visibility: hidden;
+}
+
+.clearfix() {
+    &:after {
+        content: "";
+        display: block;
+        clear: both
+    }
+    zoom:1
+}
+
+.hide {
+    display: none;
+}
+/*华丽分界线*/
+
+.hr {
+    position: relative;
+    border-bottom: 1px dashed #D7D7D7;
+    .common() {
+        content: "";
+        display: inline-block;
+        .pxrem(width, 20);
+        .pxrem(height, 20);
+        .pxrem(border-radius, 10);
+        position: absolute;
+        background: @m-back;
+        .pxrem(bottom, -15);
+    }
+    &:before {
+        .common();
+        .pxrem(left, -35);
+    }
+    &:after {
+        .common();
+        .pxrem(right, -35);
+    }
+}

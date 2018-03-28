@@ -1,0 +1,204 @@
+<!-- 顶部导航 -->
+<template>
+	<el-row class="top-main-menu">
+		<el-col class="menu-item" :class="{active:menuActive('index.')}">
+			<router-link :to="{name : 'index.index'}">
+				<i class="icon"></i>
+				<p class="name">概况</p>
+			</router-link>
+		</el-col>
+		<el-col class="menu-item" :class="{active:menuActive('product.')}">
+			<router-link :to="{name : 'product.overview'}">
+				<i class="icon"></i>
+				<p class="name">商品</p>
+			</router-link>
+		</el-col>
+		<el-col class="menu-item" :class="{active:menuActive('serve.')}">
+			<router-link :to="{name : 'serve.overview'}">
+				<i class="icon"></i>
+				<p class="name">服务站</p>
+			</router-link>
+		</el-col>
+		<el-col class="menu-item" :class="{active:menuActive('marketing.')}">
+			<router-link :to="{name : 'marketing.overview'}">
+				<i class="icon"></i>
+				<p class="name">营销</p>
+			</router-link>
+		</el-col>
+		<el-col class="menu-item" :class="{active:menuActive('data.')}">
+			<router-link :to="{name : 'data.check'}">
+				<i class="icon"></i>
+				<p class="name">数据</p>
+			</router-link>
+		</el-col>
+		<el-col class="menu-item" :class="{active:menuActive('order.')}">
+			<router-link :to="{name : 'order.list'}">
+				<i class="icon"></i>
+				<p class="name">订单</p>
+			</router-link>
+		</el-col>
+		<el-col class="menu-item" :class="{active:menuActive('setting.')}">
+			<router-link :to="{name : 'setting.register.limit'}">
+				<i class="icon"></i>
+				<p class="name">设置</p>
+			</router-link>
+		</el-col>
+	</el-row>
+</template>
+<script>
+	export default {
+		methods: {
+			menuActive(name) {
+				var routeName = this.$route.name;
+				if(routeName.indexOf(name) >= 0) {
+					return true;
+				}
+				return false;
+			}
+		}
+	}
+</script>
+<style lang="less">
+	@import "../../common/less/config.less";
+	.top-main-menu {
+		@h: 70px;
+		height: @h;
+		background: @back-gen;
+		.menu-item {
+			width: 184px;
+			text-align: center;
+			height: @h;
+			cursor: pointer;
+			a {
+				width: 100%;
+				height: 100%;
+				display: inline-block;
+				.name {
+					color: @color-f-gen;
+				}
+			}
+			.icon {
+				display: inline-block;
+				height: 28px;
+				width: 28px;
+				margin-top: 10px;
+			}
+			&:nth-child(1) {
+				.icon {
+					background: url(../../images/statistics-active.png) no-repeat center center;
+					background-size: auto 100%;
+				}
+			}
+			&:nth-child(2) {
+				.icon {
+					background: url(../../images/prod-active.png) no-repeat center center;
+					background-size: auto 100%;
+				}
+			}
+			&:nth-child(3) {
+				.icon {
+					background: url(../../images/customer-active.png) no-repeat center center;
+					background-size: auto 100%;
+				}
+			}
+			&:nth-child(4) {
+				.icon {
+					background: url(../../images/Fill11.png) no-repeat center center;
+					background-size: auto 100%;
+				}
+			}
+			&:nth-child(5) {
+				.icon {
+					background: url(../../images/data-active.png) no-repeat center center;
+					background-size: auto 100%;
+				}
+			}
+			&:nth-child(6) {
+				.icon {
+					background: url(../../images/order-active.png) no-repeat center center;
+					background-size: auto 100%;
+				}
+			}
+			&:nth-child(7) {
+				.icon {
+					background: url(../../images/mine_setting1.png) no-repeat center center;
+					background-size:  auto 100%;
+				}
+			}
+			
+		}
+		.active {
+			background: @back-m-s-1;
+			position: relative;
+			a {
+				.name {
+					color: #FFF;
+				}
+			}
+			&:after {
+				content: "\25BC";
+				position: absolute;
+				left: 50%;
+				bottom: -8px;
+				margin-left: -5px;
+				color: @back-m-s-1;
+			}
+			&:nth-child(1) {
+				.icon {
+					background: url(../../images/statistics-icon.png) no-repeat center center;
+					background-size: auto 100%;
+				}
+			}
+			&:nth-child(2) {
+				.icon {
+					background: url(../../images/prod-icon.png) no-repeat center center;
+					background-size: auto 100%;
+				}
+			}
+			&:nth-child(3) {
+				.icon {
+					background: url(../../images/customer-icon.png) no-repeat center center;
+					background-size: auto 100%;
+				}
+			}
+			&:nth-child(4) {
+				.icon {
+					background: url(../../images/Fill1.png) no-repeat center center;
+					background-size: auto 100%;
+				}
+			}
+			&:nth-child(5) {
+				.icon {
+					background: url(../../images/data-icon.png) no-repeat center center;
+					background-size: auto 100%;
+				}
+			}&:nth-child(6) {
+				.icon {
+					background: url(../../images/order-icon.png) no-repeat center center;
+					background-size: auto 100%;
+				}
+			}
+			&:nth-child(7) {
+				.icon {
+					background: url(../../images/mine_setting.png) no-repeat center center;
+					background-size: auto 100%;
+				}
+			}
+		}
+	}
+	@media screen and (max-width: 1366px) {
+		.top-main-menu{
+			@h: 50px;
+			height: @h;
+			.menu-item{
+		   		width:120px;
+		   		height: @h;
+		   		.icon{
+		   			height: 20px;
+					width: 21px;
+					margin-top: 7px;
+		   		}
+		   	}
+		}
+	}
+</style>

@@ -1,0 +1,140 @@
+<!-- 编辑配送时间 -->
+<template>
+	<el-dialog
+		  :title="editInfo.title"
+		  :visible.sync="editInfo.dialogShow"
+		  size="tiny"
+		  :close-on-click-modal="false"
+		  >
+		  <el-form :model="ruleForm"ref="ruleForm">
+				<el-form-item label="配送时间段" label-width="120px" >
+					<el-row>
+				  		<el-col :span="10">
+					  		 <el-select v-model="startTime" placeholder="请选择" @change="changeStartTime">
+							    <el-option
+							      v-for="item in startTimeOption"
+							      :key="item.key"
+							      :label="item.value"
+							      :value="item.key">
+							    </el-option>
+							  </el-select>
+						</el-col>
+						<el-col :span="2" style="text-align:center;">
+							—
+						</el-col>
+						<el-col :span="10">
+							 <el-select v-model="endTime" placeholder="请选择">
+							    <el-option
+							      v-for="item in endTimeOption"
+							      :key="item.value"
+							      :label="item.value"
+							      :value="item.key">
+							    </el-option>
+							  </el-select>
+						</el-col>
+					</el-row>
+				</el-form-item>
+				<el-form-item label="排序" label-width="120px">
+					 <el-input-number v-model="ruleForm.orderIndex"  :min="0" ></el-input-number>
+				</el-form-item>
+		  </el-form>
+		  <span slot="footer" class="dialog-footer">
+		    <el-button @click="editInfo.dialogShow = false">取 消</el-button>
+		    <el-button type="primary" @click="submitForm('ruleForm')">确 定</el-button>
+		  </span>
+	</el-dialog>
+</template>
+<script>
+  export default {
+    data() {
+      return {
+        ruleForm : {},
+        startTime : "",
+        endTime : "",
+        startTimeOption : [
+        	{key : "0", value:"00:00"},
+        	{key : "1", value:"01:00"},
+        	{key : "2", value:"02:00"},
+        	{key : "3", value:"03:00"},
+        	{key : "4", value:"04:00"},
+        	{key : "5", value:"05:00"},
+        	{key : "6", value:"06:00"},
+        	{key : "7", value:"07:00"},
+			    {key : "8", value:"08:00"},
+        	{key : "9", value:"09:00"},
+        	{key : "10", value:"10:00"},
+        	{key : "11", value:"11:00"},
+        	{key : "12", value:"12:00"},
+        	{key : "13", value:"13:00"},
+        	{key : "14", value:"14:00"},
+        	{key : "15", value:"15:00"},
+        	{key : "16", value:"16:00"},
+        	{key : "17", value:"17:00"},
+        	{key : "18", value:"18:00"},
+        	{key : "19", value:"19:00"},
+        	{key : "20", value:"20:00"},
+        	{key : "21", value:"21:00"},
+        	{key : "22", value:"22:00"},
+        	{key : "23", value:"23:00"}
+        ],
+        endTimeOption : [],
+
+      };
+    },
+    props : ["editInfo", "submitClick"],
+    created() {
+        this.resetForm();
+    },
+    methods: {
+      	submitForm(formName) {
+      		var _that = this;
+      		var form = _that.ruleForm;
+      		if(_that.startTime == "" || _that.endTime == "") {
+              _that.$message("请选择配送时间段！");
+              return false;
+          }
+          var form = _that.ruleForm;
+          if(_that.startTime < 10) {
+              form.deliveryStartTimeSection = "0"+_that.startTime+":00"
+          } else {
+              form.deliveryStartTimeSection = _that.startTime+":00"
+          }
+          if(_that.endTime < 10) {
+              form.deliveryEndTimeSection = "0"+_that.endTime+":00"
+          } else {
+              form.deliveryEndTimeSection = _that.endTime+":00"
+          }
+      		_that.submitClick(_that.ruleForm);
+      	},
+        resetForm() {
+           this.ruleForm = {
+              deliveryStartTimeSection : "",
+              deliveryEndTimeSection : "",
+              orderIndex : 0
+          }
+          this.startTime = "";
+          this.endTime = "";
+        },
+      	editFormData(formData) {
+      		if(!formData) return false;
+      		var _that = this;
+      		_that.startTime = parseInt(formData.deliveryStartTimeSection) + "";
+      		_that.changeStartTime(_that.startTime);
+          _that.endTime = parseInt(formData.deliveryEndTimeSection) + "";
+      		_that.ruleForm = formData;
+      	},
+      	changeStartTime(value) {
+      		var  _that = this;
+          _that.endTime = "";
+          _that.endTimeOption = [];
+          for(var i = 0; i < 24; i++) {
+            _that.endTimeOption.push({
+              key : i + "",
+              value : i <= value ? "次日"+i+":00" : i+":00"
+            });
+          }
+      	}
+      	
+    }
+  };
+</script>

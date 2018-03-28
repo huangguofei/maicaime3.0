@@ -1,0 +1,109 @@
+<!-- 编辑商品分类信息 -->
+<template>
+	<el-dialog :title="editInfo.title" :visible.sync="editInfo.dialogShow" size="tiny" :close-on-click-modal="false">
+		<el-form :model="ruleForm" :rules="rules" ref="ruleForm">
+			<el-form-item label="服务站名称" label-width="120px" prop="agentName">
+				<el-input v-model="ruleForm.agentName" auto-complete="off" placeholder="站点名称"></el-input>
+			</el-form-item>
+			<el-form-item label="联系人" label-width="120px" prop="contact">
+				<el-input v-model="ruleForm.contact" auto-complete="off" :maxlength="8" placeholder="联系人姓名"></el-input>
+			</el-form-item>
+			<el-form-item label="联系人手机" label-width="120px"> <!--prop="mobile"-->
+				<el-input v-model.number="ruleForm.mobile" auto-complete="off" :maxlength="11" placeholder="联系人手机"></el-input>
+			</el-form-item>
+			<el-form-item label="经纬度" label-width="120px">
+				<el-col :span="11">
+					<el-input v-model="ruleForm.longitude" auto-complete="off" placeholder="经度"></el-input>
+				</el-col>
+				<el-col class="line" :span="2">-</el-col>
+				<el-col :span="11">
+					<el-input v-model="ruleForm.dimension" auto-complete="off" placeholder="纬度"></el-input>
+				</el-col>
+			</el-form-item>
+			<el-form-item label="服务区域" label-width="120px" prop="areaId">
+				<el-cascader placeholder="试试搜索：四川" :clearable="true" expand-trigger="hover" :props="keyobj" v-model="selectcity" :options="cityData" @change="handleChange">
+				</el-cascader>
+			</el-form-item>
+		</el-form>
+		<span slot="footer" class="dialog-footer">
+		    <el-button @click="editInfo.dialogShow = false">取 消</el-button>
+		    <el-button type="primary" @click="submitForm('ruleForm')">确 定</el-button>
+		  </span>
+	</el-dialog>
+</template>
+<script>
+	import serverModule from "actionurl/serve/agent"
+	export default {
+		data() {
+			return {
+				dialogVisible: true,
+				options: [],
+				selectcity:[],
+				ruleForm: {
+					agentName: "",
+					contact: "",
+					mobile: "",
+					areaId: "",
+					longitude: "",
+					dimension: ""
+				},
+				keyobj: {
+					value: "areaId",
+					label: "areaName",
+					children: "subAreas"
+				},
+				rules: {
+					agentName: [{
+						required: true,
+						message: '请输入站点名称',
+						trigger: 'blur'
+					}],
+					contact: [{
+						required: true,
+						message: '请输入联系人',
+						trigger: 'blur'
+					}],
+					mobile: [{
+						required: true,
+						message: '请输入电话号码',
+						trigger: 'blur'
+					}, {
+						type: 'number',
+						message: '请输入数字'
+					}]
+				}
+			};
+		},
+		props: ["editInfo","cityData", "submitClick"],
+		methods: {
+			handleChange(val) {
+				this.ruleForm.areaId = val[1];
+			},
+			submitForm(formName) {
+				var _that = this;
+				_that.$refs[formName].validate((valid) => {
+					console.log(_that.ruleForm)
+					if(valid) {
+						_that.submitClick(_that.ruleForm);
+					} else {
+						console.log('error submit!!');
+						return false;
+					}
+				});
+			},
+			updateInfo(data) {
+				if(data){
+					this.ruleForm=data;
+					//this.selectcity=data.areaId;
+					this.selectcity=["110000","110100"];
+					console.log(this.selectcity)
+				}
+			}
+		}
+	};
+</script>
+<style>
+	.line {
+		text-align: center;
+	}
+</style>

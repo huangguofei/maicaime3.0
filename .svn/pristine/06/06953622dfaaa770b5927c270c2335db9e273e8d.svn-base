@@ -1,0 +1,202 @@
+<!-- 商圈列表 -->
+<template>
+	<page-layer :narData="narData" classs="back-color">
+		<el-row class="search-wrap">
+		  	 <el-col :span="2" >
+		  	 	<el-button  @click="addCircle()" class="btn-add">添加配送圈</el-button>
+		  	 </el-col>
+		</el-row>
+		<el-table
+	      :data="tableData"
+	      style="width: 100%">
+	       <el-table-column
+		      type="index"
+		      width="50">
+		    </el-table-column>
+	      <el-table-column
+	        prop="deliveryDealerName"
+	        label="配送商名称"
+	        >
+	      </el-table-column>
+	      <el-table-column
+	        prop="stationName"
+	        label="驿站名称"
+	        >
+	      </el-table-column>
+	       <!-- <el-table-column
+	        prop="startTime"
+	        label="开始时间"
+	        >
+	      </el-table-column>
+	       <el-table-column
+	        prop="entTime"
+	        label="结束时间"
+	        >
+	      </el-table-column> -->
+	      <el-table-column
+		        prop="statusId"
+		        label="状态"
+		        width="100">
+	        	<template scope="scope">
+					<span v-if="scope.row.statusId == 1">正常</span>
+					<span v-if="scope.row.statusId == -1">已删除</span>
+					<span v-if="scope.row.statusId == 0">禁用</span>
+				</template>
+
+		      </el-table-column>
+	      <el-table-column
+	        label="操作"
+	        width="340">
+	        <template scope="scope">
+	        	<!-- <el-button @click="editRowInfo(scope.row, scope.$index)" size="small">编辑</el-button>  -->
+				<el-button class="el-button-del" @click="delRow(scope.row)" size="small">删除</el-button> 
+				<el-button class="el-button-disable" v-if="scope.row.statusId == 1" @click="editRowStatus(scope.row)" size="small">禁用</el-button>
+				<el-button class="el-button-enabled" v-if="scope.row.statusId == 0" @click="editRowStatus(scope.row)" size="small">启用</el-button>
+				<el-button class="el-button-enabled" @click="setSuppliers(scope.row)" size="small">设置供应商</el-button>
+				<el-button class="el-button-enabled" @click="lookDetail(scope.row)" size="small">详情</el-button>
+			</template>
+	      </el-table-column>
+	    </el-table>
+	    <el-pagination
+	      @current-change="handleCurrentChange"
+	      :current-page.sync="pagings.current"
+	      :page-size="pagings.size"
+	      layout="total, prev, pager, next"
+	      :total="pagings.total">
+	    </el-pagination>
+	    <EDITCIRCLEINFO 
+	    	:editInfo="editInfo" 
+	    	:submitClick="submitInfo" 
+	    	:stageList="stageList" 
+	    	:distrList="distrList"
+	    	ref="circle">
+	    </EDITCIRCLEINFO>
+    	<SETSUPPLIER 
+	    	:supplierDialog="supplierDialog" 
+	    	:submitClick="editSupplier"
+	    	ref="setSupplier">
+	    </SETSUPPLIER>
+	</page-layer>
+</template>
+<script>
+	import CIRCLEACTION from "action/customer/circle"
+	import EDITCIRCLEINFO from "components/customer/edit-circle-info"
+	import SETSUPPLIER from "components/customer/set-supplier"
+	import pageLayer from "components/common/page-layer"
+    export default {
+      data() {
+        return {
+         narData : [
+    	  	{
+    	  		name : "配送圈列表",
+    	  		router : ""
+    	  	}
+    	  ],
+          tableData: [],
+          pagings : {
+          	current : 1,
+          	size : 10,
+          	pages : 1,
+          	total : 0
+          },
+          editInfo : {
+			title : "",
+			dialogShow : false
+		  },
+		  stageList : [],
+		  distrList : [],
+		  supplierDialog : {
+          		title : "设置供应商",
+          		dialogShow : false
+          },
+          selectRowInfo : {}
+        }
+      },
+      created() {
+      		CIRCLEACTION.getCircleList(this);
+      		CIRCLEACTION.getStageAll(this);
+      		CIRCLEACTION.getDistrAll(this);
+      },
+      components : {
+      		EDITCIRCLEINFO,
+      		SETSUPPLIER,
+      		pageLayer
+      },
+      methods : {
+      		editRowStatus(row) {
+      			var statusId = row.statusId, str = "", _that = this;
+      			if(statusId == 1) {
+      				str = "此操作禁用该行";
+      			} else if(statusId == 0) {
+      				str = "此操作启用该行";
+      			}
+      			_that.$confirm(str + ', 是否继续?', '提示', {
+		          confirmButtonText: '确定',
+		          cancelButtonText: '取消',
+		          type: 'warning'
+		        }).then(() => {
+		          	CIRCLEACTION.updateRowStatus(_that, row);
+		        });
+      		},
+      		handleCurrentChange(value) {
+				this.pagings.current = value;
+				CIRCLEACTION.getCircleList(this);
+			},
+			addCircle() {
+				var info = this.editInfo;
+      			info.title = "添加配送圈"
+      			info.dialogShow = true;
+      			this.$refs.circle.resetForm();
+			},
+			submitInfo(info) {
+				CIRCLEACTION.saveCircleInfo(this, info);
+			},
+			editRowInfo(row, index) {
+      			var info = this.editInfo;
+      			info.title = "编辑配送圈"
+      			info.dialogShow = true;
+      			var RowData = JSON.stringify(row);
+      			this.$refs.circle.editFormData(JSON.parse(RowData));
+			},
+			delRow(row) {
+				var _that = this;
+				_that.$confirm('此操作删除本行数据, 是否继续?', '提示', {
+		          confirmButtonText: '确定',
+		          cancelButtonText: '取消',
+		          type: 'warning'
+		        }).then(() => {
+		          	CIRCLEACTION.deleteRow(_that, row.stationCircleId);
+		        });
+			},
+			lookDetail(row) {
+				this.$router.push({
+					name : "customer.circle.detail",
+					params : {
+						id : row.stationCircleId
+					}
+				});
+			},
+			setSuppliers(row) {
+				console.log(row);
+				this.selectRowInfo = row;
+				this.supplierDialog.dialogShow = true;
+				this.$refs.setSupplier.editFormData(row);
+			},
+			editSupplier(supplierIds) {
+				var len = supplierIds.length, str = ""
+				for(var i = 0; i < len ; i ++) {
+					if(len - 1 == i) {
+						str += supplierIds[i];
+					} else{
+						str += supplierIds[i] + ","
+					}
+					
+				}
+				if(str == "") {
+					this.$message("请勾选供应商！");
+				}
+				CIRCLEACTION.bindSupplerInfo(this, str);
+			}
+      }
+    }
+  </script>

@@ -1,0 +1,10 @@
+.news-page{
+	.new-content{
+		min-height:800px;
+		padding-top:80px;
+		font-size:52px;
+		text-align: center;
+		color:#666;
+		line-height: 600px;
+	}
+}

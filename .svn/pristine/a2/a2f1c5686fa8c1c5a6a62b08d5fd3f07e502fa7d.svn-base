@@ -1,0 +1,174 @@
+<!-- 新增活动 -->
+<template>
+	<page-layer :narData="narData" classs="">
+		<activity class="view-body"></activity>
+		<div class="edit-body pull-left">
+			<div class="edit-content">
+				<div class="item back-color">
+					<h3 class="title padding">优惠活动信息</h3>
+					<el-form ref="form" :model="form" :rules="rules" label-width="100px" class="demo-ruleForm padding">
+						<el-form-item label="活动名称" prop="name">
+							<el-input v-model="form.name"></el-input>
+						</el-form-item>
+						<el-form-item label="生效时间" required>
+							<el-col :span="5">
+								<el-form-item prop="endTime">
+									<el-date-picker v-model="form.startTime" type="datetime" placeholder="选择开始日期时间"></el-date-picker>
+								</el-form-item>
+							</el-col>
+							<el-col class="line" :span="2">至</el-col>
+							<el-col :span="5">
+								<el-form-item prop="endTime">
+									<el-date-picker v-model="form.endTime" type="datetime" placeholder="选择结束日期时间"></el-date-picker>
+								</el-form-item>
+							</el-col>
+						</el-form-item>
+					</el-form>
+				</div>
+				<div class="item back-color">
+					<h3 class="title padding">优惠设置</h3>
+					<el-form ref="form" :inline="true" :model="form" :rules="rules" label-width="100px" class="demo-ruleForm padding">
+						<el-form-item label="充值" prop="price">
+							<el-input v-model="form.price" maxlength=3></el-input>
+							<span class="price">元</span>
+						</el-form-item>
+						<el-form-item>
+							<el-checkbox label="送" name="type"></el-checkbox>
+						</el-form-item>
+						<el-form-item>
+							<el-col :span="12">
+								<div class="block">
+									<el-select v-model="form.select" placeholder="请选择" @change="handleChange">
+										<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
+										</el-option>
+									</el-select>
+								</div>
+							</el-col>
+							<el-col :span="2">&nbsp;</el-col>
+							<el-col :span="5">
+								<el-select v-model="form.select" placeholder="请选择">
+									<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
+									</el-option>
+								</el-select>
+							</el-col>
+							<el-col :span="2" class="line">张</el-col>
+							<el-col :span="2" class="line">
+								<a href="javascript:;">新建</a>
+							</el-col>
+						</el-form-item>
+					</el-form>
+					<div class="add-group">
+						<a href="javascript:;">+继续添加</a>
+					</div>
+					<div class="">
+						<!--<el-checkbox v-model="checked">打折</el-checkbox>-->
+					</div>
+				</div>
+			</div>
+			<div class="btn">
+				<el-button>取消</el-button>
+				<el-button type="primary">保存</el-button>
+			</div>
+		</div>
+	</page-layer>
+</template>
+<script>
+	import pageLayer from "components/common/page-layer"
+	import activity from "components/marketing/activity/activity"
+	export default {
+		data() {
+			return {
+				narData: [{
+						name: "优惠活动",
+						router: "marketing.activity.index"
+					},
+					{
+						name: "发起优惠活动",
+						router: "marketing.activity.new"
+					}
+				],
+				form: {
+					name: "",
+					startTime: "",
+					endTime: "",
+					price: "",
+					select: ""
+				},
+				rules: {
+					name: [{
+							required: true,
+							message: '请输入活动名称',
+							trigger: 'blur'
+						},
+						{
+							min: 3,
+							max: 5,
+							message: '长度在 3 到 5 个字符',
+							trigger: 'blur'
+						}
+					]
+				},
+				options: [{
+					label: "1",
+					value: "yi"
+				}, {
+					label: "1",
+					value: "yi"
+				}]
+			}
+		},
+		methods: {
+			handleChange: function(val) {
+				console.log(val)
+			}
+		},
+		components: {
+			pageLayer,
+			activity
+		}
+	}
+</script>
+<style lang="less" scoped>
+	@import "../../../common/less/config.less";
+	.line {
+		text-align: center;
+	}
+	
+	.edit-body {
+		width: calc(~"100% - 700px");
+		margin-left: 20px;
+		.edit-content {
+			border: 1px solid #DFDFDF;
+			.item {
+				h3 {
+					font-size: 18px;
+					height: 48px;
+					background: #F4F4F4;
+					box-sizing: border-box;
+				}
+				.price {
+					position: relative;
+					top: -35px;
+					right: -180px;
+				}
+				.add-group {
+					padding-bottom: 20px;
+					text-align: center;
+					a {
+						display: inline-block;
+						margin-left: -6%;
+						width: 220px;
+						border: 1px solid @color-main;
+						line-height: 36px;
+						height: 36px;
+						color: @color-main;
+					}
+				}
+			}
+		}
+		.btn {
+			margin-top: 20px;
+			text-align: center;
+		}
+	}
+</style>

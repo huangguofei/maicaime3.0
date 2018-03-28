@@ -1,0 +1,18 @@
+/**
+*  author pzh
+*  day  2017-9-14
+*  主页路由配置
+*/
+const classifyList = r => require.ensure([], () => r(require('../view/product/classify/list')), 'classifyList')
+
+const router = [
+	{
+		name : "product.classify.list",
+		path : "/",
+		component : classifyList
+	}
+]
+
+export default{
+	router
+}

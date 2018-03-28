@@ -1,0 +1,18 @@
+/**
+*  author pzh
+*  day  2017-9-27
+*  报价路由配置
+*/
+const indexView = r => require.ensure([], () => r(require('../view/quote/index')), 'Index')
+
+const router = [
+	{
+		name : "quote.index",
+		path : "/quote/",
+		component : indexView
+	}
+]
+
+export default{
+	router
+}

@@ -1,0 +1,276 @@
+<!-- 限时特价 -->
+<template>
+	<div class="page-layer footer-page prompt-page">
+		<header >
+			<p class="title">
+					<i><img src="../../images/home_shuaihuo_time.png"></i>
+					<span>{{message}}</span>
+			</p>
+			<p class="time">
+				<span >
+					<span class="t-1">{{time.h | firstval}}</span>
+					<span class="t-1">{{time.h | lastVal}}</span>
+					<span class="t-2">:</span>
+					<span class="t-1">{{time.m | firstval}}</span>
+					<span class="t-1">{{time.m | lastVal}}</span>
+					<span class="t-2">:</span>
+					<span class="t-1">{{time.s | firstval}}</span>
+					<span class="t-1">{{time.s | lastVal}}</span>
+				</span>
+				<span class="t-1" v-if="activityStart == 2">活动已结束</span>
+				<span class="rule">活动规则</span>
+			</p>
+			
+		</header>
+		<div class="con">
+			<category-nar 
+				:categoryData="categoryData" 
+				@returnInfo="categoryInfo" class="nar" :styles="{background:'#FAFAFA',border:'1px solid #e5e5e5'}">
+			</category-nar>
+			<prompt-prod :prodData="prodData" :activityStart="activityStart" v-if="prodData.length"></prompt-prod>
+		</div>
+		<cart-suspend></cart-suspend>
+	</div>
+</template>
+<script>
+	import categoryNar from "components/often/category-nar"
+	import promptProd from "components/index/prompt-prod"
+	import promptAction from "actionurl/index/prompt"
+	import cartSuspend from "components/common/cart-suspend"
+	export default{
+		data() {
+			return{
+				categoryData : [],
+				prodData : [],
+				time : {
+					h : 0,
+					m : 0,
+					s : 0,
+				},
+				detailInfo : {},
+				activityStart : 0,
+				message : "距离开放时间",
+				day : 0
+			}
+		},
+		filters : {
+			firstval : function(value) {
+				return value < 10 ? 0 : value.toString().substring(0,1)
+			},
+			lastVal : function(value) {
+				return value < 10 ? value : value.toString().substring(1,2)
+			}
+		},
+		created() {
+			promptAction.getDetailInfo(this);
+		},
+		mounted() {
+			promptAction.getCategoryList(this);
+		},
+		components : {
+			categoryNar,
+			promptProd,
+			cartSuspend
+		},
+		methods : {
+			activityDownTime() {
+				var info = this.detailInfo, _that = this;
+				info.startDate = "2017-11-13 00:00:00"
+				info.endDate = "2017-11-16 00:00:00"
+				info.startTime = "08:00:00"
+				info.endTime = "18:00:00"
+				if(info.startDate && info.startTime) {
+
+				}
+			},
+			countDown() {
+				var info = this.detailInfo, _that = this;
+				console.log(JSON.stringify(info));
+				if(info.startDate && info.endDate && !info.startTime && !info.endTime) {
+					//cosnole.log("只有日期没有时间段");
+					var sDateStr = new Date(info.startDate).getTime(),
+						eDateStr = new Date(info.endDate).getTime(),
+						tDateStr = new Date().getTime();
+					var day = (new Date(sDateStr).getTime() - new Date().getTime()) / (3600 * 1000 * 24);
+					if(day > 1) {
+						_that.message = "距离活动开始时间：" + parseInt(day) + "天"
+					} else {
+						var localDateStr = new Date(new Date().toLocaleDateString()).getTime();
+						if(eDateStr < localDateStr) {
+							this.day = 2;
+							_that.message = "活动已结束"
+							return false;
+						}
+						if(sDateStr >= localDateStr) {
+							this.activityStart = 1;
+							this.day = 1;
+							_that.message = "活动正在进行中"
+						} else {
+							var time = this.time = _time(info.startDate,"start");
+							_downTime(time, "start");
+						}
+					}
+
+				} else if(!info.startDate && !info.endDate && info.startTime && info.endTime) {
+					//console.log("只有时间没有日期");
+					var tDate = new Date().toLocaleDateString();
+					var s = new Date(tDate + " " + info.startTime ).getTime(),
+						e = new Date(tDate + " " + info.endTime).getTime(),
+						t = new Date().getTime();
+					if(s > t) {
+						this.activityStart = 0;
+						this.day = 0;
+						_that.message = "距离开放时间"
+						var time = this.time = _time(tDate + " " + info.startTime);
+						_downTime(time);
+					} else if(t > s && e > t) {
+						this.activityStart = 1;
+						this.day = 1;
+						_that.message = "活动正在进行中"
+					} else if(t > e) {
+						this.activityStart = 2;
+						this.day = 1;
+						_that.message = "活动已结束"
+					}
+
+				} else if(info.startDate && info.endDate && info.startTime && info.endTime) {
+					//console.log("有日期也有时间");
+					var startDate = info.startDate.split(" ")[0],
+						startTime = info.startTime,
+						endDate = info.endDate.split(" ")[0],
+						endTime = info.endTime;
+					var s = startDate + " " +startTime, e = endDate + " " + endTime;
+					var sDateStr = new Date(startDate).getTime(),
+						tDateStr = new Date(new Date().toLocaleDateString()).getTime();
+					if(tDateStr > sDateStr) {
+						this.activityStart = 1;
+						_that.message = "距离活动结束时间"
+						var time = this.time = _time(new Date().toLocaleDateString() + " " + endTime);
+						_downTime(time);
+					} else {
+						//console.log("活动还未开始");
+						_that.activityStart = 0;
+						var day = (new Date(s).getTime() - new Date().getTime()) / (3600 * 1000 * 24);
+						if(day > 1) {
+							_that.message = "距离活动开始时间：" + parseInt(day) + "天"
+						} else {
+							var time = this.time = _time(s);
+							_downTime(time, "start");
+						}
+					}
+				} else {
+					//console.log("没有设置日期和时间");
+					_that.activityStart = 1;
+				}
+				function _time(date,type) {
+					let time = new Date().getTime(), times = "";
+					if(type == "start") {
+						times = time - (new Date(date).getTime());
+					} else {
+						times = (new Date(date).getTime()) - time;
+					}
+					let l1 = (times % (24*3600*1000)),
+						hours = Math.floor(l1 / (3600 * 1000));
+					let l2 = (l1 % (3600*1000)),
+						minute = Math.floor(l2 / (60 * 1000));
+					let l3 = (l2 % (60 * 1000)),
+						second = Math.round(l3 / 1000);
+					return {h : hours, m : minute, s : second};
+				}
+				function _downTime(time, type) {
+					var downTime = window.setInterval(function() {
+						if(time.s == 0 && time.m == 0 && time.h == 0) {
+							window.clearInterval(downTime);
+							if(type == "start") {
+								_that.activityStart = 1;
+							} else {
+								_that.activityStart = 2;
+							}
+							return;
+						}
+						time.s == 0 ? (
+								time.s = 59,
+								time.m --
+							) : (
+								time.s-- 
+							)
+						if(time.m == 0 && time.s == 0 && time.h != 0) {
+							time.h --;
+							time.s = 59;
+							time.m = 59;
+						}
+
+					}, 1000);
+				}
+			},
+			categoryInfo(info) {
+				promptAction.getProdList(this, info.categoryId);
+			}
+		}
+	}
+</script>
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.prompt-page{
+		header{
+			.pxrem(height, 160);
+			background: #FFF;
+			text-align: center;
+			.title{
+				.prem(20, -4);
+				padding:@prem;
+				i{
+					display: inline-block;
+					position: relative;
+					@h:31;
+					.pxrem(width, @h);
+					.pxrem(height, @h);
+					.pxrem(top, -2);
+					img{
+						width: 100%;
+					}
+				}
+			}
+			.time{
+				position: relative;
+				.pxrem(margin-top, -16);
+				.t-1{
+					display: inline-block;
+					background: #222;
+					.pxrem(font-size, 32);
+					.prem(1,5);
+					padding:@prem;
+					color:#FFF;
+					.pxrem(border-radius,5);
+				}
+				.t-2{
+					.pxrem(font-size, 46);
+				}
+				.rule{
+					position: absolute;
+					.pxrem(right, 20);
+					.pxrem(top, 15);
+					color:#666;
+					&:after{
+						content : "";
+						position: relative;
+						display: inline-block;
+						.pxrem(width, 30);
+						.pxrem(height, 30);
+						.pxrem(top, 2);
+						.pxrem(margin-left, 2);
+						background: url(../../images/home_shuaihuo_rule.png) no-repeat;
+						background-size: 100% auto;
+
+					}
+				}
+			}
+		}
+		.con{
+			.pxrem(margin-top, 20);
+			.nar{
+				background:#FAFAFA;
+			}
+		}
+	}
+</style>

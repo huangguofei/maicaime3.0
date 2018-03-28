@@ -1,0 +1,202 @@
+<template>
+	<article class="order-list padding">
+		<section v-for="(item,key) in orderData">
+			<header class="padding border-bottom">
+				<div class="pull-left">
+					<img src="../../images/time.png" />
+					<span>送达时间：10：:00之前</span>
+				</div>
+				<span class="order-status pull-right">配送费：<i>¥5</i></span>
+			</header>
+			<section class="shop-list padding border-bottom" @click="orderDateils(item)">
+				<div class="shop-item site-start">
+					<p class="commodity-name"><i></i><span>天鲜配蔬果配送</span></p>
+					<p class="price-num">地址：深圳市龙岗区爱联社区爱联路33号1楼</p>
+				</div>
+				<div class="shop-item site-end">
+					<p class="commodity-name"><i></i><span>天鲜配蔬果配送</span></p>
+					<p class="price-num">地址：深圳市龙岗区爱联社区爱联路33号1楼</p>
+				</div>
+				<article class="distance">
+					<i class="dashed"></i>
+					<p>1.5km</p>
+				</article>
+			</section>
+			<footer class="padding">
+				<article class="hide">
+					<p class="pull-left">取货号：<span>A002</span>
+					</p>
+					<span class='pull-right footer-status'>备货中</span>
+					<!--<span class='pull-right footer-btn'>扫描取货</span>-->
+				</article>
+				<p class="cargo-num">取货号：<span>A002</span></p>
+			</footer>
+		</section>
+	</article>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+				btnStr: '确认付款'
+			}
+		},
+		props: ['orderData', 'noShowNum'],
+		created() {
+			console.log(JSON.stringify(this.orderData))
+		},
+		methods: {
+			orderDateils(item) {
+				this.$router.push({
+					name: "order.detail",
+					params: {
+						id: item.orderId
+					},
+					query: {
+						noShowNum: (item.skuCount - this.noShowNum)
+					}
+				})
+			}
+		}
+	}
+</script>
+
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.order-list {
+		/*.pxrem(margin-top, 20);*/
+		.border-bottom {
+			border-bottom: 1px solid #eee;
+		}
+		header {
+			background: #fff;
+			.rem(50);
+			.pxrem(font-size, 32);
+			.pxrem(height, 64);
+			.pxrem(line-height, 64);
+			img {
+				.pxrem(width, 35);
+				width: @rem;
+				border-radius: @rem/2;
+				vertical-align: middle;
+			}
+			.order-status {
+				.pxrem(font-size, 28);
+				i {
+					.pxrem(font-size, 38);
+					font-style: initial;
+					color: @d-price;
+				}
+			}
+		}
+		.shop-list {
+			background: #FFF;
+			position: relative;
+			.shop-item {
+				.pxrem(margin-bottom, 35);
+				overflow: auto;
+				.commodity-name {
+					color: #151009;
+					.pxrem(height, 40);
+					.pxrem(line-height, 40);
+					.pxrem(font-size, 28);
+					.pxrem(margin-bottom, 5);
+					i {
+						background: @m-c;
+						display: inline-block;
+						.pxrem(width, 12);
+						.pxrem(height, 12);
+						.pxrem(border-radius, 6);
+						.pxrem(margin-right, 6);
+					}
+				}
+				.price-num {
+					.pxrem(height, 33);
+					.pxrem(line-height, 33);
+					color: #999999;
+					.pxrem(font-size, 24);
+					.pxrem(padding-left, 22);
+					span:first-child {
+						margin-right: 0.3rem;
+					}
+				}
+			}
+			.site-end {
+				.commodity-name {
+					i {
+						background: #3084F2;
+					}
+				}
+			}
+			.distance {
+				position: absolute;
+				.pxrem(top, 35);
+				.pxrem(bottom, 110);
+				.pxrem(left, 0);
+				.pxrem(font-size, 22);
+				color: #D7D7D7;
+				text-align: center;
+				.pxrem(width, 100);
+				.dashed {
+					position: absolute;
+					.pxrem(top, 12);
+					.pxrem(bottom, 12);
+					.pxrem(left, 18);
+					width: 1px;
+					border-left: 1px dashed #D7D7D7;
+				}
+				p {
+					position: relative;
+					top: 40%;
+					left: -10%;
+				}
+			}
+		}
+		footer {
+			.pxrem(height, 64);
+			.pxrem(line-height, 64);
+			background: #fff;
+			.pxrem(font-size, 28);
+			p {
+				color: #000;
+				span {
+					.pxrem(font-size, 38);
+					color: #000;
+				}
+			}
+			.cargo-num{
+				text-align: center;
+				width: 80%;
+				margin: 0 auto;
+				.pxrem(border-radius,5);
+				border:1px solid #D7D7D7;
+			}
+			span {
+				color: @m-c;
+				.pxrem(font-size, 32);
+			}
+			.footer-btn {
+				display: inline-block;
+				color: #fff;
+				background: @m-c;
+				.pxrem(padding-left, 24);
+				.pxrem(padding-right, 24);
+				.pxrem(border-radius, 4);
+			}
+		}
+		.select_radio {
+			display: inline-block;
+			.pxrem(width, 32);
+			.pxrem(height, 32);
+			border: 1px solid #a4a4a4;
+			.pxrem(border-radius, 16);
+			vertical-align: sub;
+		}
+		.active {
+			/*background: url(../../images/order_check.png)no-repeat -1px -1px;*/
+			background-size: 120% auto;
+			border-color: #3084F2;
+		}
+	}
+</style>

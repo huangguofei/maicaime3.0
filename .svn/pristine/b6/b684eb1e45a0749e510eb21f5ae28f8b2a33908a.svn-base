@@ -1,0 +1,129 @@
+<template>
+	<article class="order-item">
+		<loading v-if="!isLoad"></loading>
+		<order-list-view v-else ref="orderList" @cancelSelectAll="cancelSelectAll" :isSelect="'true'" @updateData="updatePageData" :no-show-num="option.prodQuantity"></order-list-view>
+		<section class="check-box padding">
+			<span class="pull-left" :class="{active:isSelect}" @click="selectAll"><i></i>全选</span>
+			<a href="javascript:;" class="allSelect pull-right" @click="allDelivery">批量收货</a>
+		</section>
+		<dialogs v-if="showDialog" :title="'来自买菜么的温馨提示'" :okBtnStr="'确定批量收货'" :contentHtml="'批量收货不能修改实际到货数量<br/>您仍然确定批量收货吗？'" @offDialog="offDialog" @affirm="affirm"></dialogs>
+	</article>
+</template>
+
+<script>
+	import orderListView from 'components/order/order-list'
+	import orderApi from 'actionurl/order/order'
+	import dialogs from "components/common/dialog"
+	import scroll from "components/common/scroll"
+	import loading from 'components/common/loading'
+	import { mapGetters } from 'vuex'
+	export default {
+		data() {
+			return {
+				orderList: [],
+				isLoad: false,
+				option: {
+					pageNum: 1,
+					size: 10,
+					pages: 1,
+					total: 0,
+					orderStatus: [30, 40],
+					prodQuantity: 2
+				},
+				isSelect: false,
+				showDialog: false
+			}
+		},
+		components: {
+			orderListView,
+			scroll,
+			loading,
+			dialogs
+		},
+		computed: {
+			...mapGetters([
+				"orderType",
+				"pageNum"
+			])
+		},
+		created() {
+			if(this.option.orderStatus.toString() != this.orderType) {
+				orderApi.getOrderListData(this);
+				this.$store.commit("RECORD_LAST_SCROLL_TOP", 0);
+			} else {
+				this.isLoad = true;
+				this.option.pageNum = this.pageNum;
+			}
+		},
+		methods: {
+			updatePageData() {
+				orderApi.getOrderListData(this, (count) => {
+					this.$refs.orderList.pullingUpPage(count);
+				});
+			},
+			selectAll() {
+				this.isSelect = !this.isSelect;
+				this.$refs.orderList.selectAll(this.isSelect);
+			},
+			cancelSelectAll() {
+				this.isSelect = false;
+			},
+			allDelivery() {
+				this.showDialog = true;
+			},
+			affirm() { /*批量收货*/
+				var _that = this;
+				this.$refs.orderList.countSelect((datas) => {
+					orderApi.orderAllConfirmReceipt(this, datas);
+				});
+			},
+			offDialog() {
+				this.showDialog = false;
+			}
+		}
+	}
+</script>
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.order-item {
+		height: 100%;
+		position: relative;
+	}
+	
+	.check-box {
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		.clearfix();
+		background: #f8f8f8;
+		.pxrem(height, 60);
+		.pxrem(line-height, 60);
+		i {
+			display: inline-block;
+			border: 1px solid #222;
+			.pxrem(width, 30);
+			.pxrem(height, 30);
+			.pxrem(border-radius, 15);
+			.pxrem(margin-right, 10);
+			vertical-align: middle;
+			background: #fff;
+		}
+		.active {
+			i {
+				background: url(../../images/order_check.png) no-repeat -1px -1px;
+				background-size: 120% auto;
+				border-color: @m-c;
+			}
+		}
+		a {
+			background: @m-c;
+			color: #fff;
+			.pxrem(width, 150);
+			.pxrem(height, 58);
+			text-align: center;
+			border: 1px solid @m-c;
+			.pxrem(font-size, 28);
+		}
+	}
+</style>

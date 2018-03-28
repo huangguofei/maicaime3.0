@@ -1,0 +1,218 @@
+<!-- 购物车商品分类列表 -->
+<template>
+	<div class="prod-category-list">
+		<div class="c-item" v-for="c in cartData">
+			<div class="header">
+				<i><img src="../../images/list_vagetable.png" /></i>
+				<span class="name">{{c.categoryBO.categoryName}}</span>
+			</div>
+			<div class="prod-list">
+				<div class="prod-item" v-for="p in c.productBOList">
+					<div class="content" :style="{transform:'translate(-'+leftSilde.moveLeft+'px,0px)'}">
+						<div class="prod-wrap"  >
+							<i class="prod-img"><img :src="p.skuImage"></i>
+							<span class="cart-wrap">
+								<i class="minus c-i" @click="editSkuNum(1, p)"></i>
+								<span class="num">{{p.skuQuantity}}</span>
+								<i class="add c-i"  @click="editSkuNum(2, p)"></i>
+							</span>
+							<div class="prod-info">
+								<p class="prod-name">{{p.skuName}}</p>
+								<p class="price">¥{{(p.skuPrice).toFixed(2)}}/{{p.skuUnit}}</p>
+							</div>
+						</div>
+						
+					</div>
+					<!-- <div class="del">
+						删除
+					</div> -->
+				</div>
+				
+			</div>
+		</div>
+	</div>
+</template>
+<script>
+	import { mapGetters } from 'vuex'
+	export default{
+		data() {
+			return {
+				leftSilde : {
+					x : 0,
+					moveLeft : 0,
+					delLeft : 60
+				}
+			}
+		},
+		computed : {
+			...mapGetters({
+				cartNum : "getCartNum"
+			})
+		},
+		props : ["cartData", "updateSkuNum"],
+		methods : {
+			_touchstart(e) {
+				e = e || event;
+				this.leftSilde.x = e.touches[0].clientX;
+			},
+			_touchMove(e) {
+				e = e || event;
+				var left = e.touches[0].clientX;
+				var moveLeft = this.leftSilde.x - left;
+				this.leftSilde.moveLeft = moveLeft;
+			},
+			_touchEnd(e) {
+				e = e || event;
+				var silde = this.leftSilde;
+				if(silde.moveLeft > silde.delLeft) {
+					silde.moveLeft = 60;
+				} else {
+					silde.moveLeft = 0;
+				}
+			},
+			editSkuNum(state,p) {
+				var num = p.skuQuantity, 
+					cartNum = this.cartNum;
+				if(num == 0) return;
+				if(state == 1) {
+					--num;
+					if(cartNum >= 0) this.$store.commit("minusCatrNum");
+				} else if(state == 2) {
+					++ num;
+					if(cartNum >= 0) this.$store.commit("addCartNum");
+				}
+				p.skuQuantity = num;
+				this.debounceSkuNum(p);
+			},
+			/*防止快速操作*/
+			debounceSkuNum:_.debounce(function(p) {
+					this.updateSkuNum(p);
+			},500)
+		}
+	}
+</script>
+<style lang="less">
+	@import "../../common/less/config.less";
+	.prod-category-list{
+		.c-item{
+			.header{
+				.pxrem(height,80);
+				.pxrem(line-height,80);
+				.prem(0,20);
+				padding:@prem;
+				i{
+					display: inline-block;
+					position: relative;
+					.pxrem(height,42);
+					.pxrem(width,42);
+					.pxrem(top,10);
+					img{
+						max-height: 100%;
+						max-width: 100%;
+					}
+				}
+			}
+			.prod-list{
+				background: #FFF;
+				.prod-item{
+					position: relative;
+					border-bottom:0.5px solid #E9E9E9;
+					-webkit-user-select: none;
+					-moz-user-select: none;
+					-ms-user-select: none;
+					user-select: none;
+					.content{
+						height:100%;
+						background: #FFF;
+						position: relative;
+						z-index:2;
+						.prem(20, -4);
+						padding:@prem;
+					}
+					.prod-wrap{
+						.prem(0,20);
+						padding:@prem;
+					}
+					.del{
+						position: absolute;
+						top:0;
+						z-index:0;
+						right:0;
+						height:100%;
+						width:60px;
+						color:#FFF;
+						line-height: 100%;
+						background: #F9AB0C;
+						.pxrem(font-size, 32);
+						.pxrem(line-height,170);
+						text-align: center;
+					}
+					.prod-img{
+						position: absolute;
+						display: inline-block;
+						.pxrem(width,130);
+						.pxrem(height,130);
+						border:0.5px solid #E5E5E5;
+						display: table-cell;
+						vertical-align: middle;
+						img{
+							max-width: 100%;
+							max-height: 100%;
+							text-align: center;
+							vertical-align: middle;
+						}
+					}
+					
+					.cart-wrap{
+						position: absolute;
+						right:0;
+						.pxrem(bottom, 20);
+						.pxrem(right, 20);
+						display: inline-block;
+						.pxrem(height, 49);
+						border:1px solid #EEEEEE;
+						.pxrem(border-radius,80);
+						.c-i{
+							float:left;
+							display: inline-block;
+							.pxrem(width, 47);
+							.pxrem(height, 47);
+							border-radius: 50%;
+							margin-top:0.5px;
+						}
+						.num{
+							float:left;
+							display: inline-block;
+							.pxrem(height, 47);
+							.pxrem(line-height, 47);
+							.pxrem(min-width, 60);
+							.pxrem(font-size, 31);
+							text-align:center;
+							color:#000;
+						}
+						.minus{
+							background: url(../../images/market_minus.png) no-repeat;
+							background-size: cover;
+						}
+						.add{
+							background: url(../../images/market_plus.png) no-repeat;
+							background-size: cover;
+						}
+					}
+					.prod-info{
+						.pxrem(height, 130);
+						.pxrem(padding-left, 170);
+						.prod-name{
+							color:@p-t-c;
+							.pxrem(font-size, 32);
+							.pxrem(min-height, 80);
+						}
+					}
+				}
+				.prod-item:last-child{
+					border-bottom:0;
+				}
+			}
+		}
+	}
+</style>

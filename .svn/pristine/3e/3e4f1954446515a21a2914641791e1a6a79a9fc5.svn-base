@@ -1,0 +1,32 @@
+<!-- 订单 -->
+<template>
+	<div class="page-layer">
+		<ul>
+			<li><router-link to="/all"></router-link>全部</li>
+			<li><router-link to="/obligation"></router-link>待付款</li>
+			<li><router-link to="/waitreceiving"></router-link>待收货</li>
+			<li><router-link to="/accomplish"></router-link>已完成</li>
+		</ul>
+		<router-view></router-view>
+		<FOOTERNAR :active="3"></FOOTERNAR>
+	</div>
+</template>
+<script>
+	import FOOTERNAR from "../../components/common/footer-nar"
+	export default{
+		data() {
+			return {
+
+			}
+		},
+		components : {
+			FOOTERNAR
+		},
+		created() {
+			
+		},
+		methods : {
+			
+		}
+	}
+</script>

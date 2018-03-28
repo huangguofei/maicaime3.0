@@ -1,0 +1,57 @@
+/**
+* author pzh 
+* day    2017-10-31
+* 活动业务
+*/
+import {activityAPI} from "apiurl/marketing"
+export default{
+	/*保存优惠活动*/
+	saveActivityInfo(vm, info) {
+		var _that = this,
+		_success = (mes) => {
+			vm.$message({
+	          message: mes,
+	          type: 'success'
+	        });
+			vm.$router.push({
+				name : "marketing.activity.index"
+			});
+		}
+		if(info.id) {
+			/*couponAPI.launchCouponAPI(info,(result) => {
+				_success("编辑成功");
+			});*/
+		} else {
+			let params = JSON.stringify(info);
+			params = JSON.parse(params);
+			if(params.startDate == "") {
+				delete params.startDate;
+				delete params.endDate;
+			}
+			if(params.startTime == "") {
+				delete params.startTime;
+				delete params.endTime;
+			}
+			activityAPI.launchSpecialOfferAPI(params,(result) => {
+				_success("添加成功");
+			})
+		}
+	},
+	/*获取优惠活动列表*/
+	getActivityList(vm) {
+		var paging = vm.pagings;
+		var params = {};
+		params.pageNum = paging.current;
+		activityAPI.allActivityListAPI(params,(result) => {
+			vm.activityList = result.resultList;
+			paging.total = result.totalCount;
+		})
+	},
+	/*获取有效的券*/
+	getValidCoupon(vm) {
+		activityAPI.validCouponListAPI((result) => {
+			vm.validCoupon = result;
+		})
+	}
+
+}

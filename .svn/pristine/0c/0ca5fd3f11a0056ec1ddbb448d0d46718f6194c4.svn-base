@@ -1,0 +1,79 @@
+<!-- 主页分类 -->
+<template>
+	<div class="category-nar">
+		<div class="radius"></div>
+		<ul>
+			<li class="n-item" @click="jumpCategory">
+				<i><img src="../../images/home_meat.png"></i>
+				<p class="n-name">肉类</p>
+			</li>
+			<li class="n-item" @click="jumpCategory">
+				<i><img src="../../images/home_vagetable.png"></i>
+				<p class="n-name">蔬菜</p>
+			</li>
+			<li class="n-item" @click="jumpCategory">
+				<i><img src="../../images/home_oil.png"></i>
+				<p class="n-name">粮油</p>
+			</li>
+			<li class="n-item" @click="jumpCategory">
+				<i><img src="../../images/home_chufang.png"></i>
+				<p class="n-name">厨房</p>
+			</li>
+		</ul>
+	</div>
+</template>
+<script>
+	export default{
+		methods : {
+			jumpCategory() {
+				this.$router.push({
+					name : "index.category"
+				});
+			}
+		}
+	}
+</script>
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.category-nar{
+		background: #FFF;
+		.prem(20);
+		padding: @prem;
+		position: relative;
+		.radius{
+			position: absolute;
+			left:0;
+			.pxrem(height, 200);
+			width:150%;
+			left:-25%;
+			.pxrem(top, -30);
+			background: #FFF;
+			border-radius:50%;
+		}
+		ul{
+			position: relative;
+			z-index:999;
+			&:after{
+				.clearFloat;
+			}
+		}
+		.n-item{
+			float:left;
+			display: inline-block;
+			width:25%;
+			text-align: center;
+			i{
+				display: inline-block;
+				.pxrem(width,90);
+				.pxrem(height,90);
+				img{
+					width:100%;
+				}
+			}
+			.n-name{
+				color:@index-c-color;
+				.pxrem(font-size,32);
+			}
+		}
+	}
+</style>

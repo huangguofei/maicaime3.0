@@ -1,0 +1,213 @@
+<template>
+	<article class="page-layer ">
+		<header class="header">
+			<article class="content padding">
+				<p>· 活动说明 ·</p>
+				<p class="txt" :class="{zoom:isZoom}" style="-webkit-box-orient: vertical;">{{activityData.ruleContent}}</p>
+			</article>
+			<p @click="zoom">==</p>
+		</header>
+		<article class="content">
+			<header>参加活动的商品</header>
+			<section class="main" v-if="activityData">
+				<article class="food-list" v-if="activityData.prods.length>0">
+					<section class="item padding" v-for="v in activityData.prods">
+						<img class="pull-left" :src="v.skuImage" />
+						<section class="pull-left body">
+							<h2>{{v.skuName}}</h2>
+							<!--<p class="food-num"><span>库存：{{v.minPurchaseQuantity}}件</span><span>限购：{{v.limitBuyCount}}件</span></p>-->
+							<!--<p class="food-price"><span>¥{{v.promotionPrice}}/{{v.skuUnit}}</span><span>¥{{v.promotionPrice}}/{{v.skuUnit}}</span></p>-->
+							<p class="food-num"><span>库存充足</span><span>限购：{{v.limitBuyCount}}件</span></p>
+							<p class="food-price"><span>¥{{v.promotionPrice.toFixed(2)}}/{{v.skuUnit}}</span></p>
+						</section>
+						<section class="pull-left edit-btn" :class="{active:v.statusId==0}" @click="removeShop(v)">{{v.statusId==1?"下架":v.statusId==0?"上架":v.statusText}}</section>
+					</section>
+				</article>
+				<article class="null" v-else>
+					<img src="../../../images/Group 5@2x.png" />
+					<p>您还没有添加任何食材</p>
+				</article>
+				<router-link :to="{path:'/activitiesFood/',query:{id:activityId}}" class="add-food">添加食材</router-link>
+			</section>
+		</article>
+	</article>
+</template>
+
+<script>
+	import postServer from "actionurl/user/userActivity"
+	export default {
+		data() {
+			return {
+				activityData: "",
+				activityId: this.$route.query.id,
+				isZoom: true
+			}
+		},
+		created() {
+			postServer.getActivityDeails(this);
+		},
+		methods: {
+			zoom() {
+				this.isZoom = !this.isZoom;
+			},
+			removeShop(data) {
+				console.log(data)
+				if(data.statusId == 1 || data.statusId == 0) {
+					postServer.removeShop(this, {
+						monthlySpecialProdId: data.specialProductId,
+						status: data.statusId == 1 ? 0 : 1
+					});
+				}
+			}
+		}
+	}
+</script>
+
+<style lang="less" scoped>
+	@import "../../../common/less/config.less";
+	.zoom {
+		display: -webkit-box;
+		-webkit-line-clamp: 3;
+		overflow: hidden;
+	}
+	
+	.page-layer {
+		box-sizing: border-box;
+		padding-bottom: 0;
+		position: relative;
+		padding-top: 32%;
+		.header {
+			min-height: 14%;
+			width: 100%;
+			position: absolute;
+			top: 0;
+			z-index: 2;
+			background: #fff;
+			border-bottom: 1px solid #eee;
+			margin-bottom: 3%;
+			padding-bottom: .3rem;
+			.content {
+				padding-bottom: 0;
+				p:first-child {
+					text-align: center;
+					.pxrem(font-size, 32);
+					color: #000;
+					font-weight: bold;
+					.pxrem(margin-bottom, 20);
+				}
+				.txt {
+					.pxrem(font-size, 24);
+					color: #666;
+				}
+			}
+			&>p {
+				/*text-align: center;*/
+				color: #ccc;
+				.pxrem(font-size, 32);
+				font-weight: bold;
+				position: absolute;
+				left: 47%;
+				bottom: 0;
+			}
+		}
+		&>.content {
+			background: #fff;
+			height: 100%;
+			header {
+				.pxrem(font-size, 32);
+				height: .7rem;
+				line-height: .7rem;
+				text-align: center;
+				border-bottom: 1px solid #eee;
+			}
+			.main {
+				height: calc(~'100% - .7rem');
+				text-align: center;
+				.null {
+					img {
+						width: 50%;
+						margin: 20% 25% 5%;
+					}
+					p {
+						.pxrem(font-size, 32);
+						color: #999999;
+					}
+				}
+				.add-food {
+					display: inline-block;
+					margin: .2rem auto;
+					background: #F7F9FF;
+					color: #3084F2;
+					.pxrem(height, 70);
+					.pxrem(line-height, 70);
+					.pxrem(padding-left, 60);
+					.pxrem(padding-right, 60);
+					.pxrem(border-radius, 35);
+					border: 1px solid #3084F2;
+				}
+				.food-list {
+					max-height: calc(~'100% - 1.1rem');
+					overflow: auto;
+					.item {
+						.active{
+							background: #D7D7D7!important;
+						}
+						text-align: left;
+						border-bottom: 1px solid #E9E9E9;
+						.clearfix();
+						img {
+							/*.pxrem(width,150);*/
+							padding: 0;
+							width: 20%;
+							margin-right: 5%;
+						}
+						
+						.body {
+							width: 60%;
+							h2 {
+								.pxrem(font-size, 32);
+							}
+							.food-num {
+								.pxrem(font-size, 24);
+								color: #666666;
+								.pxrem(height, 38);
+								.pxrem(line-height, 38);
+								.pxrem(margin-top, 5);
+								.pxrem(margin-bottom, 15);
+								span {
+									display: inline-block;
+									.pxrem(padding-left, 20);
+									.pxrem(padding-right, 20);
+									background: #EEEEEE;
+									.pxrem(border-radius, 19);
+									margin-right: .2rem;
+								}
+							}
+							.food-price {
+								span:last-child {
+									.pxrem(font-size, 24);
+									color: #878787;
+								}
+								span:first-child {
+									.pxrem(font-size, 34);
+									color: #F98A0C;
+									.pxrem(margin-right, 10);
+								}
+							}
+						}
+						.edit-btn {
+							width: 15%;
+							.pxrem(font-size, 28);
+							color: #fff;
+							background: @m-c;
+							.pxrem(height, 50);
+							.pxrem(line-height, 50);
+							text-align: center;
+							.pxrem(margin-top, 110);
+						}
+					}
+				}
+			}
+		}
+	}
+</style>

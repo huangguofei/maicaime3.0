@@ -1,0 +1,336 @@
+<template>
+	<article class="order-list">
+		<section class="num-search">
+			<img src="../../images/home_search_search.png" v-show="!seachNum" class="search-icon" />
+			<input type="text" class="num padding" v-model="seachNum" placeholder="输入订单取货号查询" @keyup.enter="search" />
+		</section>
+		<order-null v-if="orderData.length==0"></order-null>
+		<scroll v-else :pullingDown="true" :pullUpLoad="true" @pullingUp="onPullingUp" ref="scroll">
+			<section v-for="(item,key) in orderData" class="padding bk-white s-item">
+				<header class="padding border-bottom" @click="orderDateils(item)">
+					<div class="pull-left">
+						<img src="../../images/time.png" />
+						<span>送达时间：{{item.deliveryTimeText}}</span>
+					</div>
+					<span class="order-status">配送费：<i>¥0.00</i></span>
+				</header>
+				<section class="shop-list padding border-bottom" @click="orderDateils(item)">
+					<div class="shop-item site-start">
+						<p class="commodity-name"><i></i><span>{{item.stationName}}</span></p>
+						<p class="price-num">地址：{{item.stationAddr}}</p>
+					</div>
+					<div class="shop-item site-end">
+						<p class="commodity-name"><i></i><span>{{item.receiverName}}</span></p>
+						<p class="price-num">地址：{{item.receiverAddr}}</p>
+					</div>
+					<article class="distance">
+						<i class="dashed"></i>
+						<!--<p>1.5km</p>-->
+					</article>
+				</section>
+				<footer class="padding">
+					<article class="" v-if="item.statusId==30||item.statusId==20">
+						<p class="pull-left">取货号：<span>{{item.articleNumber}}</span>
+						</p>
+						<span class='pull-right footer-status' v-if="item.statusId==20">备货中</span>
+						<span class='pull-right footer-btn' @click="saosao" v-else>扫描取货</span>
+					</article>
+					<p class="cargo-num" v-else>取货号：<span>{{item.articleNumber}}</span></p>
+				</footer>
+			</section>
+		</scroll>
+		<!-- <dia-log-page v-show="isDialog" :title="title" :contentHtml="contentHtml" @offDialog="offDialog" @affirm="affirm"></dia-log-page> -->
+	</article>
+</template>
+
+<script>
+	import orderApi from 'actionurl/order/order'
+	import commonAction from 'actionurl/common/common'
+	import scroll from "components/common/scroll"
+	import orderNull from "components/order/order-null"
+	import { mapGetters } from 'vuex'
+	export default {
+		data() {
+			return {
+				isDialog: false,
+				title: "请手动输入取件码",
+				contentHtml: `<input type="input" style="" id="codeDom">`,
+				seachNum: ''
+				
+			}
+		},
+		props: ['orderData'],
+		created() {},
+		computed: {
+			...mapGetters({
+				thatUrl: "thatUrl"
+			})
+		},
+		/*mounted() {
+			if(cJs.isWeiXin() && this.$route.name == "order.index.new"){
+				var params = {
+					url : window.location.href
+				}
+				commonAction.getJsApiInfo(params, (result) => {
+					cJs.weixinConfig(result);
+				});
+			}
+		},*/
+		methods: {
+			search() {
+				this.$emit("search", this.seachNum);
+			},
+			orderDateils(item) {
+				if(item.statusId == 30 || item.statusId == 20) {
+					window.location.href = "/order/detail/" + item.deliveryOrderId;
+				} else {
+					this.$router.push({
+						name: "order.detail",
+						params: {
+							id: item.deliveryOrderId
+						}
+					});
+				}
+			},
+			saosao() {
+				var _that = this;
+				if(cJs.isWeiXin()) {
+					var params = {
+						url: this.thatUrl || window.location.href
+					}
+					commonAction.getJsApiInfo(params, (result) => {
+						cJs.weixinConfig(result);
+						setTimeout(function() {
+							cJs.wxScanQRCode(1, (result) => {
+								var resultStr = result.resultStr;
+								if(resultStr.indexOf("dynamic|") < 0) {
+									cJs.message("无效二维码!");
+									return false;
+								}
+								orderApi.getOrderId(_that, resultStr.split("|")[1]);
+							});
+						}, 20);
+					});
+
+				} else {
+					cJs.message("只支持微信扫一扫！");
+				}
+			},
+			offDialog() {
+				this.isDialog = false;
+			},
+			affirm() {
+				var codeDom = document.getElementById("codeDom");
+				var code = codeDom.value;
+				orderApi.getOrderId(this, code);
+			},
+			onPullingUp() {
+				var _that = this;
+				setTimeout(() => {
+					_that.$emit("updateData");
+				}, 500);
+			},
+			pullingUpPage(count) {
+				if(count >= 10) {
+					this.$refs.scroll.forceUpdate();
+				} else {
+					setTimeout(() => {
+						this.$refs.scroll.forceUpdate(true);
+					}, 20);
+				}
+			}
+		},
+		filters: {
+			dateType: function(val) {
+				if(!val) return "";
+				if(val.length > 13) {
+					return val.substring(3, val.length);
+				} else {
+					return val;
+				}
+			}
+		},
+		components: {
+			scroll,
+			orderNull
+		}
+	}
+</script>
+
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.order-list {
+		height: 100%;
+		/*.pxrem(margin-top, 20);*/
+		.pxrem(padding-bottom, 100);
+		.border-bottom {
+			border-bottom: 1px solid #eee;
+		}
+		&>section {
+			.pxrem(margin-bottom, 20);
+		}
+		.s-item {
+			.pxrem(margin-top, 26);
+		}
+		.s-item:first-child{
+			margin: 0;
+		}
+		header {
+			position: relative;
+			background: #fff;
+			.rem(50);
+			.pxrem(font-size, 32);
+			.pxrem(height, 64);
+			.pxrem(line-height, 64);
+			img {
+				.pxrem(width, 35);
+				width: @rem;
+				border-radius: @rem/2;
+				vertical-align: middle;
+			}
+			.order-status {
+				position: absolute;
+				right: 0;
+				.pxrem(font-size, 28);
+				i {
+					.pxrem(font-size, 38);
+					font-style: initial;
+					color: @d-price;
+				}
+			}
+		}
+		.shop-list {
+			background: #FFF;
+			position: relative;
+			.shop-item {
+				.pxrem(margin-bottom, 35);
+				overflow: auto;
+				.commodity-name {
+					color: #151009;
+					.pxrem(height, 40);
+					.pxrem(line-height, 40);
+					.pxrem(font-size, 28);
+					.pxrem(margin-bottom, 5);
+					i {
+						background: @m-c;
+						display: inline-block;
+						.pxrem(width, 12);
+						.pxrem(height, 12);
+						.pxrem(border-radius, 6);
+						.pxrem(margin-right, 6);
+					}
+				}
+				.price-num {
+					.pxrem(height, 33);
+					.pxrem(line-height, 33);
+					color: #999999;
+					.pxrem(font-size, 24);
+					.pxrem(padding-left, 22);
+					span:first-child {
+						margin-right: 0.3rem;
+					}
+				}
+			}
+			.site-end {
+				.commodity-name {
+					i {
+						background: #3084F2;
+					}
+				}
+			}
+			.distance {
+				position: absolute;
+				.pxrem(top, 35);
+				.pxrem(bottom, 110);
+				.pxrem(left, 0);
+				.pxrem(font-size, 22);
+				color: #D7D7D7;
+				text-align: center;
+				.pxrem(width, 100);
+				.dashed {
+					position: absolute;
+					.pxrem(top, 12);
+					.pxrem(bottom, 12);
+					.pxrem(left, 18);
+					width: 1px;
+					border-left: 1px dashed #D7D7D7;
+				}
+				p {
+					position: absolute;
+					top: 40%;
+					left: -10%;
+				}
+			}
+		}
+		footer {
+			.pxrem(height, 64);
+			.pxrem(line-height, 64);
+			background: #fff;
+			.pxrem(font-size, 28);
+			p {
+				color: #000;
+				span {
+					.pxrem(font-size, 38);
+					color: #000;
+				}
+			}
+			.cargo-num {
+				text-align: center;
+				width: 80%;
+				margin: 0 auto;
+				.pxrem(border-radius, 5);
+				border: 1px solid #D7D7D7;
+			}
+			span {
+				color: @m-c;
+				.pxrem(font-size, 32);
+			}
+			.footer-btn {
+				display: inline-block;
+				color: #fff;
+				background: @m-c;
+				.pxrem(padding-left, 24);
+				.pxrem(padding-right, 24);
+				.pxrem(border-radius, 4);
+			}
+		}
+		.select_radio {
+			display: inline-block;
+			.pxrem(width, 32);
+			.pxrem(height, 32);
+			border: 1px solid #a4a4a4;
+			.pxrem(border-radius, 16);
+			vertical-align: sub;
+		}
+		.active {
+			/*background: url(../../images/order_check.png)no-repeat -1px -1px;*/
+			background-size: 120% auto;
+			border-color: #3084F2;
+		}
+	}
+	
+	.num-search {
+		margin: .1rem .2rem 0;
+		/*margin-bottom: 0!important;*/
+		position: relative;
+		input {
+			width: 100%;
+			border: 0;
+			box-sizing: border-box;
+			.pxrem(height, 60);
+			.pxrem(line-height, 60);
+			text-align: center;
+		}
+		img {
+			.pxrem(width, 30);
+			position: absolute;
+			.pxrem(top, 10);
+		}
+		.search-icon {
+			.pxrem(left, 20);
+		}
+		.delete-icon {
+			.pxrem(right, 20);
+		}
+	}
+</style>

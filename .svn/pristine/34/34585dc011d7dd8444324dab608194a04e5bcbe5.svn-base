@@ -1,0 +1,93 @@
+<template>
+	<article class="order-details">
+		<header class="padding">
+			<section>
+				<h3 class="pull-left">待付款</h3>
+				<span class="pull-right">今天15:50</span>
+			</section>
+			<section>
+				<p class="pull-left">订单已生成，15分钟未付款则自动取消</p>
+				<span class="pull-right">更多></span>
+			</section>
+		</header>
+		<section>
+			<p>配送时间：明日16:00</p>
+			<p>配送方式：送货上门</p>
+			<p>缺货处理：部分食材缺货时，请联系（136XXXXXXXX）我</p>
+			<p>配送员：老王 136XXXXXXXX</p>
+		</section>
+		<section class="btn-group">
+			<input type="button" class="cancel-order" id="" value="取消订单" />
+			<input type="button" class="print-order" id="" value="打印订单" />
+			<input type="button" class="again-shop" id="" value="再次购买" />
+		</section>
+		<section class="shop-details">
+			<header>
+				<img class="pull-left" src="../../images/list_order_store.png" />
+				<h3 class="pull-left">诚信药店</h3>
+				<a class="pull-right" href="tel:10086"><img src="../../images/market_details_tele.png" /></a>
+			</header>
+			<ul>
+				<li>
+					<div class="shop-item">
+						<section class="item-left pull-left">
+							<p class="commodity-name"><i></i><span>{{commodityName}}</span></p>
+							<p class="price-num"><span>单价:¥{{price}}</span><span>数量:{{num}}</span></p>
+						</section>
+						<section class="item-right pull-right">
+							<b>¥{{totalPrices}}</b>
+						</section>
+					</div>
+				</li>
+			</ul>
+		</section>
+	</article>
+</template>
+
+<script>
+</script>
+
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.order-details {
+		.shop-item {
+			.pxrem(margin-bottom, 26);
+			overflow: auto;
+			.item-left {
+				.commodity-name {
+					color: #151009;
+					.pxrem(height, 40);
+					.pxrem(line-height, 40);
+					.pxrem(font-size, 28);
+					.pxrem(margin-bottom, 5);
+					i {
+						background: #FFA356;
+						display: inline-block;
+						.pxrem(width, 12);
+						.pxrem(height, 12);
+						.pxrem(border-radius, 6);
+						.pxrem(margin-right, 6);
+					}
+				}
+				.price-num {
+					.pxrem(height, 33);
+					.pxrem(line-height, 33);
+					color: #999999;
+					.pxrem(font-size, 24);
+					.pxrem(padding-left, 22);
+					span:first-child {
+						margin-right: 0.3rem;
+					}
+				}
+			}
+			.item-right {
+				.pxrem(height, 74);
+				.pxrem(line-height, 74);
+				b {
+					color: #343534;
+					.pxrem(font-size, 28);
+				}
+			}
+		}
+	}
+</style>

@@ -1,0 +1,222 @@
+<!-- 下单 -->
+<template>
+	<div class="page-layer often-orders-page footer-page">
+		<div class="content">
+			<DELIVERYINFO :addressInfo="addressInfo"></DELIVERYINFO>
+			<ORDERSPROD :supplierProd="supplierProd"></ORDERSPROD>
+			<section class="payment-wrap">
+				<header>
+					<span class="title">优惠券</span>
+					<span class="value">无可用</span>
+				</header>
+				<div class="p-content">
+					<div class="c-item">
+						<span class="title">食材金额：</span>
+						<span class="value">¥{{subTotal}}</span>
+					</div>
+					<div class="c-item">
+						<span class="title">配送费：</span>
+						<span class="value">¥0.00</span>
+					</div>
+					<div class="c-item">
+						<span class="title">优惠金额：</span>
+						<span class="value">¥0.00</span>
+					</div>
+				</div>
+				<footer>
+					<span class="v-1">应付：¥{{subTotal}}</span>
+					<span class="v-2">实付：¥{{subTotal}}</span>
+				</footer>
+			</section>
+		</div>
+		<div class="stockout">
+			<header>
+				<span class="reamk">遇到部分食材缺货时，这样联系我：</span>
+				<i class="h-icon"></i>
+			</header>
+			<section style="display:none;">
+				<STOCKOUTCONTACT></STOCKOUTCONTACT>
+			</section>
+		</div>
+		<footer class="footer">
+			<div class="content">
+				<span>合计：</span>
+				<span class="price">¥{{subTotal}}</span>
+				<button @click="confimPay()">确定支付</button>
+			</div>
+			
+		</footer>
+		<PAYMENTTYPE  :payShow="payShow" :totalAmount="totalAmount" :submitPay="submitPay"></PAYMENTTYPE>
+	</div>
+</template>
+<script>
+	import DELIVERYINFO from "components/often/delivery-info"
+	import STOCKOUTCONTACT from "components/often/stockout-contact"
+	import ORDERSPROD from "components/often/orders-prod"
+	import PAYMENTTYPE from "components/common/payment-type"
+	import ORDERSACTION from "actionurl/often/orders"
+	import COMMONACTION from "actionurl/common/common"
+	export default{
+		data() {
+			return {
+				payShow : false,
+				addressInfo : {},
+				supplierProd : [],
+				totalAmount : 0,
+				orderId : 0,
+			}
+		},
+		computed : {
+			subTotal() {
+				var suppliers = this.supplierProd;
+				if(!suppliers) return 0;
+				var len = suppliers.length, total = 0;
+				for(var i = 0; i< len; i++) {
+					var su = suppliers[i].list;
+					var l = su.length;
+					for(var n = 0; n < l; n++) {
+						var prod = su[n];
+						total += prod.skuQuantity * prod.skuPrice;
+					}
+				}
+				return total.toFixed(2);
+			}
+		},
+		components : {
+			DELIVERYINFO,
+			STOCKOUTCONTACT,
+			ORDERSPROD,
+			PAYMENTTYPE
+		},
+		created() {
+			ORDERSACTION.getOrdersInfo(this);
+		},
+		methods : {
+			confimPay() {
+				ORDERSACTION.saveOrdersInfo(this);
+			},
+			submitPay() {
+				COMMONACTION.payByBalance(this);
+			}
+		}
+	}
+</script>
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.often-orders-page{
+		.content{
+			.prem(20);
+			padding:@prem;
+			.pxrem(margin-bottom,60);
+		}	
+		.payment-wrap{
+			.prem(-4, 20);
+			background: #FFF;
+			.pxrem(margin-top,20);
+			padding:@prem;
+			header{
+				position: relative;
+				.pxrem(height, 91);
+				.pxrem(line-height, 91);
+				.pxrem(font-size, 32);
+				.value{
+					float:right;
+					.pxrem(font-size, 28);
+					color:#999999;
+					.pxrem(margin-right,20);
+				}
+				border-bottom:1px solid #F4F4F4;
+			}
+			header:before{
+				content : "";
+				position: absolute;
+				right:0;
+				top:50%;
+				.pxrem(margin-top,-20);
+				.pxrem(width,13);
+				.pxrem(height,22);
+				background: url(../../images/home_jifen_arrow.png) no-repeat 0 center;
+				background-size: 100% auto;
+			}
+			.p-content{
+				.prem(20, 0);
+				padding:@prem;
+				.c-item{
+					.prem(5, 0);
+					padding:@prem;
+					.pxrem(font-size, 28);
+					.value{
+						float:right;
+					}
+				}
+				
+			}
+			footer{
+				.pxrem(height, 91);
+				.pxrem(line-height, 91);
+				border-top:1px dotted #E9E9E9;
+				.v-2{
+					float:right;
+				}
+			}
+		}
+		.stockout{
+			position: fixed;
+			left:0;
+			width:100%;
+			.pxrem(bottom, 98);
+			header{
+				position: relative;
+				.pxrem(height, 70);
+				.pxrem(line-height, 70);
+				background: #FFF4DD;
+				border:1px solid #FCD586;
+				.pxrem(font-size,28);
+				.prem(-4,20);
+				padding:@prem;
+				.h-icon{
+					position: absolute;
+					.pxrem(right, 20);
+					.pxrem(top, 7);
+					display: inline-block;
+					.pxrem(width, 47);
+					.pxrem(height, 47);
+					background: url(../../images/list_order_arrow1.png) no-repeat;
+					background-size:cover;
+				}
+			}
+		}
+		.footer{
+			position: fixed;
+			left:0;
+			bottom:0;
+			width:100%;
+			.pxrem(height, 98);
+			background: #FFF;
+			.pxrem(line-height, 98);
+			.content{
+				.prem(0,20);
+				padding:@prem;
+			}
+			span{
+				.pxrem(font-size,28);
+			}
+			.price{
+				color:@p-p-c;
+				.pxrem(font-size,36);
+			}
+			button{
+				position: absolute;
+				top:0;
+				right:0;
+				height:100%;
+				border:0;
+				background: @m-c;
+				.pxrem(width,251);
+				text-align: center;
+				color:#FFF;
+				.pxrem(font-size,36);
+			}
+		}
+	}
+</style>

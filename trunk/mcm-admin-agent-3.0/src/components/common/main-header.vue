@@ -1,0 +1,115 @@
+<!-- 主页头部 -->
+<template>
+	<div class="main-header" >
+		<el-row>
+			<el-col :span="2" class="m-h left">
+				<img src="../../images/logo.png">
+			</el-col>
+			<el-col :span="16" class="m-h right">
+				<span class="user-name r-h">{{userInfo.realName}}</span>
+				<a class="login-out r-h" href="javascript:;" @click="logoOut()">退出</a>
+			</el-col>
+		</el-row>
+	</div>
+</template>
+<script>
+import https from "../../axios/https"
+import resServer from "action/login/login"
+export default{
+	data() {
+		return{
+			userInfo : {}
+		}
+	},
+	created() {
+		var userInfo = cJs.getCookie("MCM_AGENT_USER_INFO");
+		this.userInfo = JSON.parse(userInfo);
+	},
+	methods : {
+		menuShrink() {
+			this.$parent.isShrink = this.$parent.isShrink ? false : true;
+		},
+		logoOut() {
+			var _that = this;
+			resServer.logout(this);
+			/*https.commAjax({
+				method : "post",
+				url : "admin/user/logout",
+				success : function(response) {
+					common.setCookie("userInfo" , "");
+					_that.$router.push({path : "/login"});
+				}
+			});*/
+		}
+	}
+}
+</script>
+<style lang="less" scoped >
+	@import "../../common/less/config.less";
+	.main-header{
+		@height:50px;
+		height:@height;
+		background: #FFF;
+		.m-h{
+			height:@height;
+			line-height: @height;
+		}
+		.left{
+			background: @color-main;
+			width:184px;
+			text-indent: 10px;
+			color:#FFF;
+			img{
+				margin-top:6px;
+			}
+		}
+		.right{
+			text-align: right;
+			float:right;
+			padding-right:20px;
+			.r-h{
+				padding:0 10px;
+			}
+			.icon{
+				content: "";
+				position: relative;
+				display: inline-block;
+				width:16px;
+				height:16px;
+				top:3px;
+				left:-2px;
+			}
+			.user-name{
+				display: inline-block;
+				&:before{
+					.icon;
+					background: url(../../images/mine .png) no-repeat;
+				}
+			}
+			.login-out{
+				&:before{
+					.icon;
+					background: url(../../images/log-out.png) no-repeat;
+				}
+				color:@color-f-gen;
+			}
+		}
+		
+	}
+	@media screen and (max-width: 1366px) {
+		.main-header{
+			@height:42px;
+			height:@height;
+			.m-h{
+				height:@height;
+				line-height: @height;
+			}
+			.left{
+		   		width:120px;
+		   		img{
+		   			height:70%;
+				}
+		   }
+		}
+	}
+</style>

@@ -1,0 +1,121 @@
+<template>
+	<article class="page-layer user-info">
+		<article class="group padding">
+			<section class="item">
+				<b>头像</b>
+				<aside class="pull-right">
+					<img class="headimg" src="../../images/user-default.png" />
+					<img class="icon" src="../../images/mine_arrow2.png" />
+				</aside>
+			</section>
+			<section class="item">
+				<b>店铺名称</b>
+				<aside class="pull-right">
+					<span class="user-name">牛先森和猫小姐的店</span>
+					<img class="icon" src="../../images/mine_arrow2.png" />
+				</aside>
+			</section>
+			<section class="item">
+				<b>联系人</b>
+				<aside class="pull-right">
+					<span class="user-linkman">牛先森</span>
+					<img class="icon" src="../../images/mine_arrow2.png" />
+				</aside>
+			</section>
+			<section class="item">
+				<b>电话</b>
+				<aside class="pull-right">
+					<span class="user-phone">1XXXXXXXXXX</span>
+					<img class="icon" src="../../images/mine_arrow2.png" />
+				</aside>
+			</section>
+			<section class="item">
+				<b>地区</b>
+				<aside class="pull-right">
+					<span class="user-city">广东深圳</span>
+					<img class="icon" src="../../images/mine_arrow2.png" />
+				</aside>
+			</section>
+			<section class="item">
+				<b>地址</b>
+				<aside class="pull-right">
+					<span class="user-address">龙岗区大运软件小镇15栋2楼</span>
+					<img class="icon" src="../../images/mine_arrow2.png" />
+				</aside>
+			</section>
+		</article>
+	</article>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+
+			}
+		},
+		props: [],
+		created() {
+
+		},
+		methods: {
+
+		},
+		components: {
+
+		}
+	}
+</script>
+
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.user-info {
+		background: #fff;
+		.item {
+			.pxrem(height, 115);
+			border-bottom: 1px solid #eee;
+			.clearfix();
+			b {
+				.pxrem(font-size, 32);
+			}
+			aside {
+				height: 100%;
+				span {
+					.pxrem(font-size, 28);
+					color: #666;
+				}
+			}
+			b {
+				.pxrem(line-height, 115);
+			}
+			span {
+				display: inline-block;
+				.pxrem(line-height, 115);
+			}
+			.headimg {
+				.pxrem(width, 80);
+				.pxrem(height, 80);
+				.pxrem(border-radius, 40);
+				.pxrem(margin-right, 50);
+				.pxrem(margin-top, 10);
+			}
+			aside {
+				position: relative;
+				/*.pxrem(width, 300);*/
+				text-align: right;
+				span {
+					.pxrem(margin-right, 50);
+				}
+				.icon {
+					vertical-align: middle;
+					position: absolute;
+					.pxrem(top, 35);
+					.pxrem(right, 5);
+				}
+			}
+		}
+		.item:last-child {
+			border: 0;
+		}
+	}
+</style>

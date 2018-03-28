@@ -1,0 +1,26 @@
+/**
+*  author pzh
+*  day  2017-9-21
+*  商品模块路由配置
+*/
+const goodsIndex = r => require.ensure([], () => r(require('../view/goods/index')), 'goodsIndex')
+
+const overview = r => require.ensure([], () => r(require('../view/goods/overview')), 'overview')
+const router = [
+	{
+		name : "goods.index",
+		path : "/goods",
+		component : goodsIndex,
+		children : [
+			{
+				name : "goods.overview",
+				path : "/",
+				component : overview
+			}
+		]
+	}
+]
+
+export default{
+	router
+}

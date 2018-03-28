@@ -1,0 +1,164 @@
+<!-- 收货地址列表 -->
+<template>
+	<div class="addr-index">
+		<div class="item" v-for="a in addrList">
+			<div class="con" @click="setDefault(a)">
+				<div class="header">
+					<span class="name">{{a.userName}}</span>
+					<span class="mobile">{{a.mobile}}</span>
+					<span class="default" v-if="a.defaultAddress">默认</span>
+				</div>
+				<div class="addr-info">
+					地址：{{a.provinceName}}{{a.cityName}}{{a.areaName}}{{a.address}}
+				</div>
+				
+			</div>
+			<div class="event" @click="editAddr(a.addressId)">
+				<img src="../../images/edit-addr.png"  class="edit-icon" />
+			</div>
+			<div class="footer" style="display: none;">
+				<span @click="setDefault(a)">
+					<span class="check" :class="{active:a.defaultAddress==1}"></span>
+					<span class="def">设为默认</span>
+				</span>
+			</div>
+		</div>
+		<div class="footer-event">
+			<div class="wrap">
+				<button class="btn btn-save" @click="jumpNewAddr">新建地址</button>
+			</div>
+			
+		</div>
+	</div>
+</template>
+<script >
+import addrAction from "actionurl/addr/addr"
+export default{
+	data() {
+		return{
+			addrList : []
+		}
+	},
+	created() {
+		addrAction.getAddrList(this);
+	},
+	methods : {
+		jumpNewAddr() {
+			if(this.$route.query.type == "order") {
+				this.$router.push({
+					name : "addr.edit",
+					query : {
+						type : "order"
+					}
+				});
+			}
+		},
+		setDefault(item) {
+			var params = {
+				addressId : item.addressId
+			};
+			addrAction.setDefaultAddr(this, params);
+		},
+		editAddr(addrId) {
+			if(this.$route.query.type == "order") {
+				this.$router.push({
+					name : "addr.edit",
+					query : {
+						type : "order",
+						addrId : addrId
+					}
+				});
+			}
+		}
+	}
+}
+</script>
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.addr-index{
+		.item{
+			background: #FFF;
+			.prem(15);
+			padding:@prem;
+			.pxrem(margin-top,20);
+			position: relative;
+			.con{
+				.pxrem(padding-right,150);
+				
+				.header{
+					.pxrem(font-size, 36);
+				}
+				.addr-info{
+					color:#666;
+					.pxrem(margin-top,3);
+				}
+				.default{
+					display: inline-block;
+					background: @m-c;
+					color:#FFF;
+					.pxrem(font-size, 20);
+					.prem(-1,3);
+					padding:@prem;
+				}
+				
+			}
+			.event{
+				position: absolute;
+				.pxrem(width, 120);
+				.pxrem(height, 80);
+				.pxrem(top, 10);
+				top:50%;
+				.pxrem(margin-top, -40);
+				right:0;
+				border-left:1px solid #eee;
+				text-align: center;
+				.edit-icon{
+					.pxrem(width, 50);
+					.pxrem(margin-top, 10);
+				}
+			}
+			.footer{
+				.pxrem(height, 78);
+				.pxrem(line-height, 88);
+				border-top:1px solid #eee;
+				.pxrem(margin-top, 20);
+				.check{
+					display: inline-block;
+					.pxrem(width, 33);
+					.pxrem(height, 33);
+					border:1px solid #979797;
+					border-radius:50%;
+					position: relative;
+					.pxrem(top, 3);
+					
+				}
+				.active{
+					background:@m-c;
+					border: @m-c;
+				}
+				.def{
+					color:#666666;
+				}
+				.btn-del{
+					color:@assist-color;
+					float: right;
+				}
+			}
+		}
+		.footer-event{
+			position: absolute;
+			bottom:0;
+			width:100%;
+			.wrap{
+				.prem(20);
+				padding:@prem;
+				.btn-save{
+					width:100%;
+					.pxrem(height, 97);
+					.pxrem(line-height, 97);
+					.pxrem(font-size, 36);
+				}
+			}
+		}
+	}
+</style>

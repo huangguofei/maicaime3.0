@@ -1,0 +1,109 @@
+<!--[if lt IE 9]>
+<script type="text/javascript">
+ 	window.location.href="/web/view/ie"
+</script>
+<![endif]-->
+<div class="head-wrap" id="headNar">
+	<div class="content">
+		<span  class="head-buy" onclick="common.goodsListLayer()">
+			<p class="point">
+				<i></i>
+				<i></i>
+				<i></i>
+				<i></i>
+			</p>
+			<p class="point">
+				<i></i>
+				<i></i>
+				<i></i>
+				<i></i>
+			</p>
+			<p class="point">
+				<i></i>
+				<i></i>
+				<i></i>
+				<i></i>
+			</p>
+			<span class="mes">买茶</span>
+		</span> 
+		<a href="/web/view/index" class="logo" id="logoMain">
+			<img src="../../images/logo.png">
+		</a>
+		<a href="javascript:void(0)" class="nar-more" id="wapNar"><span class="mes">菜单</span></a>
+		<!-- <ul class="nar">
+			<li class="nar-item index"><a href="/web/view/index">首页</a></li>
+			<li class="nar-item"><a href="javascript:void(0);" onclick="common.goodsListLayer()">买茶</a></li>
+			<li class="nar-item choose"><a href="/web/view/choose">选茶</a></li>
+			<li class="nar-item origin"><a href="/web/view/origin">茶源</a></li>
+			<li class="nar-item story"><a href="/web/view/story">茶事</a></li>
+			<li class="nar-item gift"><a href="/web/view/gift">茶礼</a></li>
+		</ul> -->
+
+	</div>
+</div>
+<div id="narList" class="nar-wrap" >
+	<div class="bg-layer"></div>
+	<div class="swiper-container-nar">
+        <div class="swiper-wrapper">
+		   <div class="swiper-slide slide-1 ">    
+				<div class="main-nar">
+					<div class="nar-logo">
+						<a href="/wap/view/index" class="logo">
+							<img src="../../images/logo.png" />
+						</a>
+						<a href="javascript:void(0)" class="close common-icon-1" ></a>
+					</div>
+					<div class="nar">
+						<ul >
+							<li class="nar-item tea"><a href="javascript:void(0)" onclick="common.goodsListLayer()"><img src="../../images/tea-.png" /></a></li>
+							<li class="nar-item tonic"><a href="javascript:void(0)" onclick="common.openUpComing()"><img src="../../images/tonic-.png" /></a></li>
+							<li class="nar-item honey"><a href="javascript:void(0)" onclick="common.openUpComing()"><img src="../../images/honey-.png" /></a></li>
+							<li class="nar-item crops"><a href="javascript:void(0)" onclick="common.openUpComing()"><img src="../../images/crops-.png" /></a></li>
+						</ul>
+					</div>
+					<div class="more-wrap">
+						<a href="javascript:void(0)" class="more-nar">更多信息<i class="common-icon-1"></i></a>
+					</div>
+				</div> 
+			</div>
+			<div class="swiper-slide slide-2 ">  
+				<div class="other-nar">
+					<div class="nar-logo">
+						<a href="javascript:void(0)" class="close-top">往上<i class="common-icon-1"></i></a>
+						<a href="javascript:void(0)" class="close common-icon-1"></a>
+					</div>
+					<div class="nar2">
+						<div class="con">
+							<ul >
+								<li class="nar-item"><a href="javascript:void(0)" onclick="common.goodsListLayer()">茶介绍</a></li>
+								<li class="nar-item"><a href="/web/view/index">茶理念</a></li>
+								<li class="nar-item"><a href="/web/view/choose/">选好茶</a></li>
+								<li class="nar-item"><a href="/web/view/gift/">茶礼物</a></li>
+							</ul>
+						</div>
+						
+					</div>
+					<div class="site-footer">
+						<div class="con">
+							<a href="http://shop.yuanyoudadi.com"  target="_blank" class="youzan">有赞商城</a>
+							<a href="http://yuanyoudadi.jd.com/" target="_blank" class="jd">京东商城</a>
+						</div>
+						
+					</div>
+				</div> 
+			</div>
+	 </div>
+    </div>
+</div>
+ <div class="up-coming" id="upComing" >
+	<a href="javascript:void(0)" class="close common-icon-1" ></a>
+	<div class="nar">
+			<p class="header">即将售卖</p>
+			<ul >
+				<li class="nar-item tonic"><img src="../../images/tonic-.png" /></li>
+				<li class="nar-item honey"><img src="../../images/honey-.png" /></li>
+				<li class="nar-item crops"><img src="../../images/crops-.png" /></li>
+			</ul>
+		</div>
+</div> 
+

@@ -1,0 +1,92 @@
+<!-- 添加到购物车 -->
+<template>
+	<span class="cart-wrap " :class="num > 0 ? 'cart-active' : ''">
+		<i class="minus c-i" v-show="num > 0" @click="editSkuNum(1)"></i>
+		<span class="num" v-show="num > 0">{{num}}</span>
+		<i class="add c-i"  @click="editSkuNum(2)"></i>
+	</span>
+</template>
+<script>
+	import commonAction from "actionurl/common/common"
+	import { mapGetters } from 'vuex'
+	export default{
+		props : ["row", "num"],
+		computed : {
+			...mapGetters({
+				cartNum : "getCartNum"
+			})
+		},
+		methods : {
+			editSkuNum(state) {
+				var num = this.num, 
+				cartNum = this.cartNum;
+				if(state == 1) {
+					--num;
+					if(cartNum >= 0) this.$store.commit("minusCatrNum");
+				} else if(state == 2) {
+					++ num;
+					if(cartNum >= 0) this.$store.commit("addCartNum");
+					this.$parent.$refs.parabola.drop(event.target);
+				}
+				this.$emit("changeProdNum", this.row, num);
+				this.debounceSkuNum(num);
+			},
+			/*防止快速操作*/
+			debounceSkuNum:_.debounce(function(num) {
+					this.updateSkuNum(num);
+			},500),
+			updateSkuNum(num) {
+				var row = this.row;
+				if(row.specialProductId) {
+					/*活动商品*/
+					var specialProductId = row.specialProductId;
+					commonAction.addPromptCartByProd(specialProductId, num);
+				} else {
+					/*正常商品*/
+					var	skuId = row.productSkuId;
+					commonAction.addCartByProd(skuId, num);
+				}
+				
+			}
+		}
+	}
+</script>
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.cart-wrap{
+		.pxrem(bottom, 20);
+		display: inline-block;
+		.pxrem(height, 49);
+		.c-i{
+			float:left;
+			display: inline-block;
+			.pxrem(width, 47);
+			.pxrem(height, 47);
+			border-radius: 50%;
+			margin-top:0.5px;
+		}
+		.num{
+			float:left;
+			display: inline-block;
+			.pxrem(height, 47);
+			.pxrem(line-height, 47);
+			.pxrem(min-width, 60);
+			text-align:center;
+			.pxrem(font-size, 31);
+			text-align:center;
+			color:#000;
+		}
+		.minus{
+			background: url(../../images/market_minus.png) no-repeat;
+			background-size: cover;
+		}
+		.add{
+			background: url(../../images/market_plus.png) no-repeat;
+			background-size: cover;
+		}
+	}
+	.cart-active{
+		border:1px solid #EEEEEE;
+		.pxrem(border-radius,80);
+	}
+</style>

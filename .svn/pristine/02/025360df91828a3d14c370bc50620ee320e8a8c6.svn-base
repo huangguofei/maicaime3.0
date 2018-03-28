@@ -1,0 +1,25 @@
+/**
+ * author hgf 
+ * day    2017-9-25
+ * 登录注册
+ */
+import serverAPI from "apiurl/login"
+import cityApi from "apiurl/public"
+export default {
+	/*获取站点列表数据*/
+	getCityData(vm) {
+		cityApi.provicesAPI((result) => {
+			vm.info = result;
+		});
+	},
+	login(vm) {
+		var loginData={
+			"userName": vm.userName,
+			"password": vm.password
+		}
+		serverAPI.loginAPI(loginData,(result) => {
+			vm.loginData = result;
+		});
+	}
+
+}

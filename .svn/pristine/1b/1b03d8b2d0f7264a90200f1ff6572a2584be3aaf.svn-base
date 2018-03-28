@@ -1,0 +1,280 @@
+<!-- 流水信息 -->
+<template>
+	<page-layer :narData="narData" classs="back-color">
+		<el-form :inline="true" ref="form" :model="queryParams" label-width="100px" style='padding-top: 10px;'>
+			<el-form-item label="服务站">
+				<el-select v-model="queryParams.agentId" clearable placeholder="服务站" size="small" :disabled="isSelect">
+					<el-option v-for="item in agentList" :key="item.agentId" :label="item.agentName" :value="item.agentId">
+					</el-option>
+				</el-select>
+			</el-form-item>
+			<el-form-item label="订单状态">
+				<el-select v-model="queryParams.orderStatus" placeholder="订单状态" size="small">
+					<el-option v-for="item in orderStatus" :key="item.value" :label="item.name" :value="item.value">
+					</el-option>
+				</el-select>
+			</el-form-item>
+			<el-form-item label="订单类型">
+				<el-select v-model="queryParams.orderType" placeholder="订单类型" size="small">
+					<el-option v-for="item in orderType" :key="item.value" :label="item.name" :value="item.value">
+					</el-option>
+				</el-select>
+			</el-form-item>
+			<el-form-item label="配送方式">
+				<el-select v-model="queryParams.deliveryWay" placeholder="配送方式" size="small">
+					<el-option v-for="item in deliveryWay" :key="item.value" :label="item.name" :value="item.value">
+					</el-option>
+				</el-select>
+			</el-form-item>
+			<el-form-item label="日期筛选方式">
+				<el-select v-model="queryParams.dateTypeId" placeholder="日期筛选方式" size="small">
+					<el-option v-for="item in dateTypeId" :key="item.value" :label="item.name" :value="item.value">
+					</el-option>
+				</el-select>
+			</el-form-item>
+			<el-form-item label="查询时间">
+				<el-date-picker v-model="searchDate" format="yyyy-MM-dd HH:mm" size="small" @change="changeTime" type="datetimerange" unlink-panels :picker-options="pickerOptions" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" align="right">
+				</el-date-picker>
+				<!--<el-date-picker v-model="searchDate" @change="changeTime" type="daterange" align="right" unlink-panels range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" :picker-options="pickerOptions">
+				</el-date-picker>-->
+			</el-form-item>
+			<el-form-item label="配送时间">
+				<el-date-picker v-model="searchDates" format="yyyy-MM-dd HH:mm" size="small" @change="changeTimes" type="datetimerange" unlink-panels :picker-options="pickerOptions" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" align="right">
+				</el-date-picker>
+			</el-form-item>
+			<el-form-item label="关键字">
+				<el-input v-model="queryParams.keyword" size="small"></el-input>
+			</el-form-item>
+			<el-form-item>
+				<el-button type="primary" style="margin-left:20px;" @click="queryInfo()" size="small">查询</el-button>
+			</el-form-item>
+			<el-tooltip class="item" effect="dark" content="会根据您设置的条件过滤导出Excel" placement="top-start">
+		      <el-button size="small" style="float:right;margin:5px 20px 0 0;" @click="downloadExcel">导出</el-button>
+		    </el-tooltip>
+		</el-form>
+		<el-table :data="tableDatas" style="width: 100%">
+			<el-table-column type="index" width="60">
+			</el-table-column>
+			<el-table-column prop="purchaserName" label="采购商" width="180">
+			</el-table-column>
+			<el-table-column prop="purchaserMobile" label="采购手机" width="160">
+			</el-table-column>
+			<el-table-column prop="supplierName" label="供应商" width="200">
+			</el-table-column>
+			<el-table-column prop="supplierMobile" label="供应手机" width="160">
+			</el-table-column>
+			<el-table-column label="订单编号" width="200">
+				<template scope="scope">
+					<p>{{scope.row.orderId }}</p>
+					<p>({{scope.row.parentOrderId }})</p>
+				</template>
+			</el-table-column>
+			<el-table-column prop="orderStatusText" label="状态">
+			</el-table-column>
+			<el-table-column prop="orderTypeText" label="订单类型" width="120">
+			</el-table-column>
+			<el-table-column prop="timeCreated" label="订单时间" width="180">
+			</el-table-column>
+			<el-table-column prop="purchaserRemark" label="备注" >
+			</el-table-column>
+			<el-table-column prop="payableAmount" label="实付金额" >
+			</el-table-column>
+			<el-table-column prop="totalAmount" :label="queryParams.orderType == 2 ? '合计积分' : '合计金额'" width="120">
+			</el-table-column>
+			<el-table-column label="操作" width="150" fixed="right">
+				<template scope="scope">
+					<a :href="'/order/'+scope.row.orderId" target="_blank">
+						<el-button type="" class="btn">查看订单详情</el-button>
+					</a>
+				</template>
+			</el-table-column>
+
+		</el-table>
+		<pagination :pagings="queryParams" :totalCount="totalCount" @changePageSize="changePageSize"></pagination>
+	</page-layer>
+</template>
+<script>
+	import SETTINGAREA from "actionurl/order/order"
+	import pageLayer from "components/common/page-layer"
+	import pagination from "components/common/pagination"
+	import agrntServer from "actionurl/serve/agent"
+	export default {
+		data() {
+			return {
+				narData: [{
+					name: "订单列表",
+					router: ""
+				}],
+				searchDate: "",
+				searchDates: "",
+				agentList: [],
+				isSelect: true,
+				queryParams: {
+					agentId: '',
+					dateTypeId: 10,
+					orderStatus: "",
+					orderType: "",
+					deliveryWay: "",
+					deliveryBeginTime: "",
+					deliveryEndTime: "",
+					beginDate: "",
+					endDate: "",
+					keyword: "",
+					pageSize: 10,
+					pageNum: 1,
+				},
+				tableDatas: [],
+				totalCount: 0,
+				orderStatus: [{
+					name: '选择订单状态',
+					value: ""
+				}, {
+					name: '待确认',
+					value: '30'
+				}, {
+					name: '待收货',
+					value: '40,50'
+				}, {
+					name: '已完成',
+					value: '100'
+				}, {
+					name: '已取消',
+					value: '300'
+				}],
+				orderType: [{
+					name: '选择订单类型',
+					value: ""
+				}, {
+					name: '食材采购',
+					value: 1
+				}, {
+					name: '积分兑换',
+					value: 2
+				}],
+				deliveryWay: [{
+					name: '选择配送方式',
+					value: ""
+				}, {
+					name: '送货上门',
+					value: 100
+				}, {
+					name: '自提',
+					value: 200
+				}, {
+					name: '驿站',
+					value: 300
+				}],
+				dateTypeId: [{
+					name: '选择日期筛选方式',
+					value: ""
+				}, {
+					name: '下单时间',
+					value: 10
+				}, {
+					name: '付款时间',
+					value: 20
+				}, {
+					name: '接单时间',
+					value: 30
+				}, {
+					name: '收货时间',
+					value: 40
+				}, {
+					name: '完成时间',
+					value: 50
+				}, {
+					name: '取消时间',
+					value: 60
+				}],
+				pickerOptions: {
+					shortcuts: [{
+						text: '最近一周',
+						onClick(picker) {
+							const end = new Date();
+							const start = new Date();
+							start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+							picker.$emit('pick', [start, end]);
+						}
+					}, {
+						text: '最近一个月',
+						onClick(picker) {
+							const end = new Date();
+							const start = new Date();
+							start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+							picker.$emit('pick', [start, end]);
+						}
+					}, {
+						text: '最近三个月',
+						onClick(picker) {
+							const end = new Date();
+							const start = new Date();
+							start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+							picker.$emit('pick', [start, end]);
+						}
+					}]
+				}
+			}
+		},
+		created() {
+			SETTINGAREA.getOrderList(this);
+			agrntServer.getSiteList(this, {
+				pageSize: 50
+			});
+		},
+		components: {
+			pageLayer,
+			pagination
+		},
+		methods: {
+			queryInfo() {
+				SETTINGAREA.getOrderList(this);
+			},
+			changePageSize() {
+				SETTINGAREA.getOrderList(this);
+			},
+			viewDetails(data) {
+				this.$router.push({
+					name: "order.details",
+					params: {
+						id: data.orderId
+					},
+					query: {
+						page: this.queryParams.pageNum
+					}
+				})
+			},
+			changeTime(val) {
+				if(val) {
+					this.queryParams.beginDate = val.split("至")[0];
+					this.queryParams.endDate = val.split("至")[1];
+
+				} else {
+					this.queryParams.beginDate = "";
+					this.queryParams.endDate = "";
+				}
+			},
+			changeTimes(val) {
+				if(val) {
+					this.queryParams.deliveryBeginTime = val.split("至")[0];
+					this.queryParams.deliveryEndTime = val.split("至")[1];
+				} else {
+					this.queryParams.deliveryBeginTime = "";
+					this.queryParams.deliveryEndTime = "";
+				}
+			},
+			downloadExcel() {
+				SETTINGAREA.doweloadOrderExcel(this);
+			}
+		}
+	}
+</script>
+<style lang="less" scoped>
+	@import "../../../common/less/config.less";
+	.price {
+		color: red;
+	}
+	
+	.active {
+		color: #46CD72;
+	}
+</style>

@@ -1,0 +1,75 @@
+/**
+ *  author pzh
+ *  day  2017-9-13
+ *  我的模块路由配置
+ */
+const indexView = r => require.ensure([], () => r(require('../view/user/index')), 'Index')
+const activitiesListView = r => require.ensure([], () => r(require('../view/user/activity/user-activitiesList')), 'Index')
+const activitiesAddView = r => require.ensure([], () => r(require('../view/user/activity/user-activitiesAdd')), 'Index')
+const editFoodView = r => require.ensure([], () => r(require('../view/user/activity/user-editfood')), 'Index')
+const activitiesFoodView = r => require.ensure([], () => r(require('../view/user/activity/user-activities-food')), 'Index')
+const userInfoView = r => require.ensure([], () => r(require('../view/user/user-info')), 'Index')
+const salesSummaryView = r => require.ensure([], () => r(require('../view/user/user-sales-summary')), 'Index')
+const salesRankView = r => require.ensure([], () => r(require('../view/user/salesRank/index')), 'Index')
+const salesTimeSearchView = r => require.ensure([], () => r(require('../view/user/salesRank/salesTimeSearch')), 'Index')
+const depositView = r => require.ensure([], () => r(require('../view/user/user-deposit')), 'Index')
+const balanceView = r => require.ensure([], () => r(require('../view/user/balance/index')), 'Index')
+const balanceDetailsView = r => require.ensure([], () => r(require('../view/user/balance/user-balance-details')), 'Index')
+const statisticAnalysisView = r => require.ensure([], () => r(require('../view/user/statisticAnalysis/index')), 'Index')
+const router = [{
+	name: "user.index",
+	path: "/user/",
+	component: indexView
+}, {
+	name: "user.activitiesList",
+	path: "/activitiesList/",
+	component: activitiesListView
+}, {
+	name: "user.activitiesAdd",
+	path: "/activitiesAdd/",
+	component: activitiesAddView
+}, {
+	name: "user.editFood",
+	path: "/editFood/",
+	component: editFoodView
+}, {
+	name: "user.activitiesFood",
+	path: "/activitiesFood/",
+	component: activitiesFoodView
+}, {
+	name: "user.info",
+	path: "/user/info/",
+	component: userInfoView
+}, {
+	name: "user.salesSummary",
+	path: "/user/salesSummary/",
+	component: salesSummaryView
+}, {
+	name: "user.salesRank",
+	path: "/user/salesRank/",
+	component: salesRankView
+}, {
+	name: "user.salesTimeSearch",
+	path: "/user/salesTimeSearch/",
+	component: salesTimeSearchView
+}, {
+	name: "user.deposit",
+	path: "/user/deposit/",
+	component: depositView
+}, {
+	name: "user.balance",
+	path: "/user/balance/",
+	component: balanceView
+}, {
+	name: "user.balanceDetails",
+	path: "/user/balance/:id",
+	component: balanceDetailsView
+}, {
+	name: "user.statisticAnalysis",
+	path: "/user/statisticAnalysis/",
+	component: statisticAnalysisView
+}]
+
+export default {
+	router
+}

@@ -1,0 +1,194 @@
+/*
+ * author pizhenhua
+ * day 2017-7-13
+ * 主页js
+ */
+var indexModule = {
+	init : function() {
+		this.getTeaList();
+		this.pageEvent();
+	},
+	pageEvent : function() {
+		var mainCount = $('.swiper-container').find(".swiper-main").length;
+		var swiperObj = new Swiper('.swiper-container',{
+			mode: 'vertical',
+			keyboardControl : true,
+			mousewheelControl : true,
+			speed:600,
+			resistance : "100%",
+			onSlideChangeEnd: function(swiper){
+				var index = swiperObj.activeIndex;
+				var $footer = $(".footer-fixed");
+				if(index == mainCount - 1) {
+					$footer.removeClass("footer-hide").css("bottom",-$footer.height());
+					$footer.delay(50).animate({bottom:0},500);
+					$(".arrow").hide();
+				} else {
+					$footer.addClass("footer-hide");
+					$(".arrow").show();
+				}
+			}
+		})
+		$("#swiperDown").click(function() {
+			swiperObj.swipeNext();
+		});
+		/*var mySwiperLive = new Swiper('.swiper-live',{
+		    grabCursor: true,
+			paginationClickable: true,
+			centeredSlides: true,
+    		slidesPerView: 1.5,
+    		speed:1000,
+		})
+		mySwiperLive.swipeTo(1);
+		$(".swiper-live").find(".swiper-slide").click(function() {
+				var index = $(this).index();
+				mySwiperLive.swipeTo(index);
+		});
+
+		var mySwiperPublic = new Swiper('.swiper-public',{
+		    grabCursor: true,
+			paginationClickable: true,
+			centeredSlides: true,
+    		slidesPerView: 1.5,
+    		resistance : "100%",
+		})
+		mySwiperPublic.swipeTo(1)
+  		$(".swiper-public .swiper-slide").click(function(e) {
+				var index = $(this).index();
+				mySwiperPublic.swipeTo(index);
+		});*/
+
+		
+	},
+	getTeaList : function() {
+		var that = this;
+		common.commAjax({
+ 			type : "POST",
+ 			url : "product/list",
+ 			success : function(result) {
+ 				if(result.length > 0) {
+ 					that.teaSwiperResolve(result);
+ 					
+ 				}
+ 			}
+ 		});
+	},
+	/*主页茶的轮播*/
+	teaSwiperResolve : function(result) {
+		var swiperHtml = "", teaHtml = "", teaReamkHtml = "", that = this;
+		$.each(result, function(key, item) {
+				var url = "/web/view/detail?productId=" + item.productId,
+					backImg = item.productBGPC,
+					productIcon = item.productIcon,
+					brefDesc = item.brefDesc,
+					productPcImage = item.productPcImage;
+				swiperHtml += '<div class="swiper-slide n-1 s-back" style="background: url('+backImg+') no-repeat center center;background-size:cover">'+
+								'<a href="'+url+'" target="_blank"></a>'+
+							  '</div>';
+				teaHtml += '<li class="tea-item item-1">'+
+	                       '<i class="tea-img s-back" style="background-image: url('+productIcon+');background-position: -6px 6px;"></i>'+
+	                       '<span class="name">'+item.productName+'</span></li>';
+
+                teaReamkHtml += '<div class="p-item '+brefDesc+'">'+
+	                                  '<div class="p-img">'+
+	                                      '<img src="'+productPcImage+'" />'+
+	                                  '</div>'+
+	                                  '<p class="p-name">'+item.productName+'</p>'+
+	                                  '<p class="p-remak">'+item.content+'</p>'+
+	                                  '<a href="'+url+'" class="p-detail">查看详情</a>'+
+                              '</div>';
+		});
+		var $teaList = $("#teaList"), $nested = $(".swiper-nested");
+		$nested.find(".swiper-wrapper").append(swiperHtml);
+		$teaList.find("ul").empty().append(teaHtml);
+		$(".tea-map .prod-reamk").empty().append(teaReamkHtml).find(".tea-1").addClass("active");
+		var len = $teaList.find(".tea-item").length;
+		if(len > 1) {
+			var mean = parseInt(len / 2);
+			$teaList.find(".tea-item:lt("+mean+")").addClass("leftFlyRight");
+			$teaList.find(".tea-item:gt("+ (mean - 1 )+")").addClass("rightFlyLeft");
+		}
+		var count = $nested.find(".swiper-slide").length;
+		$nested.find(".swiper-slide:eq(0)").addClass("active");
+		function swiperEnd(swiper) {
+			var index = 0;
+			if(count < swiper.activeIndex) {
+				index = 0;
+			} else if(swiper.activeIndex == 0){
+				index = count - 1;
+			} else {
+				index = swiper.activeIndex - 1;
+			}
+			$teaList.find(".tea-item").removeClass("active");
+			$teaList.find(".tea-item:eq("+ (index - 1)+")").addClass("active")
+		}
+		var len = $(".swiper-nested").find(".swiper-slide").length;
+		var swiper = new Swiper('.swiper-nested', {
+	    		//autoplay : 3000,
+	    		speed:1000,
+				loop:true,
+				//grabCursor: true,
+				//paginationClickable: true,
+				onSlideNext: function(swiper){
+					swiperEnd(swiper);
+				},
+				onSlidePrev : function(swiper) {
+					swiperEnd(swiper);
+				},
+				onSlideChangeEnd: function(swiper){
+					if(swiper.activeIndex - 1 == len || swiper.activeIndex == 1) {
+						$teaList.fadeOut();
+					} else {
+						$teaList.fadeIn();
+					}
+				}
+	    });
+		$('.swiper-button-next').on('click', function(e){
+			e.preventDefault()
+			swiper.swipeNext()
+		})
+		$('.swiper-button-prev').on('click', function(e){
+			e.preventDefault()
+			swiper.swipePrev()
+		})
+
+		$teaList.find(".tea-item").click(function() {
+			var index = $(this).index();
+			$teaList.find(".tea-item").removeClass("active");
+			$teaList.find(".tea-item:eq("+index+")").addClass("active")
+			swiper.swipeTo(index + 1)
+		});
+
+	    $(".fixed-content").find(".layer").click(function(e) {
+	    	e = window.event || e;
+		    if(document.all){  
+		        e.cancelBubble=true;
+		    }else{
+		        e.stopPropagation();
+		    }
+    		$nested.find(".swiper-slide-active").click();
+	    });
+
+	    that.mapEvent();
+	},
+	/*地图上的事件*/
+	mapEvent : function() {
+		var productInfo = function($obj) {
+			$(".tea-map").find(".t-item").removeClass("active");
+			$obj.addClass("active");
+			var checkTea = $obj.attr("value");
+			if(checkTea) {
+				var $activeSilder = $(".swiper-nested").find(".swiper-slide-active");
+				var $prodWrap = $activeSilder.find(".prod-reamk");
+				$prodWrap.find(".p-item").removeClass("active");
+				$prodWrap.find("." + checkTea).addClass("active");
+			}
+		}
+		$(".tea-map").find(".t-item").click(function() {
+			productInfo($(this));
+		});
+		$(".tea-map").find(".t-item").hover(function() {
+			productInfo($(this));
+		});
+	}
+}

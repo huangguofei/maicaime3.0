@@ -1,0 +1,6 @@
+<!-- 采购商列表 -->
+<template>
+	<div>
+		采购商列表
+	</div>
+</template>

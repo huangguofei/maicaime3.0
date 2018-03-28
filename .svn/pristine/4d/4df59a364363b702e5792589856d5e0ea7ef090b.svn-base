@@ -1,0 +1,107 @@
+<!-- 食材列表 -->
+<template>
+	<div class="prod-list">
+		<div class="prod-item" v-for="p in prodData">
+				<i class="prod-img"><router-link :to="{name : 'market.detail'}"><img :src="p.skuImage"></router-link></i>
+				<add-often :row="p"></add-often>
+				<add-cart :row="p" :num="p.skuQuantity" class="cart" @changeProdNum="changeProdNum"></add-cart>
+				<div class="prod-info">
+					<router-link :to="{name : 'market.detail'}"><p class="prod-name">{{p.skuName}}</p></router-link>
+					<p class="price">¥{{(p.price * 1).toFixed(2)}}/斤</p>
+					<span class="orgin-price" v-if="p.skuPrice > 0">¥{{(p.skuPrice * 1).toFixed(2)}}</span>
+				</div>
+		</div>
+		<cart-parabola ref="parabola">
+			 <div class="inner inner-hook">
+             </div>
+		</cart-parabola>
+		<div class="no-data" v-if="prodData.length <= 0">没有食材!</div>
+	</div>
+</template>
+<script >
+	
+	import cartParabola from "components/common/cart-parabola"
+	import addCart from "components/common/add-cart"
+	import addOften from "components/common/add-often"
+	export default{
+		data() {
+			return {
+				
+			}
+		},
+		props : ["prodData"],
+		components : {
+			cartParabola,
+			addCart,
+			addOften
+		},
+		methods : {
+			changeProdNum(row, num) {
+				row.skuQuantity = num;
+			}
+		}
+}
+</script>
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.prod-list{
+		
+		.inner{
+			.pxrem(width, 30);
+			.pxrem(height, 30);
+			border-radius: 50%;
+			transition: all 0.4s linear;
+			overflow: hidden;
+			background: @m-c;
+		}
+		background: #FFF;
+		.prem(0,20);
+		padding:@prem;
+		.no-data{
+			.prem(20);
+			padding:@prem;
+			text-align: center;
+		}
+		.prod-item{
+			position: relative;
+			.prem(20, 0);
+			padding:@prem;
+			border-bottom:0.5px solid #E9E9E9;
+			&:last-child{
+				border-bottom:0;
+			}
+			.prod-img{
+				position: absolute;
+				display: inline-block;
+				.pxrem(width,150);
+				.pxrem(height,150);
+				border:0.5px solid #E5E5E5;
+				display: table-cell;
+				vertical-align: middle;
+				img{
+					max-width: 100%;
+					max-height: 100%;
+					text-align: center;
+					vertical-align: middle;
+				}
+			}
+			.often{
+				position: absolute;
+				right:0;
+			}
+			.prod-info{
+				.pxrem(height, 150);
+				.pxrem(padding-left, 170);
+				.prod-name{
+					color:@p-t-c;
+					.pxrem(font-size, 32);
+					.pxrem(min-height, 60);
+				}
+			}
+		}
+		.cart{
+			position: absolute;
+			right:0;
+		}
+	}
+</style>

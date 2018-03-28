@@ -1,0 +1,37 @@
+/*路由*/
+import Vue from 'vue'
+import VueRouter from 'vue-router'
+import IndexRouter from './index'
+import ProductRouter from './product'
+Vue.use(VueRouter);
+
+const mainView = r => require.ensure([], () => r(require('../view/main')), 'Main')
+const loginView = r => require.ensure([], () => r(require('../view/login')), 'Login')
+
+const mainS = [];
+const mainRouters = mainS.concat(ProductRouter.router);
+const routes = [
+	{
+		name : "main",
+		path : "/",
+		component : mainView,
+		children : mainRouters
+	},
+	{
+		name : "login",
+		path : "/login",
+		component : loginView
+	}
+];
+/*合并路由配置*/
+const routesArray = routes.concat(IndexRouter.router);
+
+export const router = new VueRouter({
+	mode : "history",
+	base: __dirname,
+	routes : routesArray
+})
+
+new Vue({
+	router
+}).$mount("#app")

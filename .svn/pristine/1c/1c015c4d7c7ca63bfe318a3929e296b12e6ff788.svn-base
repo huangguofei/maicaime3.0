@@ -1,0 +1,10 @@
+import Vue from 'vue'
+import Router from './router/router'
+import CommonLess from './common/less/common.less'
+import Animation from './common/less/animation.less'
+
+
+
+
+
+

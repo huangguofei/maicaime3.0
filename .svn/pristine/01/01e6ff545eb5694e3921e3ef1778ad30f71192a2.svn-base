@@ -1,0 +1,41 @@
+<!-- 分类商品 -->
+<template>
+	<div class="page-layer footer-page">
+		<category-nar :categoryData="categoryData"></category-nar>
+		<prodlist :prodData="prodData"  class="prod-wrap"></prodlist>
+		<cart-suspend></cart-suspend>
+	</div>
+</template>
+<script>
+	import categoryNar from "components/often/category-nar"
+	import prodlist from "components/market/prod-list"
+	import cartSuspend from "components/common/cart-suspend"
+	export default{
+		data() {
+			return{
+				categoryData : [],
+				prodData : []
+			}
+		},
+		created() {
+			this.categoryData =[
+							{"categoryId":"1","merchantTypeId":500,"merchantTypeText":"总部运营","merchantId":"","userId":"","categoryName":"蔬菜213","parentCategoryId":"1","categoryStatusId":-666,"categoryStatusText":"","orderIndex":0,"timeCreated":"2017-10-13 16:55:06","timeUpdated":"","parentCategoryName":""},
+							{"categoryId":"9ffd891f34a746a1b097b177459fc850","merchantTypeId":500,"merchantTypeText":"总部运营","merchantId":"","userId":"","categoryName":"肉类","parentCategoryId":"9ffd891f34a746a1b097b177459fc850","categoryStatusId":0,"categoryStatusText":"禁用","orderIndex":1,"timeCreated":"2017-09-20 15:34:58","timeUpdated":"","parentCategoryName":""}]
+			this.prodData = [{"productSkuId":"0f03820501f441f397c7e2d084ed45d7","prodTempplateId":"","categoryId":"9e57c92f5b094701993c45aee3041d7d","agentId":"29b63f4a810f4dbf8089a4dabf881fbd","merchantTypeId":300,"merchantTypeText":"供货商","merchantId":"ef66e67a3d9840a69cb68f7adc5f0685","userId":"4b182c56f11143ac84b96692892c979e","skuName":"牛肉","skuPrice":0.0,"skuUnit":"两","skuStatusId":0,"skuStatusText":"禁用","auditStatusId":5,"auditStatusText":"未审核","quantitySale":0,"skuUpc":"","skuImage":"http://maicaim3.oss-cn-shenzhen.aliyuncs.com/product/162e74fd44be40f7aa4475418011f515.png","slogan":"","timeCreated":"2017-10-13 17:12:01","timeUpdated":"","orderIndex":"","remark":"供应商添加","skuQuantity":4,"categoryName":"","collectId":"06adf8e540214fff8746413377990314","price":9.80,"cartId":"","supplierId":"ef66e67a3d9840a69cb68f7adc5f0685"},{"productSkuId":"8ddeb812e3bd427ab7021bea825affab","prodTempplateId":"","categoryId":"9e57c92f5b094701993c45aee3041d7d","agentId":"29b63f4a810f4dbf8089a4dabf881fbd","merchantTypeId":300,"merchantTypeText":"供货商","merchantId":"ef66e67a3d9840a69cb68f7adc5f0685","userId":"4b182c56f11143ac84b96692892c979e","skuName":"猪肉","skuPrice":0.0,"skuUnit":"两","skuStatusId":0,"skuStatusText":"禁用","auditStatusId":5,"auditStatusText":"未审核","quantitySale":0,"skuUpc":"","skuImage":"http://maicaim3.oss-cn-shenzhen.aliyuncs.com/product/4b31342a1a8d4333915136767e2ab763.png","slogan":"","timeCreated":"2017-10-13 17:11:33","timeUpdated":"","orderIndex":"","remark":"供应商添加","skuQuantity":0.0,"categoryName":"","collectId":"","price":5.60,"cartId":"","supplierId":"ef66e67a3d9840a69cb68f7adc5f0685"}]
+		},
+		components : {
+			categoryNar,
+			prodlist,
+			cartSuspend
+		},
+		methods : {
+			
+		}
+	}
+</script>
+<style lang="less" scoped>
+@import "../../common/less/config.less";
+.prod-wrap{
+	.pxrem(margin-top, 20);
+}
+</style>

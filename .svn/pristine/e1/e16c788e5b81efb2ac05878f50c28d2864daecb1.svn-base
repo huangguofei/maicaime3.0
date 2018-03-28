@@ -1,0 +1,78 @@
+<template>
+	<page-layer :narData="narData" classs="back-color">
+		<div class="goods-class padding">
+			<el-tree :data="data" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
+		</div>
+	</page-layer>
+</template>
+<script>
+	import pageLayer from "components/common/page-layer"
+
+	export default {
+		data() {
+			return {
+				narData: [{
+					name: "商品分类",
+					router: "goods.goodsClass"
+				},{
+					name: "商品列表",
+					router: "goods.goodslist"
+				}],
+				data: [{
+					label: '一级 1',
+					children: [{
+						label: '二级 1-1',
+						children: [{
+							label: '三级 1-1-1'
+						}]
+					}]
+				}, {
+					label: '一级 2',
+					children: [{
+						label: '二级 2-1',
+						children: [{
+							label: '三级 2-1-1'
+						}]
+					}, {
+						label: '二级 2-2',
+						children: [{
+							label: '三级 2-2-1'
+						}]
+					}]
+				}, {
+					label: '一级 3',
+					children: [{
+						label: '二级 3-1',
+						children: [{
+							label: '三级 3-1-1'
+						}]
+					}, {
+						label: '二级 3-2',
+						children: [{
+							label: '三级 3-2-1'
+						}]
+					}]
+				}],
+				defaultProps: {
+					children: 'children',
+					label: 'label'
+				}
+			}
+		},
+		created() {
+
+		},
+		methods: {
+			handleNodeClick(data) {
+				console.log(data);
+			}
+		},
+		components: {
+			pageLayer
+		}
+	}
+</script>
+
+<style lang="less" scoped>
+	@import "../../../common/less/config.less";
+</style>

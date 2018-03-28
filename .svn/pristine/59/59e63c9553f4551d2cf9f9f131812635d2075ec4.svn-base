@@ -1,0 +1,18 @@
+/**
+*  author pzh
+*  day  2017-9-14
+*  商品模块路由配置
+*/
+const categoryList = r => require.ensure([], () => r(require('../view/product/category/list')), 'categoryList')
+
+const router = [
+	{
+		name : "product.category.list",
+		path : "/",
+		component : categoryList
+	}
+]
+
+export default{
+	router
+}

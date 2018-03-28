@@ -1,0 +1,163 @@
+<template>
+	<page-layer :narData="narData" classs="back-color">
+		<el-form :inline="true" ref="form" :model="queryParams" label-width="80px" style='padding-top: 10px;'>
+			<el-form-item label="商品名称">
+				<el-input v-model="queryParams.skuName" placeholder="商品名称"></el-input>
+			</el-form-item>
+			<el-form-item label="商品分类">
+				<el-cascader expand-trigger="hover" :clearable=true :disabled="isDisabled" :options="classData" v-model="categoryId" :props="options" @change="handleChange">
+				</el-cascader>
+			</el-form-item>
+			<el-form-item label="商品状态">
+				<el-select v-model="queryParams.skuStatus" placeholder="商品状态">
+					<el-option v-for="item in goodsStatus" :key="item.value" :label="item.name" :value="item.value">
+					</el-option>
+				</el-select>
+			</el-form-item>
+			<el-form-item>
+				<el-button type="primary" style="margin-left:20px;" @click="queryInfo()">搜索</el-button>
+			</el-form-item>
+		</el-form>
+		<el-table :data="tableData" style="width: 100%">
+			<el-table-column type="index" width="60">
+			</el-table-column>
+			<el-table-column label="商品名称" width="190">
+				<template scope="scope">
+					<img class="goods-img" :src="scope.row.skuImage" />
+					<span class="goods-name">{{scope.row.skuName }}</span>
+				</template>
+			</el-table-column>
+			<el-table-column prop="categoryName" label="分类">
+			</el-table-column>
+			<el-table-column prop="skuPrice" label="单价 ">
+			</el-table-column>
+			<el-table-column prop="skuUnit" label="销售单位">
+			</el-table-column>
+			<el-table-column label="状态">
+				<template scope="scope">
+					<span class="goods-status" :class="[{delete:scope.row.skuStatusId==0,disabled:scope.row.skuStatusId==0}]">{{scope.row.skuStatusText }}</span>
+				</template>
+			</el-table-column>
+			<el-table-column prop="creater" label="创建者">
+			</el-table-column>
+			<el-table-column prop="timeCreated" label="创建时间">
+			</el-table-column>
+			<el-table-column prop="remark" label="备注">
+			</el-table-column>
+			<el-table-column label="操作" width="250">
+				<template scope="scope">
+					<a :href="'/material/goods/'+scope.row.productSkuId" class="btn" target="_blank">查看商品详情</a>
+					<el-button type="text" class="btn" @click="goodsEdit(scope.row)">编辑</el-button>
+					<el-button type="text" class="btn" @click="viewDetails(scope.row)">禁用</el-button>
+					<el-button type="text" class="btn" @click="viewDetails(scope.row)">删除</el-button>
+				</template>
+			</el-table-column>
+
+		</el-table>
+		<pagination :pagings="queryParams" :totalCount="totalCount" @changePageSize="changePageSize"></pagination>
+		<edit-goods 
+	    	:editInfo="editInfo" 
+	    	:submitClick="submitInfo" 
+	    	ref="editMaterial">
+	    </edit-goods>
+	</page-layer>
+</template>
+
+<script>
+	import pageLayer from "components/common/page-layer"
+	import editGoods from "components/goods/edit-goods"
+	import server from "action/goods/goods"
+	import pagination from "components/common/pagination"
+	export default {
+		data() {
+			return {
+				narData: [{
+					name: "商品列表",
+					router: "goods.goodslist"
+				}],
+				categoryId: [],
+				queryParams: {
+					skuName: '',
+					categoryId: "",
+					skuStatus: '',
+					pageSize: 10,
+					pageNum: 1,
+				},
+				totalCount: 0,
+				tableData: [],
+				classData: [],
+				goodsStatus: [{
+					name: "正常",
+					value: "1"
+				}, {
+					name: "已下架",
+					value: "0"
+				}],
+				options: {
+					value: 'categoryId',
+					label: 'categoryName',
+					children: "subCategoryList"
+				},
+				isDisabled: true,
+				editInfo: {
+					title: "",
+					dialogShow: false
+				}
+			}
+		},
+		created() {
+			server.getGoodsClass(this);
+			server.getGoodsList(this);
+		},
+		methods: {
+			queryInfo() {
+				server.getGoodsList(this);
+			},
+			changePageSize() {
+				server.getGoodsList(this);
+			},
+			handleChange(val) {
+				this.queryParams.categoryId = val[1];
+			},
+			goodsEdit(data) {
+				var info = this.editInfo;
+				info.title = "编辑"
+				info.dialogShow = true;
+				this.$refs.editMaterial.resetForm();
+			},submitInfo(){
+				
+			}
+		},
+		components: {
+			pageLayer,
+			pagination,
+			editGoods
+		}
+	}
+</script>
+
+<style lang="less" scoped>
+	@import "../../../common/less/config.less";
+	.goods-img {
+		width: 26px;
+		height: 26px;
+		border-radius: 13px;
+		vertical-align: middle;
+	}
+	
+	.goods-status {
+		color: @color-main;
+	}
+	
+	.delete {
+		color: red;
+	}
+	
+	.disabled {
+		color: #e96900;
+	}
+	
+	.btn {
+		color: @color-main;
+	}
+</style>

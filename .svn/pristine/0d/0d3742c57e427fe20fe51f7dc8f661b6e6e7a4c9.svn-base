@@ -1,0 +1,35 @@
+/**
+ * pzh 2017年12月11日
+ * 账单
+ */
+import { billAPI } from "../../api/data"
+export default {
+	/*获取账单列表*/
+	getcheckList(vm) {
+		var str = JSON.stringify(vm.queryParams);
+		var params = JSON.parse(str);
+		for(var i in params) {
+			if(!params[i])
+				delete params[i];
+		}
+		billAPI.billListAPI(params, (result) => {
+			vm.tableData = result.resultList;
+			vm.totalCount = result.totalCount;
+		});
+	},
+	getBillDetails(vm) {
+		billAPI.billHeadAPI({
+			billId: vm.billId,
+			merchantTypeId: vm.type
+		}, (result) => {
+			vm.headData = result;
+		});
+		billAPI.billDetailAPI(vm.queryParams, (result) => {
+			vm.tradeAmount=result.stats.tradeAmount;
+			vm.billData = result.pageInfo.resultList;
+			vm.queryParams.pageNum = result.pageInfo.currentPage;
+			vm.queryParams.pages = result.pageInfo.totalPage;
+			vm.queryParams.total = result.pageInfo.totalCount;
+		});
+	}
+}

@@ -1,0 +1,10 @@
+/**
+ * author 黄hgf 
+ * day    2017-9-25
+ * 登录注册模块接口
+ */
+import https from "httpurl/https"
+export default {
+	/*添加服务站*/
+//	addAgentAPI: (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/agent/add", v)),
+}

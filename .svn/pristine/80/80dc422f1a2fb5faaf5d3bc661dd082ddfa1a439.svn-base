@@ -1,0 +1,85 @@
+<!-- 限时抢购 -->
+<template>
+	<page-layer :narData="narData" classs="padd" class="edit-page">
+		<phone-model title="限时抢购活动">
+			<div class="content">
+				<edit-element  @setElement="setElement" :elementIndex="1" :class="selectElementIndex == 1 ? 'active' : ''">
+					<activity-time-element></activity-time-element>
+				</edit-element>
+				<edit-element  @setElement="setElement" :elementIndex="2" class="prod-ele" :class="selectElementIndex == 2 ? 'active' : ''">
+					<editor-prod></editor-prod>
+				</edit-element>
+			</div>
+			
+		</phone-model>
+		<div class="right">
+			<setting-area title="活动基本信息" v-if="selectElementIndex == 1">
+				<setting-basic></setting-basic>
+			</setting-area>
+			<setting-area title="活动范围" style="top:430px;" v-if="selectElementIndex == 1">
+				<setting-scope></setting-scope>
+			</setting-area>
+			<setting-area title="添加主题活动商品"  v-if="selectElementIndex == 2">
+				添加主题活动商品
+			</setting-area>
+		</div>
+	</page-layer>
+</template>
+<script>
+import pageLayer from "components/common/page-layer"
+import phoneModel from "components/marketing/editor/phone-model"
+import settingArea from "components/marketing/editor/setting-area"
+import editElement from "components/marketing/editor/edit-element"
+import activityTimeElement from "components/marketing/editor/index/activity-time-element"
+import editorProd from "components/marketing/editor/index/editor-prod"
+import settingBasic from "components/marketing/editor/index/setting-basic"
+import settingScope from "components/marketing/editor/index/setting-scope"
+export default{
+	data() {
+		return{
+			narData : [
+	    	  	{
+	    	  		name : "主题活动",
+	    	  		router : "marketing.feature.list"
+	    	  	},
+	    	  	{
+	    	  		name : "发起主题活动",
+	    	  		router : "marketing.feature.theme",
+	    	  		active : true
+	    	  	}
+	    	  ],
+	    	  selectElementIndex : 1
+		}
+	},
+	components : {
+		pageLayer,
+		phoneModel,
+		settingArea,
+		editElement,
+		activityTimeElement,
+		editorProd,
+		settingBasic,
+		settingScope
+	},
+	methods : {
+		setElement(index) {
+			this.selectElementIndex = index;
+		}
+	}
+}
+</script>
+<style lang="less" scoped>
+	.edit-page{
+		position: relative;
+		.right{
+			float: left;
+			.event{
+				text-align: center;
+				padding:20px 60px;
+			}
+		}
+	}
+	.prod-ele{
+		margin-top:10px;
+	}
+</style>

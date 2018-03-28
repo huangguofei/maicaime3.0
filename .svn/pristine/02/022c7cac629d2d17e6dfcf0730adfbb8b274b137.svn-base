@@ -1,0 +1,86 @@
+<!-- 下拉刷新 -->
+<template>
+	<div class="refersh wrapper" ref="wrapper">
+		<!--  <p class="load" v-if="load" ref="load" :style="{height:bubbleY + 'px'}">松开刷新</p> -->
+		<div class="content">
+			 <slot></slot>
+		</div>
+		
+	</div>
+</template>
+<script>
+	import BScroll from 'better-scroll'
+	export default{
+		data() {
+			return{
+				load : false,
+				bubbleY : 0
+			}
+		},
+		created() {
+			
+		},
+		props : {
+			 probeType: {
+	            type: Number,
+	            default: 1
+	         },
+	         click: {
+	            type: Boolean,
+	            default: true
+	         },
+			 pullingDown : {
+			 	type : Boolean,
+			 	default : false
+			 },
+			 startY : {
+			 	type : Number,
+			 	default : 0
+			 }
+		},
+		mounted() {
+			setTimeout(() => {
+		        this._initLoadData()
+		      }, 20)
+		},
+		methods : {
+			_initLoadData() {
+				if (!this.$refs.wrapper) {
+		          return;
+		        }
+		        var _that = this;
+				/*this.scroll = new BScroll(this.$refs.wrapper, {
+	                probeType: this.probeType,
+	                click: this.click,
+	                startY : this.startY,
+	                scrollX : false,
+	                scrollY : true,
+	                scrollbar : true,
+	                pullDownRefresh : true,
+	                freeScroll : true
+	            });
+	            this.scroll.on("scroll", (pos) => {
+	            	console.log(this.scroll.distY);
+	            	//_that.load = true;
+	            	//_that.bubbleY = this.scroll.distY;
+	            })
+	            this.scroll.on("pullingDown", (pos) => {
+	            	console.log(123);
+	            	//_that.bubbleY = 0
+	            })*/
+
+			}
+	
+		}
+	}
+</script>
+<style lang="less" scoped>
+@import "../../common/less/config.less";
+.refersh{
+	.load{
+		text-align: center;
+		height:0;
+		color:@elide-color;
+	}
+}
+</style>

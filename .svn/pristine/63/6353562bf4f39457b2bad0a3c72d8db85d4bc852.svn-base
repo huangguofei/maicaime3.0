@@ -1,0 +1,65 @@
+<!-- 设置活动范围 -->
+<template>
+	<div class="setting-scope">
+		<el-row class="r-item">
+			<label>品类范围</label><br/><br/>
+			<el-radio class="radio" v-model="form.radio" label="1">不限</el-radio>
+  			<el-radio class="radio" v-model="form.radio" label="2">指定品类</el-radio>
+  			<br/><br/>
+  			<el-row>
+	  			<el-tag type="gray" :closable="true">肉类</el-tag>
+	  			<el-tag type="gray" :closable="true">肉类</el-tag>
+	  		</el-row>
+		</el-row>
+		<el-row class="r-item">
+			<label>参加的区域范围</label><br/><br/>
+			<el-radio class="radio" v-model="form.radio" label="1">不限</el-radio>
+  			<el-radio class="radio" v-model="form.radio" label="2">指定品类</el-radio>
+  			<br/><br/>
+  			<el-row>
+	  			<el-tag type="gray" :closable="true">肉类</el-tag>
+	  			<el-tag type="gray" :closable="true">肉类</el-tag>
+	  		</el-row>
+		</el-row>
+		<el-row class="r-item">
+			<label>供应商范围</label><br/><br/>
+			<el-radio class="radio" v-model="form.radio" label="1">不限</el-radio>
+  			<el-radio class="radio" v-model="form.radio" label="2">指定供应商</el-radio>
+  			
+		</el-row>
+	</div>
+</template>
+<script>
+export default{
+	data() {
+		return{
+			form : {
+				radio : "2"
+			}
+		}
+	}
+}
+</script>
+<style lang="less" scoped>
+@import "../../../../common/less/config.less";
+	.r-item{
+		margin-bottom:10px;
+		label{
+			font-size: @size-title;
+		}
+		.el-tag--gray{
+			background: #FFF;
+			border:1px solid @color-border;
+			height: 28px;
+   			line-height: 26px;
+		}
+		.el-tag .el-icon-close{
+			background: @color-yellow;
+				top:20px;
+			&:before{
+				
+			}
+			
+		}
+	}
+</style>

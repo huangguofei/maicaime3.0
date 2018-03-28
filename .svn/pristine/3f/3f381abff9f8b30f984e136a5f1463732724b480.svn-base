@@ -1,0 +1,61 @@
+<template>
+	<div class="page-layer footer-page">
+		<keep-alive>
+			<images-slider></images-slider>
+		</keep-alive>
+		<CATEGORYNAR></CATEGORYNAR>
+		
+		<div class="wrap">
+			<h1>特色专区</h1>
+			<PREFECTURE></PREFECTURE>
+		</div>
+		<div class="wrap">
+			<h1>推荐食材</h1>
+		</div>
+		<FOOTERNAR :active="1"></FOOTERNAR>
+	</div>
+</template>
+<script>
+	import CATEGORYNAR from "components/index/category-nar"
+	import PREFECTURE from "components/index/feature-prefecture"
+	import FOOTERNAR from "components/common/footer-nar"
+	import imagesSlider from "components/common/images-slider"
+	export default{
+		data() {
+			return {
+
+			}
+		},
+		components : {
+			CATEGORYNAR,
+			PREFECTURE,
+			FOOTERNAR,
+			imagesSlider
+		},
+		created() {
+		},
+		methods : {
+			
+		}
+	}
+</script>
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	header{
+		.pxrem(padding-bottom, 20);
+	}
+	
+	.wrap{
+		background: #FFF;
+		.prem(20);
+		margin-top:@prem;
+		h1{
+			text-align:center;
+			color:@index-h-color;
+			.pxrem(font-size,32);
+			.prem(20);
+			padding-top:@prem;
+
+		}
+	}
+</style>

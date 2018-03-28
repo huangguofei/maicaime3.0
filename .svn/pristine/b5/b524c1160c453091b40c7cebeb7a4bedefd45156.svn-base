@@ -1,0 +1,6 @@
+<!-- 注册 -->
+<template>
+	<div class="page-layers">
+		注册
+	</div>
+</template>

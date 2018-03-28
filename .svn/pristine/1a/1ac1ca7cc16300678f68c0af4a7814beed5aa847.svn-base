@@ -1,0 +1,115 @@
+<!-- 推荐食材 -->
+<template>
+ <div class="referrals-prod">
+ 	<ul>
+ 		<li class="p-item" v-for="p in prodList">
+ 			<div class="con">
+ 				<div class="p-img">
+ 					<img :src="p.skuImage">
+ 				</div>
+ 				<div class="info">
+ 					<p class="name">
+	 					{{p.skuName}}
+	 				</p>
+	 				<p class="price">¥{{(p.price * 1).toFixed(2)}}</p>
+	 				<span class="orgin-price" v-show="p.skuPrice > 0">¥{{(p.skuPrice * 1).toFixed(2)}}</span>
+	 				<span class="cart-wrap">
+						<!-- <i class="minus c-i" ></i>
+						<span class="num" >0</span> -->
+						<!-- <i class="add c-i"></i> -->
+					</span>
+ 				</div>
+ 				
+ 			</div>
+ 		</li>
+ 	</ul>
+ </div>
+</template>
+<script>
+	export default{
+		props : ["prodList"]
+	}
+</script>
+<style lang="less" scoped>
+@import "../../common/less/config.less";
+	.referrals-prod{
+		.pxrem(margin-top,20);
+		&:after{
+			.clearFloat;
+		}
+		.p-item{
+			width:33.2%;
+			border:1px solid #e5e5e5;
+			float:left;
+			margin-top:-1px;
+			&:nth-child(1n){
+				border-left:0;
+			}
+			&:nth-child(3n){
+				border-right:0;
+				margin-left:-1px;
+			}
+			.con{
+				.prem(10);
+				padding:@prem;
+				.p-img{
+					.pxrem(height, 160);
+					.pxrem(margin-top, 20);
+					text-align: center;
+					img{
+						max-height:100%;
+						max-width: 100%;
+						.pxrem(font-size, 27);
+					}
+				}
+				.info{
+					position: relative;
+				}
+				.price{
+					.pxrem(font-size, 27);
+				}
+				.or-price{
+					.pxrem(font-size, 20);
+				}
+				.cart-wrap{
+					position: absolute;
+					right:0;
+					.pxrem(bottom, 5);
+					display: inline-block;
+					.pxrem(height, 49);
+					.c-i{
+						float:left;
+						display: inline-block;
+						.pxrem(width, 47);
+						.pxrem(height, 47);
+						border-radius: 50%;
+						margin-top:0.5px;
+					}
+					.num{
+						float:left;
+						display: inline-block;
+						.pxrem(height, 47);
+						.pxrem(line-height, 47);
+						.pxrem(min-width, 60);
+						text-align:center;
+						.pxrem(font-size, 31);
+						text-align:center;
+						color:#000;
+					}
+					.minus{
+						background: url(../../images/market_minus.png) no-repeat;
+						background-size: cover;
+					}
+					.add{
+						background: url(../../images/market_plus.png) no-repeat;
+						background-size: cover;
+					}
+				}
+				.cart-active{
+					border:1px solid #EEEEEE;
+					.pxrem(border-radius,80);
+				}
+			}
+		}
+	}
+</style>

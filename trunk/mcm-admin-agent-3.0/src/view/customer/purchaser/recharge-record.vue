@@ -1,0 +1,223 @@
+<template>
+	<page-layer :narData="narData" classs="">
+		<el-container class="header" v-if="rechargeRecordData">
+			<el-aside class="aside padding bk-white">
+				<div class="head">
+					<div class="img-box pull-left">
+						<img src="../../../images/order-icon.png" />
+					</div>
+					<h1 class="title pull-left">充值概况</h1>
+				</div>
+				<div class="con">
+					<p class="til">充值总金额</p>
+					<h4 class="n num">¥{{rechargeRecordData.amount}}</h4>
+				</div>
+			</el-aside>
+			<el-main class="main padding bk-white">
+				<el-row>
+					<el-col :span="6" class="item">
+						<p class="til">今日充值</p>
+						<p class="n number">{{headData.amount1}}</p>
+					</el-col>
+					<el-col :span="6" class="item">
+						<p class="til">昨日充值</p>
+						<p class="n number">{{headData.amount2}}</p>
+					</el-col>
+					<el-col :span="6" class="item">
+						<p class="til">近3天充值</p>
+						<p class="n number">{{headData.amount3}}</p>
+					</el-col>
+					<el-col :span="6" class="item">
+						<p class="til">近7天充值</p>
+						<p class="n number">{{headData.amount4}}</p>
+					</el-col>
+				</el-row>
+			</el-main>
+		</el-container>
+		<div class="table bk-white">
+			<el-form :inline="true" ref="form" :model="queryParams" label-width="90px" style='padding-top: 10px;'>
+				<el-form-item label="支付方式">
+					<el-select v-model="queryParams.paymentType" placeholder="支付方式">
+						<el-option v-for="item in payType" :key="item.value" :label="item.name" :value="item.value">
+						</el-option>
+					</el-select>
+				</el-form-item>
+				<!--<el-form-item label="区域">
+					<el-select v-model="queryParams.status" placeholder="区域" :disabled="isSelect">
+						<el-option v-for="item in areaData" :label="item.regionName" :value="item.agentId">
+						</el-option>
+					</el-select>
+				</el-form-item>-->
+				<el-form-item label="充值时间">
+					<el-col :span="11">
+						<el-date-picker type="date" placeholder="开始时间" v-model="queryParams.beginDate" style="width: 100%;" value-format="yyyy-MM-dd"></el-date-picker>
+					</el-col>
+					<el-col class="line" style="text-align: center;" :span="2">-</el-col>
+					<el-col :span="11">
+						<el-date-picker type="date" placeholder="结束时间" v-model="queryParams.endDate" style="width: 100%;" value-format="yyyy-MM-dd"></el-date-picker>
+					</el-col>
+				</el-form-item>
+				<el-form-item label="关键字">
+					<el-input v-model="queryParams.keyword" placeholder="请输入关键字"></el-input>
+				</el-form-item>
+				<el-form-item>
+					<el-button type="primary" style="margin-left:20px;" @click="queryInfo()">查询</el-button>
+				</el-form-item>
+			</el-form>
+			<el-table :data="tableDatas" style="width: 100%">
+				<el-table-column type="index" width="60">
+				</el-table-column>
+				<el-table-column prop="merchantName" label="采购商名称" width="190">
+				</el-table-column>
+				<el-table-column prop="merchantMobile" label="手机号">
+				</el-table-column>
+				<el-table-column prop="merchantTypeText" label="客户类型">
+				</el-table-column>
+				<el-table-column prop="paymentTypeText" label="充值方式">
+				</el-table-column>
+				<el-table-column prop="amount" label="充值金额">
+				</el-table-column>
+				<el-table-column prop="timeCreated" label="充值时间">
+				</el-table-column>
+				<el-table-column prop="approachText" label="交易用途">
+				</el-table-column>
+				<el-table-column prop="description" label="备注">
+				</el-table-column>
+			</el-table>
+			<pagination :pagings="queryParams" :totalCount="totalCount" @changePageSize="changePageSize"></pagination>
+		</div>
+	</page-layer>
+</template>
+
+<script>
+	import pageLayer from "components/common/page-layer"
+	import pagination from "components/common/pagination"
+	import SETTINGAREA from "action/setting/area"
+	import server from "action/data/check"
+	export default {
+		data() {
+			return {
+				narData: [{
+					name: "采购商列表",
+					router: "customer.purchaser.list"
+				}, {
+					name: "充值记录",
+					router: "customer.purchaser.rechargeRecord"
+				}],
+				rechargeRecordData: "",
+				queryParams: {
+					merchantTypeId: '200',
+					tradeType: '3',
+					beginDate: '',
+					endDate: '',
+					keyword: "",
+					paymentType: '',
+					pageSize: 10,
+					pageNum: 1,
+				},
+				totalCount: 0,
+				tableDatas: [],
+				headData:"",
+				areaData: [],
+				isSelect: true,
+				payType: [{
+					name: '选择支付方式',
+					value: ""
+				}, {
+					name: '微信',
+					value: 20
+				}, {
+					name: '支付宝',
+					value: 30
+				}],
+			}
+		},
+		created() {
+			SETTINGAREA.getAreaList(this);
+			server.getcheckList(this);
+			server.getRechargeStatisticsAPI(this);
+		},
+		methods: {
+			queryInfo() {
+				server.getcheckList(this);
+			},
+			changePageSize() {
+
+			}
+		},
+		components: {
+			pageLayer,
+			pagination
+		}
+	}
+</script>
+
+<style lang="less" scoped>
+	@import "../../../common/less/config.less";
+	.header {
+		height: 200px;
+		.aside {
+			border: 1px solid #DFDFDF;
+			.head {
+				.clearfix();
+				height: 50px;
+				line-height: 50px;
+				border-bottom: 1px solid #F4F4F4;
+				padding-bottom: 10px;
+				.img-box {
+					width: 50px;
+					height: 50px;
+					text-align: center;
+					border-radius: 25px;
+					background: @color-main;
+					img {
+						margin-top: 10px;
+					}
+				}
+				.title {
+					font-size: 16px;
+					margin-left: 10px;
+				}
+			}
+			.con {
+				text-align: center;
+				padding-top: 30px;
+				.num {
+					color: #F98A0C;
+				}
+			}
+		}
+		.n {
+			font-size: 30px;
+		}
+		.til {
+			font-size: 14px;
+			color: #737373;
+		}
+		.main {
+			border: 1px solid #DFDFDF;
+			margin-left: 10px;
+			box-sizing: border-box;
+			height: 200px;
+			&>div {
+				height: 100%;
+			}
+			.item {
+				height: 100%;
+				text-align: center;
+				padding-top: 40px;
+				border-left: 1px solid #DFDFDF;
+			}
+			.item:first-child {
+				border: 0;
+			}
+			.number {
+				color: #343434;
+			}
+		}
+	}
+	
+	.table {
+		margin-top: 10px;
+	}
+</style>

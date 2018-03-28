@@ -1,0 +1,348 @@
+<!-- 新增活动 -->
+<template>
+	<page-layer :narData="narData" classs="">
+		<activity class="view-body" :activityInfo="form"></activity>
+		<div class="edit-body pull-left">
+			<div class="edit-content">
+				<el-form ref="form" :model="form" :rules="rules" label-width="100px" class="demo-ruleForm">
+					<div class="item back-color">
+						<h3 class="title padding">优惠活动设置</h3>
+						<div class="con">
+							<el-form-item label="活动名称" prop="name">
+								<el-input v-model="form.name"></el-input>
+							</el-form-item>
+							<el-form-item label="优惠类型">
+								<el-radio-group v-model="form.specialOfferType" @change="changeType">
+									<el-radio class="radio" label="50">充值送券</el-radio>
+									<el-radio class="radio" label="60">消费送积分</el-radio>
+									<el-radio class="radio" label="70">注册送券</el-radio>
+								</el-radio-group>
+							</el-form-item>
+							<el-form-item :label="form.specialOfferType == 50 ? '充值门槛' : '消费门槛'" v-if="form.specialOfferType != 70">
+								<el-col :span="4">
+									<el-radio-group v-model="form.preconditionType">
+										<el-radio class="radio" label="0">不限制</el-radio>
+										<el-radio class="radio" label="1">{{form.specialOfferType == 50 ? '满' : '消费'}}</el-radio>
+									</el-radio-group>
+								</el-col>
+								<el-col :span="8" v-show="form.preconditionType == 1">
+									<el-form-item label=" " label-width="90px" prop="preconditionAmount">
+										<el-input v-model="form.preconditionAmount">
+											<template slot="append" v-if="form.specialOfferType == 50">元可领券</template>
+											<template slot="append" v-else>元可送积分</template>
+										</el-input>
+									</el-form-item>
+								</el-col>
+							</el-form-item>
+							<el-form-item label="积分设置" v-show="form.specialOfferType == 60" prop="postconditionAmount">
+								<el-col :span="12">
+									<el-input v-model="form.postconditionAmount">
+										<template slot="prepend">一元等于</template>
+										<template slot="append">积分</template>
+									</el-input>
+								</el-col>
+							</el-form-item>
+
+							<el-form-item label="优惠" prop="validDay">
+								<el-checkbox v-model="form.isCoexist" label="1">与其他优惠同时享受</el-checkbox>
+							</el-form-item>
+							<el-form-item label="有效日期">
+								<el-date-picker v-model="dateVal" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" placeholder="选择日期范围" @change="changeDate">
+								</el-date-picker>
+							</el-form-item>
+							<el-form-item label="有效时间段">
+								<el-time-picker is-range arrow-control v-model="timeVal" range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" placeholder="选择时间范围" @change="changeTime">
+								</el-time-picker>
+							</el-form-item>
+
+							<el-form-item label="活动介绍">
+								<el-input type="textarea" v-model="form.introduction"></el-input>
+							</el-form-item>
+							<el-form-item label="充值设置" v-show="form.specialOfferType == 50 || form.specialOfferType == 70">
+								<el-card class="box-card">
+									<el-row>
+										<el-col :span="4">类型</el-col>
+										<el-col :span="1">&nbsp;</el-col>
+										<el-col :span="4">优惠券</el-col>
+										<el-col :span="1">&nbsp;</el-col>
+										<el-col :span="4">数量</el-col>
+									</el-row>
+									<el-row v-for="(p, key) in prods">
+										<el-col :span="4">
+											<el-select v-model="p.productType" placeholder="请选择" size="small">
+												<el-option v-for="item in prodOptions" :key="item.value" :label="item.label" :value="item.value">
+												</el-option>
+											</el-select>
+										</el-col>
+										<el-col :span="1">&nbsp;</el-col>
+										<el-col :span="4">
+											<el-select v-model="p.productId" placeholder="请选择" size="small">
+												<el-option v-for="item in validCoupon" :key="item.couponId" :label="item.title" :value="item.couponId">
+												</el-option>
+											</el-select>
+										</el-col>
+										<el-col :span="1">&nbsp;</el-col>
+										<el-col :span="5">
+											<el-input-number v-model="p.productNumber" :min="1" label="描述文字" size="small"></el-input-number>
+										</el-col>
+										<el-col :span="2" v-if="key > 0">
+											<i class="el-icon-delete" @click="delProdJson(key)"></i>
+										</el-col>
+									</el-row>
+									<el-row>
+										<el-button type="primary" size="small" @click="addPay">添加</el-button>
+									</el-row>
+								</el-card>
+							</el-form-item>
+						</div>
+					</div>
+				</el-form>
+			</div>
+			<div class="btn">
+				<el-button>取消</el-button>
+				<el-button type="primary" @click="submitForm('form')">保存</el-button>
+			</div>
+		</div>
+	</page-layer>
+</template>
+<script>
+	import pageLayer from "components/common/page-layer"
+	import activity from "components/marketing/activity/activity"
+	import activityAction from "actionurl/marketing/activity"
+	export default {
+		data() {
+			var pricetype = (rule, value, callback) => {
+				var exp = /^([1-9][\d]{0,7}|0)(\.[\d]{1,2})?$/;
+				if(!exp.test(value)) {
+					callback(new Error('请输入正确金额值'));
+				} else {
+					callback();
+				}
+			};
+			return {
+				narData: [{
+						name: "优惠活动",
+						router: "marketing.activity.index"
+					},
+					{
+						name: "发起优惠活动",
+						router: "marketing.activity.new"
+					}
+				],
+				form: {
+					name: "",
+					specialOfferType: "50",
+					activityType: 4,
+					mandatoryCondition: 1,
+					preconditionType: 1,
+					preconditionAmount: 0,
+					repeatCount: 1,
+					postconditionType: 4,
+					postconditionAmount: 0,
+					startDate: "",
+					endDate: "",
+					startTime: "",
+					endTime: "",
+					isCoexist: 0,
+					introduction: ""
+				},
+				rules: {
+					name: [{
+							required: true,
+							message: '请输入活动名称',
+							trigger: 'blur'
+						},
+						{
+							min: 3,
+							max: 20,
+							message: '长度在 3 到 20 个字符',
+							trigger: 'blur'
+						}
+					],
+					preconditionAmount: [{
+						validator: pricetype,
+						trigger: 'blur'
+					}],
+					postconditionAmount: [{
+						validator: pricetype,
+						trigger: 'blur'
+					}]
+				},
+				dateVal: "",
+				timeVal: "",
+				prodOptions: [{
+					label: "优惠券",
+					value: 10
+				}],
+				prods: [{
+					productType: 10,
+					productId: "",
+					productNumber: 0,
+				}],
+				validCoupon: []
+			}
+		},
+		methods: {
+			handleChange: function(val) {
+				console.log(val)
+			}
+		},
+		components: {
+			pageLayer,
+			activity
+		},
+		mounted() {
+			/*有效券*/
+			activityAction.getValidCoupon(this);
+		},
+		methods: {
+			changeDate(val) {
+				var form = this.form;
+				if(!val) {
+					form.startDate = "";
+					form.endDate = "";
+				} else {
+					var splits = val.split("至");
+					if(splits.length >= 2) {
+						form.startDate = splits[0],
+							form.endDate = splits[1];
+					}
+				}
+
+			},
+			changeTime(val) {
+				var form = this.form;
+				if(!val) {
+					form.startTime = "",
+						form.endTime = "";
+				} else {
+					var splits = val.split("至");
+					if(splits.length >= 2) {
+						form.startTime = splits[0],
+							form.endTime = splits[1];
+					}
+				}
+
+			},
+			addPay() {
+				this.prods.push({
+					productType: 10,
+					productId: "",
+					productNumber: 0,
+				});
+			},
+			submitForm(formName) {
+				var _that = this;
+				var _validateProds = function() {
+					let prods = _that.prods,
+						bool = true;
+					prods.map((item) => {
+						let error = "";
+						if(!item.productType) {
+							error = "勾选产品类型！"
+						} else if(!item.productId) {
+							error = "勾选优惠券！"
+						}
+						if(error) {
+							_that.$message(error);
+							return bool = false;
+						}
+					});
+					return bool
+				}
+				this.$refs[formName].validate((valid) => {
+					if(valid) {
+						if(_that.form.specialOfferType == 50 || _that.form.specialOfferType == 70) {
+							var bool = true;
+							_validateProds() ? _that.form.prods = JSON.stringify(_that.prods) : bool = false;
+							if(!bool) return false;
+						} else {
+							delete _that.form.prods;
+						}
+						if(isNaN(_that.form.postconditionAmount)) {
+							_that.$message("积分格式不正确");
+							return false;
+						}
+						activityAction.saveActivityInfo(_that, _that.form);
+					} else {
+						console.log('error submit!!');
+						return false;
+					}
+				});
+			},
+			changeType() {
+				var form = this.form;
+				if(form.specialOfferType == 60) {
+					form.activityType = 6;
+				} else if(form.specialOfferType == 70) {
+					form.activityType = 7;
+					form.preconditionAmount = 0;
+					form.preconditionType = 0;
+				} else {
+					form.activityType = 4;
+				}
+			},
+			delProdJson(key) {
+				this.prods.splice(key, 1);
+			}
+		}
+	}
+</script>
+<style lang="less" scoped>
+	@import "../../../common/less/config.less";
+	.line {
+		text-align: center;
+	}
+	
+	.edit-body {
+		width: calc(~"100% - 700px");
+		margin-left: 20px;
+		.edit-content {
+			border: 1px solid #DFDFDF;
+			background: #FFF;
+			.item {
+				.con {
+					padding: 20px;
+				}
+				.el-date-editor--daterange.el-input,
+				.el-input-number,
+				.el-date-editor.el-input {
+					width: 300px;
+				}
+				.el-card__body {
+					.el-input-number {
+						width: 150px;
+					}
+				}
+				h3 {
+					font-size: 18px;
+					height: 48px;
+					background: #F4F4F4;
+					box-sizing: border-box;
+				}
+				.price {
+					position: relative;
+					top: -35px;
+					right: -180px;
+				}
+				.add-group {
+					padding-bottom: 20px;
+					text-align: center;
+					a {
+						display: inline-block;
+						margin-left: -6%;
+						width: 220px;
+						border: 1px solid @color-main;
+						line-height: 36px;
+						height: 36px;
+						color: @color-main;
+					}
+				}
+			}
+		}
+		.btn {
+			margin-top: 20px;
+			text-align: center;
+		}
+	}
+</style>

@@ -1,0 +1,46 @@
+<template>
+	<el-dialog title="选择登入站点" :visible.sync="info.isShow"  :before-close="handleClose">
+		<el-row>
+			<el-col :span="4" style="height: 36px;line-height: 36px;">选择一个站点登录</el-col>
+			<el-col :span="10">
+				<el-select v-model="value" placeholder="请选择">
+					<el-option v-for="item in info.list" :key="item.merchantId" :label="item.merchantName" :value="item.merchantId">
+					</el-option>
+				</el-select>
+			</el-col>
+			<el-col :span="5">
+				<el-button type="success" @click="postData">确定</el-button>
+			</el-col>
+		</el-row>
+	</el-dialog>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+				value: "",
+				options: [{
+					value: '选项1',
+					label: '黄金糕'
+				}, {
+					value: '选项2',
+					label: '黄金甲'
+				}],
+			}
+		},
+		props: ['info'],
+		methods: {
+			postData() {
+				this.$emit("select",this.value);
+			},handleClose(){
+				cJs.delCookie("mcm-agent-user-info");
+				this.info.isShow=false;
+			}
+		}
+	}
+</script>
+
+<style>
+
+</style>

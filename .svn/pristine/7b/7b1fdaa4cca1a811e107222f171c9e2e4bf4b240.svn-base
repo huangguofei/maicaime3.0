@@ -1,0 +1,293 @@
+<!-- 清单里分类商品 -->
+<template>
+	<div class="often-category-prod" >
+		<div class="c-item" v-for="(c,ck) in categoryProd">
+			<div class="header" :class="!editorStatus ? 'editor' : ''">
+				<span class="check-box" 
+				 :class="c.categoryBO.check ? 'check-active' : ''" 
+				 @click="childAllCheck(c)" 
+				 v-show="!editorStatus"></span>
+				<i class="c-icon"><img src="../../images/list_vagetable.png" /></i>
+				<span class="name">{{c.categoryBO.categoryName}}</span>
+				<span class="sub">{{c.collectProductItemBOList.length}}</span>
+			</div>
+			<div class="prod-list"  :class="!editorStatus ? 'editor' : ''">
+				<div class="prod-item" v-for="(p, pk) in c.collectProductItemBOList">
+					<span class="check-box" 
+						 :class="p.check ? 'check-active' : ''"
+						 v-show="!editorStatus" 
+						 @click="singleCheck(p, c)"></span>
+					<div class="prod-wrap"  >
+						<add-cart :row="p" :num="p.num" class="cart" @changeProdNum="changeProdNum"></add-cart>
+						<div class="prod-info">
+							<p class="prod-name">{{p.skuName}}</p>
+							<p class="price">单价：¥{{(p.offerPrice * 1).toFixed(2)}}</p>
+						</div>
+					</div>
+				</div>
+				
+			</div>
+		</div>
+		<section class="event-all" v-if="!editorStatus">
+			<div class="con">
+				<span class="check-box check-all"
+					 :class="allCheck ? 'check-active' : ''" 
+					 @click="allCheckClick"></span><span class="all-mes">全选</span>
+				<button class="btn btn-del" @click="delProd">删除</button>
+			</div>
+			
+		</section>
+		<cart-parabola ref="parabola">
+			 <div class="inner inner-hook">
+             </div>
+		</cart-parabola>
+	</div>
+</template>
+<script>
+	import cartParabola from "components/common/cart-parabola"
+	import addCart from "components/common/add-cart"
+	export default{
+		data () {
+			return{
+				checkSku : {},
+				allCheck : false
+			}
+		},
+		props :["categoryProd", "editorStatus"],
+		components : {
+			cartParabola,
+			addCart
+		},
+		methods : {
+			/*单个选中*/
+			singleCheck(p, c) {
+				if(p.check) {
+					p.check = false;
+					c.categoryBO.check = false;
+				} else {
+					p.check = true;
+					var prods = c.collectProductItemBOList;
+					var len = prods.length, active = true;
+					for(var i = 0; i< len; i++) {
+						var prod = prods[i];
+						if(!prod.check) {
+							active = false;
+						}
+					}
+					c.categoryBO.check = active;
+				}
+			},
+			childAllCheck(c) {
+				var categoryBO = c.categoryBO;
+				if(categoryBO.check) {
+					categoryBO.check = false;
+				} else {
+					categoryBO.check = true;
+				}
+				var prods = c.collectProductItemBOList;
+				var len = prods.length;
+				for(var i = 0; i< len; i++) {
+					var prod = prods[i];
+					prod.check = categoryBO.check;
+				}
+			},
+			allCheckClick() {
+				if(this.allCheck) {
+					this.allCheck = false;
+				} else {
+					this.allCheck = true;
+				}
+				var data = this.categoryProd;
+				var len = data.length;
+				for(var i = 0;i < len; i++) {
+					data[i].categoryBO.check = this.allCheck;
+					var prods = data[i].collectProductItemBOList;
+					var plen = prods.length;
+					for(var n = 0;n < plen; n++) {
+						prods[n].check = this.allCheck;
+					}
+				}
+			},
+			delProd() {
+				var r = confirm("确定要删除选中的食材");
+				if(r) {
+					this.$emit("delProdClick");
+				}
+			},
+			changeProdNum(row, num) {
+				row.num = num;
+			}
+		}
+	}
+</script>
+<style lang="less">
+	@import "../../common/less/config.less";
+	.often-category-prod{
+		.prem(20);
+		padding:@prem;
+		.inner{
+			.pxrem(width, 30);
+			.pxrem(height, 30);
+			border-radius: 50%;
+			transition: all 0.4s linear;
+			overflow: hidden;
+			background: @m-c;
+		}
+		.check-box{
+			position: absolute;
+			.pxrem(left,20);
+			.pxrem(top,18);
+			display: inline-block;
+			.pxrem(width,33);
+			.pxrem(height,33);
+			border:1px solid #999999;
+			border-radius:50%;
+		}
+		.check-active{
+			background: url(../../images/order_value_tick.png) no-repeat;
+			background-size:100% auto;
+			.pxrem(width,36);
+			.pxrem(height,36);
+			border:0;
+		}
+		.c-item{
+			background: #FFF;
+			.pxrem(margin-bottom,20);
+			.header{
+				.pxrem(height,80);
+				.pxrem(line-height,80);
+				.prem(0,20);
+				padding:@prem;
+				border-bottom:1px solid #F4F4F4;
+				.pxrem(font-size,32);
+				position: relative;
+				.check-box{
+					.pxrem(top,22);
+				}
+				i{
+					display: inline-block;
+					position: relative;
+					.pxrem(height,42);
+					.pxrem(width,42);
+					.pxrem(top,2);
+					img{
+						max-height: 100%;
+						max-width: 100%;
+					}
+				}
+			}
+		}
+		.prod-list{
+			.prod-item{
+				position: relative;
+				.prem(10,-4);
+				padding:@prem;
+				.prod-wrap{
+					.prem(0,20);
+					padding:@prem;
+				}
+				.cart-wrap{
+					position: absolute;
+					right:0;
+					.pxrem(bottom, 20);
+					.pxrem(right, 20);
+					display: inline-block;
+					.pxrem(height, 49);
+					.pxrem(border-radius,80);
+					.c-i{
+						float:left;
+						display: inline-block;
+						.pxrem(width, 47);
+						.pxrem(height, 47);
+						border-radius: 50%;
+						margin-top:0.5px;
+					}
+					.num{
+						float:left;
+						display: inline-block;
+						.pxrem(height, 47);
+						.pxrem(line-height, 47);
+						.pxrem(min-width, 60);
+						.pxrem(font-size, 31);
+						text-align:center;
+						color:#000;
+					}
+					.minus{
+						background: url(../../images/market_minus.png) no-repeat;
+						background-size: cover;
+					}
+					.add{
+						background: url(../../images/market_plus.png) no-repeat;
+						background-size: cover;
+					}
+				}
+				.active{
+					border:1px solid #EEEEEE;
+				}
+				.prod-info{
+					.pxrem(padding-left,15);
+					.prod-name{
+						color:@p-t-c;
+						.pxrem(font-size, 32);
+						position: relative;
+						&:after{
+							content: "";
+							.pxrem(width, 9);
+							.pxrem(height, 9);
+							background:#F9AB0C;
+							position: absolute;
+							border-radius: 100%;
+							left:0;
+							top:0;
+							.pxrem(margin-top,15);
+							.pxrem(margin-left,-22);
+						}
+					}
+					.price{
+						color:#B0B0B0;
+						.pxrem(font-size, 24);
+					}
+					
+				}
+				
+			}
+			
+			.prod-item:last-child{
+				border-bottom:0;
+			}
+		}
+		.editor{
+			.c-icon{
+				.pxrem(margin-left,50);
+			}
+			.prod-item{
+				.prod-info{
+					.pxrem(padding-left,65);
+				}
+			}
+		}
+		.event-all{
+			background: #fafafa;
+			position: fixed;
+			width:100%;
+			left:0;
+			.pxrem(bottom,100);
+			.con{
+				.prem(20);
+				padding:@prem;	
+			}
+			.all-mes{
+				.pxrem(margin-left,50);
+			}
+			.check-all{
+				.pxrem(top,22);
+			}
+			.btn-del{
+				float:right;
+				border-color:#F98A0C;
+				color:#F98A0C;
+				background: none;
+			}
+		}
+	}
+</style>

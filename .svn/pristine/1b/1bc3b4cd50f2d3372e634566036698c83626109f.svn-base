@@ -1,0 +1,68 @@
+<!-- 主页头部 -->
+<template>
+	<div class="main-header" >
+		<el-row>
+			<el-col :span="2" class="m-h left">
+				买菜么服务站系统
+			</el-col>
+			<el-col :span="20" class="m-h right">
+				<span class="user-name r-h">{{userInfo.realName}}</span>
+				<a class="login-out r-h" href="javascript:;" @click="logoOut()">退出</a>
+			</el-col>
+		</el-row>
+	</div>
+</template>
+<script>
+import https from "../../axios/https"
+export default{
+	data() {
+		return{
+			userInfo : {}
+		}
+	},
+	created() {
+		var userInfo = cJs.getCookie("mcm-agent-user-info");
+		this.userInfo = JSON.parse(userInfo);
+	},
+	methods : {
+		menuShrink() {
+			this.$parent.isShrink = this.$parent.isShrink ? false : true;
+		},
+		logoOut() {
+			var _that = this;
+			/*https.commAjax({
+				method : "post",
+				url : "admin/user/logout",
+				success : function(response) {
+					common.setCookie("userInfo" , "");
+					_that.$router.push({path : "/login"});
+				}
+			});*/
+		}
+	}
+}
+</script>
+<style lang="less" scoped >
+	@import "../../common/less/config.less";
+	.main-header{
+		@height:50px;
+		height:@height;
+		background: #FFF;
+		.m-h{
+			height:@height;
+			line-height: @height;
+		}
+		.left{
+			background: @color-main;
+			width:184px;
+			text-indent: 20px;
+			color:#FFF;
+		}
+		.right{
+			text-align: right;
+			.r-h{
+				padding:0 10px;
+			}
+		}
+	}
+</style>

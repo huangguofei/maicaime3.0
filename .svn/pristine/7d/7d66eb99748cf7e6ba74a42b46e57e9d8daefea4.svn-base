@@ -1,0 +1,9 @@
+/**
+ * author hgf 
+ * day    2017-9-25
+ * 公共模块接口
+ */
+import https from "../axios/https"
+export default {
+	
+}

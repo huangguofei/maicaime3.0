@@ -1,0 +1,199 @@
+<!-- 编辑配送圈信息 -->
+<template>
+	<el-dialog
+		  :title="editInfo.title"
+		  :visible.sync="editInfo.dialogShow"
+		  size="mini"
+		  :close-on-click-modal="false"
+		  >
+		  <el-form :model="ruleForm" ref="ruleForm">
+		  		<el-steps :space="200" :active="active" finish-status="success" >
+					  <el-step title="选择驿站"></el-step>
+					  <el-step title="选择配送商"></el-step>
+					  <el-step title="设置配送时间段"></el-step>
+				</el-steps>
+				<el-row  v-show="active == 0">
+					<br/>
+					<label>驿站</label>
+					<br/><br/>
+					<el-row>
+							 <el-radio-group v-model="ruleForm.stationId">
+							    <el-radio :label="s.stationId" v-for="s in stageList">{{s.stationName}}</el-radio>
+							  </el-radio-group>
+					</el-row>
+				</el-row>
+				<el-row  v-show="active == 1">
+					<br/>
+					<label>配送商</label>
+					<br/><br/>
+					<el-row>
+							<el-radio-group v-model="ruleForm.deliveryDealerId">
+							    <el-radio :label="d.deliveryDealerId" v-for="d in distrList">{{d.deliveryDealerName}}</el-radio>
+							  </el-radio-group>
+					</el-row>
+				</el-row>
+				<el-row  v-show="active == 2">
+					<br/>
+					<label>配送时间段</label>
+					<br/><br/>
+					<el-row>
+						<el-col :span="10">
+					  		 <el-select v-model="startTime" placeholder="请选择" @change="changeStartTime">
+							    <el-option
+							      v-for="item in startTimeOption"
+							      :key="item.key"
+							      :label="item.value"
+							      :value="item.key">
+							    </el-option>
+							  </el-select>
+						</el-col>
+						<el-col :span="2" style="text-align:center;">
+							—
+						</el-col>
+						<el-col :span="10">
+							 <el-select v-model="endTime" placeholder="请选择">
+							    <el-option
+							      v-for="item in endTimeOption"
+							      :key="item.value"
+							      :label="item.value"
+							      :value="item.key">
+							    </el-option>
+							  </el-select>
+						</el-col>
+					</el-row>
+				</el-row>
+		  </el-form>
+		  <span slot="footer" class="dialog-footer">
+		  	<el-button @click="prevActive" v-show="active > 0">上一步</el-button>
+		    <el-button type="primary" @click="nextActive" v-show="active < 2">下一步</el-button>
+		    <!-- <el-button @click="editInfo.dialogShow = false" v-show="active == 2">取 消</el-button> -->
+		    <el-button type="primary" @click="submitForm()" v-show="active == 2">确 定</el-button>
+		  </span>
+	</el-dialog>
+</template>
+<script>
+  export default {
+    data() {
+      return {
+      	active: 0,
+        ruleForm : {},
+        startTime : "",
+        endTime : "",
+        startTimeOption : [
+        	{key : "0", value:"00:00"},
+        	{key : "1", value:"01:00"},
+        	{key : "2", value:"02:00"},
+        	{key : "3", value:"03:00"},
+        	{key : "4", value:"04:00"},
+        	{key : "5", value:"05:00"},
+        	{key : "6", value:"06:00"},
+        	{key : "7", value:"07:00"},
+		    {key : "8", value:"08:00"},
+        	{key : "9", value:"09:00"},
+        	{key : "10", value:"10:00"},
+        	{key : "11", value:"11:00"},
+        	{key : "12", value:"12:00"},
+        	{key : "13", value:"13:00"},
+        	{key : "14", value:"14:00"},
+        	{key : "15", value:"15:00"},
+        	{key : "16", value:"16:00"},
+        	{key : "17", value:"17:00"},
+        	{key : "18", value:"18:00"},
+        	{key : "19", value:"19:00"},
+        	{key : "20", value:"20:00"},
+        	{key : "21", value:"21:00"},
+        	{key : "22", value:"22:00"},
+        	{key : "23", value:"23:00"}
+        ],
+        endTimeOption : [],
+        rules: {
+        	 stationId: [
+	            { required: true, message: '请选择驿站', trigger: 'blur' }
+	         ],
+	         deliveryDealerId: [
+	            { required: true, message: '请选择配送商', trigger: 'blur' }
+	         ],
+	         startTime: [
+	            { required: true, message: '请选择开始配送时间', trigger: 'blur' }
+	         ],
+	         endTime: [
+	            { required: true, message: '请选择结束配送时间', trigger: 'blur' }
+	         ],
+        }
+      };
+    },
+    props : ["editInfo", "stageList", "distrList", "submitClick"],
+    created() {
+        this.resetForm();
+    },
+    methods: {
+      	submitForm(formName) {
+      		var _that = this;
+      		/*if(_that.startTime == "" || _that.endTime == "") {
+      			_that.$message("请选择配送时间段！");
+      			return false;
+      		}*/
+      		/*var form = _that.ruleForm;
+      		if(_that.startTime < 10) {
+      			form.startTime = "0"+_that.startTime+":00"
+      		} else {
+      			form.startTime = _that.startTime+":00"
+      		}
+      		if(_that.endTime < 10) {
+      			form.endTime = "0"+_that.endTime+":00"
+      		} else {
+      			form.endTime = _that.endTime+":00"
+      		}*/
+      		_that.submitClick(_that.ruleForm);
+	        
+      	},
+        resetForm() {
+             this.ruleForm = {
+              stationId : "",
+              deliveryDealerId : "",
+             /* startTime : "",
+              endTime : "",*/
+            }
+        },
+      	editFormData(formData) {
+      		if(!formData) return false;
+      		var form = this.ruleForm;
+      		form.deliveryDealerId = formData.deliveryDealerId;
+      		form.stationId = formData.stationId;
+      		form.startTime = formData.startTime;
+      		form.endTime = formData.entTime;
+      		form.stationCircleId = formData.stationCircleId;
+      		this.startTime = parseInt(formData.startTime) + "";
+  			this.changeStartTime(this.startTime);
+      		this.endTime = parseInt(formData.entTime) + "";
+
+      	},
+      	changeStartTime(value) {
+      		var  _that = this;
+      		_that.endTime = "";
+      		_that.endTimeOption = [];
+      		for(var i = 0; i < 24; i++) {
+      			_that.endTimeOption.push({
+      				key : i + "",
+      				value : i <= value ? "次日"+i+":00" : i+":00"
+      			});
+      		}
+      	},
+      	prevActive() {
+      		if (this.active-- > 2) this.active = 0;
+      	},
+      	nextActive() {
+      		var active = this.active, form = this.ruleForm;
+      		if(active == 0 && form.stationId == "") {
+      			this.$message("请勾选驿站！");
+      			return false;
+      		} else if(active == 1 && form.deliveryDealerId == "") {
+      			this.$message("请勾选配送商！");
+      			return false;
+      		}
+      		if (this.active++ > 2) this.active = 0;
+      	}
+      	
+    }
+  };
+</script>

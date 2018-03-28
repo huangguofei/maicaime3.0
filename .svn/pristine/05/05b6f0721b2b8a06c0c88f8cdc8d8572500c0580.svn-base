@@ -1,0 +1,28 @@
+/**
+ * hgf 2017年11月3日16:21:34
+ */
+import { activityGoodsAPI } from "../../api/goods"
+export default {
+	/*获取活动列表*/
+	getActivityGoods(vm) {
+		activityGoodsAPI.getActivityGoodsAPI({
+			pageNum: 1,
+			pageSize: 20
+		}, (result) => {
+			vm.tableData = result.resultList;
+			vm.pagings.current = result.currentPage;
+			vm.pagings.pages = result.totalPage;
+			vm.pagings.total = result.totalCount;
+		});
+	},
+	/*审核活动食材*/
+	auditActivityGoods(vm, data) {
+		activityGoodsAPI.auditActivityGoodsAPI(data, (result) => {
+			vm.$message({
+				message: '审核成功',
+				type: 'success'
+			});
+			this.getActivityGoods(vm);
+		});
+	}
+}

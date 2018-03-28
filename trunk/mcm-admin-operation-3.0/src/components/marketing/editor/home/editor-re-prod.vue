@@ -1,0 +1,88 @@
+<!-- 推荐食材 -->
+<template>
+<div class="editor-re-prod">
+	<header>
+		<span>推荐食材</span>
+	</header>
+	<div class="con">
+		<ul>
+			<li class="p-item" v-for="n in 6">
+				<div class="p-con">
+					<div class="p-img">
+						<img src="../../../../images/home_chufang.png">
+					</div>
+					<p class="name">优选胡萝卜 井冈胡 萝卜 约500</p>
+					<div class="cart-info">
+						<span class="price">¥4.50</span><br/>
+						<span class="or-price">¥4.50</span>
+						<i class="add"></i>
+					</div>
+				</div>
+			</li>
+		</ul>
+	</div>
+</div>
+</template>
+<style lang="less" scoped>
+	@import "../../../../common/less/config.less";
+  .editor-re-prod{
+  		margin-top:10px;
+  		background: #FFF;
+  		header{
+  			height:46px;
+  			line-height:46px;
+  			font-size:@size-title;
+  			text-align: center;
+  		}
+  		.con{
+  			&:after{
+  				.clearFloat;
+  			}
+  			.p-con{
+  				padding:10px;
+  			}
+  			.p-item{
+  				width:33.33%;
+  				float:left;
+  				border-top:1px solid #e5e5e5;
+  				border-right:1px solid #e5e5e5;
+  				margin-right:-1px;
+  				.p-img{
+  					height:95px;
+  					max-height:100%;
+  					text-align: center;
+  					vertical-align: middle;
+  					img{
+  						vertical-align: middle;
+  						height:80%;
+  						margin-top:10%;
+  					}
+  				}
+  				.cart-info{
+  					position: relative;
+  					.add{
+  						display: inline-block;
+  						position: absolute;
+  						right:0;
+  						bottom:5px;
+  						width:20px;
+  						height:20px;
+  						background: url(../../../../images/market_plus+.png) no-repeat;
+  						background-size: cover;
+  					}
+  				}
+  				.price{
+  					color:@color-yellow;
+  				}
+  				.or-price{
+  					text-decoration:line-through;
+  					color:#999;
+  				}
+  			}
+  			.p-item:nth-child(3n){
+  				border-right:0;
+  			}
+  		}
+  }
+  
+</style>

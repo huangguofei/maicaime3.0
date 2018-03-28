@@ -1,0 +1,156 @@
+<!-- 食材 -->
+<template>
+	<div class="page-layer food-index-page footer-page">
+		<header class="header">
+			<div class="search-wrap" ref="header">
+				<div class="s-content">搜索食材</div>
+				<i class="pattern" @click="switchPattern"></i>
+			</div>
+		</header>
+		<div class="f-con">
+				<PRODMENU :categoryData="categoryData" :setSelectInfo="getSelectInfo"></PRODMENU>
+				<PRODLISTPIC v-if="pattern == 2" :categoryProdData="prodData"  :submitEditorPrice="submitEditorPrice"></PRODLISTPIC>
+				<PRODLIST v-if="pattern == 1" :categoryProdData="prodData" :submitEditorPrice="submitEditorPrice"></PRODLIST>
+		</div>
+		<div class="footer-event">
+			<router-link :to="{name : 'food.add'}">
+				<button>添加食材</button>
+			</router-link>
+			
+			<!-- <button>食材管理</button> -->
+		</div>
+		<FOOTERNAR :active="3"></FOOTERNAR>
+	</div>
+</template>
+<script>
+	import FOOTERNAR from "components/common/footer-nar"
+	import PRODMENU from "components/food/prod-menu"
+	import PRODLISTPIC from "components/food/prod-list-pic"
+	import PRODLIST from "components/food/prod-list"
+	import FOODACTION from "actionurl/food/food"
+	import { mapGetters } from 'vuex'
+	export default{
+		data() {
+			return {
+				categoryData : [],
+				prodData : [],
+				pattern : 1,
+			}
+		},
+		components : {
+			FOOTERNAR,
+			PRODMENU,
+			PRODLISTPIC,
+			PRODLIST
+		},
+		computed : {
+			...mapGetters({
+				categoryList : "getCategoryList"
+			})
+		},
+		created() {
+			if(this.categoryList.length > 0) {
+				this.categoryData = this.categoryList;
+			} else {
+				FOODACTION.getCategoryList(this);
+			}
+		},
+		mounted() {
+			//this.$refs.refresh.style.height
+			console.log(123);
+		},
+		methods : {
+			getSelectInfo(info) {
+				if(info && info.subCategoryId) {
+
+				} else {
+					var params = {
+						categoryId : info.categoryId
+					};
+					FOODACTION.getProdList(this, params);
+				}
+			},
+			submitEditorPrice(prod) {
+				var params = {
+					productSkuId : prod.productSkuId,
+					price : prod.offerPrice
+				};
+				FOODACTION.editorProductPrice(this, params);
+			},
+			switchPattern() {
+				this.pattern = this.pattern == 1 ? 2 : 1;
+			}
+		}
+	}
+</script>
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.food-index-page{
+		.header{
+			position: fixed;
+			z-index:2;
+			width:100%;
+		}
+		.search-wrap{
+			.pxrem(height, 80);
+			background: #222222;
+			.prem(16, 120, 0, 20);
+			position: relative;
+			padding:@prem;
+			.s-content{
+				.pxrem(height, 58);
+				.pxrem(line-height, 58);
+				.pxrem(text-indent, 58);
+				color:#AAAAAA;
+				.pxrem(font-size, 26);
+
+				background: rgba(255, 255, 255, 0.17) url(../../images/food_search.png) no-repeat 5px 4px;
+				.prem(40);
+				background-size: auto @prem;
+			}
+			.pattern{
+				display: inline-block;
+				position: absolute;
+				.pxrem(right,20);
+				.pxrem(top,20);
+				.pxrem(width, 60);
+				.pxrem(height, 48);
+				background:url(../../images/food_list.png) no-repeat;
+				background-size:auto 100% ;
+			}
+			.pattern:after{
+				content: "";
+				position: absolute;
+				.pxrem(left, -25);
+				.pxrem(top, 10);
+				.pxrem(height, 30);
+				width:1px;
+				background: rgba(255, 255, 255, 0.2);
+			}
+		}
+		.f-con{
+			.pxrem(padding-top, 100);
+			.pxrem(padding-bottom, 190);
+		}
+		.footer-event{
+			position: fixed;
+			width:100%;
+			.pxrem(height,105);
+			background: #FFF;
+			.pxrem(bottom,97);
+			text-align: center;
+			button{
+				background: @m-c;
+				.pxrem(width,194);
+				.pxrem(height,60);
+				.pxrem(font-size,28);
+				color:#FFF;
+				border:1px solid @m-c;
+				.pxrem(border-radius,100);
+				.prem(20);
+				margin:@prem;
+				box-shadow: 2px 2px 5px rgba(48,132,242,0.59);
+			}
+		}
+	}
+</style>

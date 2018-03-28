@@ -1,0 +1,13 @@
+/**
+* author pzh 
+* day    2017-9-13
+* 动画效果
+*/
+/*提示框淡入淡出*/
+@keyframes messageFadeIn{
+    0% {opacity:0;}
+}
+@keyframes messageFadeOut{
+    0% {opacity:0.8;}
+    100% {opacity:0;}
+}

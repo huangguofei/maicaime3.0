@@ -1,0 +1,220 @@
+<!-- 流水信息 -->
+<template>
+	<page-layer :narData="narData" classs="back-color">
+		<el-form :inline="true" ref="form" :model="queryParams" label-width="100px" style='padding-top: 10px;'>
+			<el-form-item label="订单状态">
+				<el-select v-model="queryParams.orderStatus" placeholder="订单状态">
+					<el-option v-for="item in orderStatus" :key="item.value" :label="item.name" :value="item.value">
+					</el-option>
+				</el-select>
+			</el-form-item>
+			<el-form-item label="订单类型">
+				<el-select v-model="queryParams.orderType" placeholder="订单类型">
+					<el-option v-for="item in orderType" :key="item.value" :label="item.name" :value="item.value">
+					</el-option>
+				</el-select>
+			</el-form-item>
+			<el-form-item label="配送方式">
+				<el-select v-model="queryParams.deliveryWay" placeholder="配送方式">
+					<el-option v-for="item in deliveryWay" :key="item.value" :label="item.name" :value="item.value">
+					</el-option>
+				</el-select>
+			</el-form-item>
+			<el-form-item label="日期筛选方式">
+				<el-select v-model="queryParams.dateTypeId" placeholder="日期筛选方式">
+					<el-option v-for="item in dateTypeId" :key="item.value" :label="item.name" :value="item.value">
+					</el-option>
+				</el-select>
+			</el-form-item>
+			<el-form-item label="查询时间">
+				<el-col :span="11">
+					<el-date-picker type="date" placeholder="开始时间" v-model="queryParams.beginDate" style="width: 100%;"></el-date-picker>
+				</el-col>
+				<el-col class="line" style="text-align: center;" :span="2">-</el-col>
+				<el-col :span="11">
+					<el-date-picker type="date" placeholder="结束时间" v-model="queryParams.endDate" style="width: 100%;"></el-date-picker>
+				</el-col>
+			</el-form-item>
+			<el-form-item label="配送时间">
+				<el-col :span="11">
+					<el-date-picker type="date" placeholder="开始时间" v-model="queryParams.deliveryBeginTime" style="width: 100%;"></el-date-picker>
+				</el-col>
+				<el-col class="line" style="text-align: center;" :span="2">-</el-col>
+				<el-col :span="11">
+					<el-date-picker type="date" placeholder="结束时间" v-model="queryParams.deliveryEndTime" style="width: 100%;"></el-date-picker>
+				</el-col>
+			</el-form-item>
+			<el-form-item label="关键字">
+				<el-input v-model="queryParams.keyword"></el-input>
+			</el-form-item>
+			<el-form-item>
+				<el-button type="primary" style="margin-left:20px;" @click="queryInfo()">查询</el-button>
+			</el-form-item>
+		</el-form>
+		<el-table :data="tableData" style="width: 100%">
+			<el-table-column type="index" width="60">
+			</el-table-column>
+			<el-table-column prop="purchaserName" label="采购商">
+			</el-table-column>
+			<el-table-column prop="purchaserMobile" label="采购手机">
+			</el-table-column>
+			<el-table-column prop="supplierName" label="供应商">
+			</el-table-column>
+			<el-table-column prop="supplierMobile" label="供应手机">
+			</el-table-column>
+			<el-table-column label="订单编号" width="180">
+				<template scope="scope">
+					<p>{{scope.row.orderId }}</p>
+					<p>{{scope.row.parentOrderId }}</p>
+				</template>
+			</el-table-column>
+			<el-table-column prop="orderStatusText" label="状态">
+			</el-table-column>
+			<el-table-column prop="orderTypeText" label="订单类型">
+			</el-table-column>
+			<el-table-column prop="timeCreated" label="订单时间">
+			</el-table-column>
+			<el-table-column prop="purchaserRemark" label="备注">
+			</el-table-column>
+			<el-table-column prop="payableAmount" label="实付金额">
+			</el-table-column>
+			<el-table-column prop="totalAmount" label="合计金额">
+			</el-table-column>
+			<el-table-column label="操作" width="150">
+				<template scope="scope">
+					<el-button type="" class="btn" @click="viewDetails(scope.row)">查看订单详情</el-button>
+				</template>
+			</el-table-column>
+			
+		</el-table>
+		<el-pagination @current-change="handleCurrentChange" :current-page.sync="queryParams.pageNum" :page-size="queryParams.size" layout="total, prev, pager, next" :total="queryParams.total">
+		</el-pagination>
+	</page-layer>
+</template>
+<script>
+	import SETTINGAREA from "action/order/order"
+	import pageLayer from "components/common/page-layer"
+	export default {
+		data() {
+			return {
+				narData: [{
+					name: "订单列表",
+					router: ""
+				}],
+				queryParams: {
+					dateTypeId: 10,
+					orderStatus: "",
+					orderType: "",
+					deliveryWay: "",
+					deliveryBeginTime: "",
+					deliveryEndTime: "",
+					beginDate: "",
+					endDate: "",
+					keyword: "",
+					pageNum: 1,
+					size: 10,
+					pages: 1,
+					total: 0
+				},
+				tableData: [],
+				pagings: {
+
+				},
+				orderStatus: [{
+					name: '选择订单状态',
+					value: ""
+				}, {
+					name: '待确认',
+					value: '30'
+				}, {
+					name: '待收货',
+					value: '40,50'
+				}, {
+					name: '已完成',
+					value: '100'
+				}, {
+					name: '已取消',
+					value: '300'
+				}],
+				orderType: [{
+					name: '选择订单类型',
+					value: ""
+				}, {
+					name: '食材采购',
+					value: 1
+				}, {
+					name: '积分兑换',
+					value: 2
+				}],
+				deliveryWay: [{
+					name: '选择配送方式',
+					value: ""
+				}, {
+					name: '送货上门',
+					value: 100
+				}, {
+					name: '自提',
+					value: 200
+				}, {
+					name: '驿站',
+					value: 300
+				}],
+				dateTypeId: [{
+					name: '选择日期筛选方式',
+					value: ""
+				}, {
+					name: '下单时间',
+					value: 10
+				}, {
+					name: '付款时间',
+					value: 20
+				}, {
+					name: '接单时间',
+					value: 30
+				}, {
+					name: '收货时间',
+					value: 40
+				}, {
+					name: '完成时间',
+					value: 50
+				}, {
+					name: '取消时间',
+					value: 60
+				}]
+			}
+		},
+		created() {
+			SETTINGAREA.getOrderList(this);
+		},
+		components: {
+			pageLayer
+		},
+		methods: {
+			queryInfo() {
+				SETTINGAREA.getOrderList(this);
+			},
+			handleCurrentChange(value) {
+				SETTINGAREA.getOrderList(this);
+			},viewDetails(data){
+//				 this.$message('功能待开发！');
+//				 return;
+				this.$router.push({
+					name:"order.details",
+					params:{
+						id:data.orderId
+					}
+				})
+			}
+		}
+	}
+</script>
+<style lang="less" scoped>
+	@import "../../../common/less/config.less";
+	.price {
+		color: red;
+	}
+	
+	.active {
+		color: #46CD72;
+	}
+</style>

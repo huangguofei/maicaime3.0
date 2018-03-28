@@ -1,0 +1,59 @@
+/**
+ * author hgf 
+ * day    2017-9-25
+ * 登录注册
+ */
+import serverAPI from "apiurl/login"
+import cityApi from "apiurl/public"
+export default {
+	/*获取站点列表数据*/
+	getCityData(vm) {
+		cityApi.provicesAPI((result) => {
+			vm.info = result;
+		});
+	},
+	login(vm, data) {
+		serverAPI.loginAPI(data, (result) => {
+			var userInfo = {
+				userName: result.userName,
+				mobile: result.mobile,
+				token: result.token
+			}
+			cJs.setCookie("supplier-user-info", JSON.stringify(userInfo));
+			vm.shopList = result.merchantBOList;
+			cJs.message("登录成功！");
+			if(result.merchantBOList.length > 1)
+				vm.isSelectShop = true;
+			else
+				vm.$router.push({
+					name: "order.index.new"
+				});
+		});
+	},
+	register(vm) {
+		serverAPI.registerAPI(vm.registerData, (result) => {
+			cJs.message("注册成功！");
+			vm.$router.push({
+				name: "login.index"
+			});
+		});
+	},
+	selectShop(vm, id) {
+		var params = {};
+		params = vm.userInfo;
+		params.merchantId = id;
+		serverAPI.loginAPI(params, (result) => {
+			vm.$router.push({
+				name: "order.index.new"
+			});
+		});
+	},/*获取验证码*/
+	getCode(vm, callback) {
+		serverAPI.getCodeAPI({
+			mobile: vm.mobile
+		}, (result) => {
+			callback(result);
+		});
+	}
+
+}

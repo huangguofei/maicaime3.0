@@ -1,0 +1,28 @@
+<!-- 客户 -->
+<template>
+	<div class="page-layer">
+		<err msg="客户"></err>
+		<FOOTERNAR :active="2"></FOOTERNAR>
+	</div>
+</template>
+<script>
+	import FOOTERNAR from "../../components/common/footer-nar"
+	import err from "components/common/err"
+	export default{
+		data() {
+			return {
+
+			}
+		},
+		components : {
+			FOOTERNAR,
+			err
+		},
+		created() {
+			
+		},
+		methods : {
+			
+		}
+	}
+</script>

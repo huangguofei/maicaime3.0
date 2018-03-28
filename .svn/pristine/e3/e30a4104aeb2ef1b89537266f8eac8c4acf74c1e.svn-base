@@ -1,0 +1,63 @@
+<template>
+	<article class="order-item">
+		<order-list-view ref="orderList" :order-data="orderList" @updateData="updatePageData"  :no-show-num="option.prodQuantity"></order-list-view>
+	</article>
+</template>
+
+<script>
+	import orderListView from 'components/order/order-list'
+	import orderApi from 'actionurl/order/order'
+	export default {
+		data() {
+			return {
+				orderList: [],
+				searchIndex: 2,
+				isSelectAll: false,
+				option: {
+					status:30,
+					/*待付款*/
+					prodQuantity: 2,
+					pageNum: 1,
+					pageSize: 10
+				},
+				totalPage: "",
+				currentPage: 1
+			}
+		},
+		components: {
+			orderListView
+		},
+		created() {
+			orderApi.getOrderListData(this);
+		},
+		watch: {
+			orderList(val) {
+				console.log(val)
+			}
+		},
+		methods: {
+			changeSearch(index) {
+				if(this.searchIndex == index) {}
+				this.searchIndex = index;
+			},
+			selectAll() {
+				if(this.isSelectAll)
+					this.isSelectAll = false;
+				else
+					this.isSelectAll = true;
+			},
+			updatePageData() {
+				orderApi.getOrderListData(this,(count) => {
+					this.$refs.orderList.pullingUpPage(count);
+				});
+			}
+		}
+	}
+</script>
+
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.order-item{
+		height:100%;
+	}
+</style>

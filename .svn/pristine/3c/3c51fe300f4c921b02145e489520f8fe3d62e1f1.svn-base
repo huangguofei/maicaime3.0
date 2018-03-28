@@ -1,0 +1,309 @@
+<!-- 我的 -->
+<template>
+	<div class="page-layer footer-page" style="overflow-y: auto; height: auto;">
+		<section class="bg"></section>
+		<article class="user-main padding">
+			<article class="user-content">
+				<article class="user-header item padding">
+					<section class="user-info header hr">
+						<section class="bod">
+							<img :src="userInfo.headImg?userInfo.headImg:require('../../images/user-default.png')" class="pull-left" />
+							<section class="pull-left">
+								<h2 class="title">{{userInfo.merchantName}}</h2>
+								<p>主营：</p>
+							</section>
+						</section>
+					</section>
+					<article class="header-bottom">
+						<section class="pull-left">余额：<span>¥{{(userInfo.balance * 1).toFixed(2)}}</span></section>
+						<section class="pull-right">
+							<router-link to="/user/balance" class="details">明细</router-link>
+							<router-link to="/user/deposit" class="drawings">提现</router-link>
+						</section>
+					</article>
+					<section class="header-right">
+						<router-link to="/message/" class="message new"><img src="../../images/message-icon.png" /><i></i></router-link>
+						<router-link to="/user/info"><img src="../../images/mine_arrow1.png" /></router-link>
+					</section>
+				</article>
+				<article class="user-tab item">
+					<router-link :to="{name:'order.index.new'}" :class="{new:orderNum!=0}"><img src="../../images/food_add_fenlei.png" /><span><i></i>订单</span></router-link>
+					<!-- <router-link to="/user/statisticAnalysis"><img src="../../images/mine_tongji@2x.png" /><span>统计分析</span></router-link> -->
+					<a href="javascript:cJs.message('此功能暂未开放');"><img src="../../images/mine_tongji@2x.png" /><span>统计分析</span></a>
+					<router-link to="/user/salesRank"><img src="../../images/mine_rank@2x.png" /><span>销售排行</span></router-link>
+					<!-- <router-link to="/user/salesSummary"><img src="../../images/mine_daily@2x.png" /><span>每日汇总</span></router-link> -->
+					<a href="javascript:cJs.message('此功能暂未开放');"><img src="../../images/mine_daily@2x.png" /><span>每日汇总</span></a>
+					<router-link to="/checking/"><img src="../../images/mine_account@2x.png" /><span>对账</span></router-link>
+					<router-link to="/activitiesList/" class="new"><img src="../../images/Combined Shape@2x.png" /><span><i></i>参与活动</span></router-link>
+				</article>
+				<article class="user-panel item hide">
+					<section class="header hr">
+						<img src="../../images/Group 2@2x.png" />
+						<span class="">驿站</span>
+						<img src="../../images/Group 2 Copy@2x.png" />
+					</section>
+					<section class="content">
+						<section class="pull-left">
+							<h3>0</h3><span>待送达订单数</span></section>
+						<section class="pull-right">
+							<h3>0</h3><span>待取货订单数</span></section>
+					</section>
+					<a href="javascript:cJs.message('此功能暂未开放');" class="changebtn">切换至驿站</a>
+				</article>
+				<article class="user-nav item">
+					<router-link to="/user/set"><img src="../../images/mine_setting.png" /><span class="title">设置</span><img class="pull-right" src="../../images/mine_arrow2.png" /></router-link>
+				<router-link to="/user/about"><img src="../../images/mine_aboutus.png" /><span class="title">关于我们</span><img class="pull-right" src="../../images/mine_arrow2.png" /></router-link>
+					<!--<section @click="err"><img src="../../images/mine_help.png" /><span class="title">使用帮助</span><img class="pull-right" src="../../images/mine_arrow2.png" /></section>-->
+				</article>
+			</article>
+		</article>
+		<FOOTERNAR :active="5"></FOOTERNAR>
+	</div>
+</template>
+<script>
+	import FOOTERNAR from "../../components/common/footer-nar"
+	import server from "actionurl/user/user"
+	export default {
+		data() {
+			return {
+				orderNum: 0,
+				userInfo: ''
+			}
+		},
+		components: {
+			FOOTERNAR
+		},
+		created() {
+			server.getOrderNum(this);
+			server.getUserInfo(this);
+		},
+		methods: {
+			err() {
+				cJs.message("此功能在未开放！");
+			},
+			logout() {
+				server.logout(this);
+			}
+		}
+	}
+</script>
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.bg {
+		position: fixed;
+		top: 0;
+		width: 100%;
+		background: #19191E;
+		.pxrem(height, 130);
+		z-index: -1;
+	}
+	
+	.new {
+		position: relative;
+		i {
+			position: absolute;
+			.pxrem(width, 10);
+			.pxrem(height, 10);
+			border-radius: 50%;
+			background: #F74C31;
+			right: 0;
+		}
+	}
+	
+	.user-main {
+		.user-content{
+			background: #f3f3f3;
+		}
+		
+		.title {
+			.pxrem(font-size, 32);
+			color: #000;
+		}
+		.item {
+			background: #fff;
+			.pxrem(margin-bottom, 20);
+		}
+		.user-header {
+			position: relative;
+			padding-bottom: 0;
+			overflow: hidden;
+			.user-info {
+				.pxrem(padding-top, 50);
+				.pxrem(padding-bottom, 50);
+				.bod {
+					.clearfix();
+					&>section {
+						width: 70%;
+					}
+				}
+				img {
+					.pxrem(width, 120);
+					.pxrem(height, 120);
+					.pxrem(margin-right, 20);
+					border-radius: 50%;
+				}
+				p {
+					.pxrem(font-size, 24);
+					color: #999;
+				}
+			}
+			a {
+				color: #666;
+			}
+			.header-bottom {
+				.pxrem(height, 100);
+				.pxrem(line-height, 100);
+				.clearfix();
+				.pxrem(font-size, 28);
+				section {
+					span {
+						.pxrem(font-size, 42);
+						color: #F98A0C;
+					}
+					a {
+						display: inline-block;
+						.pxrem(width, 100);
+						.pxrem(height, 50);
+						.pxrem(line-height, 50);
+						text-align: center;
+						border: 1px solid @m-c;
+						.pxrem(border-radius, 25);
+					}
+					.details {
+						color: @m-c;
+					}
+					.drawings {
+						background: @m-c;
+						color: #fff;
+					}
+				}
+			}
+			.header-right {
+				position: absolute;
+				.pxrem(top, 25);
+				.pxrem(right, 25);
+				a {
+					display: block;
+					img {
+						.pxrem(width, 45);
+						height: auto;
+					}
+				}
+				a:first-child {
+					.pxrem(margin-bottom, 20);
+				}
+			}
+		}
+		.user-tab {
+			display: flex;
+			display: -webkit-flex;
+			flex-direction: row;
+			flex-wrap: wrap;
+			justify-content: center;
+			align-items: center;
+			a {
+				display: inline-block;
+				.pxrem(padding-top, 15);
+				border-bottom: 1px solid #E9E9E9;
+				border-right: 1px solid #E9E9E9;
+				box-sizing: border-box;
+				width: 33.3333%;
+				.pxrem(height, 150);
+				.pxrem(font-size, 28);
+				color: #000;
+				text-align: center;
+				img {
+					.pxrem(width, 54);
+				}
+				span {
+					display: block;
+				}
+			}
+			.new {
+				i {
+					.pxrem(right, 50);
+				}
+			}
+			a:nth-child(3n) {
+				border-right: 0;
+			}
+			a:nth-child(3)~a {
+				border-bottom: none;
+			}
+		}
+		.user-panel {
+			padding-bottom: .3rem;
+			.header {
+				text-align: center;
+				&:before {
+					.pxrem(left, -10);
+				}
+				&:after {
+					.pxrem(right, -10);
+				}
+				img {
+					.pxrem(width, 30);
+				}
+				span {
+					display: inline-block;
+					.pxrem(height, 100);
+					.pxrem(line-height, 100);
+					.pxrem(margin-left, 10);
+					.pxrem(margin-right, 10);
+					.pxrem(font-size, 36);
+				}
+			}
+			.content {
+				.clearfix();
+				text-align: center;
+				margin: .5rem 0;
+				section {
+					width: 50%;
+					h3 {
+						.pxrem(font-size, 50);
+						color: #F98A0C;
+					}
+					span {
+						.pxrem(font-size, 24);
+						color: #999;
+					}
+				}
+			}
+			.changebtn {
+				display: block;
+				width: 80%;
+				margin: 0 auto;
+				.pxrem(height, 70);
+				.pxrem(line-height, 70);
+				color: @m-c;
+				border: 1px solid @m-c;
+				.pxrem(border-radius, 35);
+				text-align: center;
+			}
+		}
+		.user-nav {
+			.clearfix();
+			.pxrem(padding-left, 25);
+			.pxrem(padding-right, 25);
+			a {
+				display: block;
+				.pxrem(padding-top, 25);
+				.pxrem(padding-bottom, 25);
+				border-bottom: 1px solid #E5E5E5;
+				img {
+					.pxrem(width, 40);
+					height: auto;
+					.pxrem(margin-right, 10);
+					vertical-align: text-bottom;
+				}
+				img:last-child {
+					.pxrem(width, 15);
+					height: auto;
+				}
+			}
+			section:last-child {
+				border: 0;
+			}
+		}
+	}
+</style>

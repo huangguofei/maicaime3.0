@@ -1,0 +1,12 @@
+/**
+* author pzh 
+* day    2017-9-14
+* 服务站模块接口
+*/
+import https from "../axios/https"
+export default{
+	/*添加服务站*/
+	addAgentAPI : (...v) => https.commAjax({method : "post",url : "/admin/agent/add", params : v[0], success : v[1], error : v[2]}),
+	/*服务站列表*/
+	agentListAPI : (...v) => https.commAjax({method : "post",url : "/admin/agent/list", params : v[0], success : v[1], error : v[2]}),
+}

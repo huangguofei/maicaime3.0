@@ -1,0 +1,45 @@
+/**
+ * author hgf 
+ * day    2017-11-8
+ * 个人中心模块接口
+ */
+import https from "httpurl/https"
+
+/*获取个人信息*/
+export const userAPI = {
+	/*个人信息*/
+	userAPI: (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/user/purhcaserOwnInfo", v)),
+}
+
+/*获取订单数量*/
+export const orderAPI = {
+	/*订单列表*/
+	orderNumAPI: (...v) => https.commAjax(cJs.apiDataReturnParams("get", "/order/getCountByStatus", v)),
+}
+/*获取对账*/
+export const checkingAPI = {
+	/*对账列表*/
+	checkingListAPI: (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/bill/commonBill", v)),
+}
+/*积分/流水明细中心*/
+export const integralAPI = {
+	/*积分/流水明细中心列表*/
+	userIntegralAPI: (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/wallet/balance", v)),
+	/*积分/流水明细中心记录列表*/
+	userIntegralListAPI: (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/wallet/tradeRecord", v)),
+}
+/*优惠券中心*/
+export const couponAPI = {
+	/*优惠券中心列表*/
+	userCouponAPI: (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/user_coupon/list", v)),
+	/*当前时间可以券列表*/
+	userUsableCouponAPI: (...v) => https.commAjax(cJs.apiDataReturnParams("get", "/user_coupon/availableList", v)),
+
+}
+/*余额*/
+export const balanceAPI = {
+	/*充值*/
+	rechargeAmountAPI : (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/OuryuePay/rechargeAmount", v)),
+	/*充值活动*/
+	rechargeActivityAPI : (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/special_offer/getActivityTypeList", v)), 
+}

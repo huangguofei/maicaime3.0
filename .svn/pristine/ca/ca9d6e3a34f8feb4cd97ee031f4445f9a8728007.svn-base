@@ -1,0 +1,16 @@
+/**
+ * hgf 2017年12月20日
+ * 商品分析
+ */
+import { goodsAnalyzeAPI } from "../../api/data"
+export default {
+	/*获取商品分析数据*/
+	getGoodsAnalyze(vm) {
+		goodsAnalyzeAPI.goodsAnalyzeDetailAPI(vm.queryParams, (result) => {
+			vm.tableData = result.resultList;
+			vm.queryParams.pageNum = result.currentPage;
+			vm.queryParams.pages = result.totalPage;
+			vm.queryParams.total = result.totalCount;
+		});
+	}
+}

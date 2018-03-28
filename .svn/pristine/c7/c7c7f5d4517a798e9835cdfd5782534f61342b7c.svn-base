@@ -1,0 +1,43 @@
+/**
+*  author pzh
+*  day  2017-9-29
+*  商品状态管理器
+*/
+import common from "actionurl/common/common"
+/*查询购物车数量*/
+const queryCartNum = "queryCartNum";
+/*添加购物车数量*/
+const addCartNum = "addCartNum"
+/*减购物车数量*/
+const minusCatrNum = "minusCatrNum"
+const state = {
+	cartNum : 0
+}
+const getters = {
+	getCartNum(state) {
+		return state.cartNum;
+	}
+}
+const actions = {
+	
+}
+
+const mutations = {
+	[queryCartNum](state) {
+		if(!state.cartNum) {
+			common.getCartNum(state);
+		}
+	},
+	[addCartNum](state) {
+		++state.cartNum;
+	},
+	[minusCatrNum](state) {
+		--state.cartNum;
+	}
+}
+export default{
+	state,
+	getters,
+	actions,
+	mutations
+}

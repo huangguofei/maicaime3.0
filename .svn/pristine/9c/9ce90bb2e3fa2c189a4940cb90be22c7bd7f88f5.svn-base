@@ -1,0 +1,47 @@
+<!-- 活动列表 -->
+<template>
+	<page-layer :narData="narData" classs="">
+		<div class="activity-list">
+			<activity v-for="a in activityList" :activityInfo="a"></activity>
+		</div>
+	</page-layer>
+</template>
+<script>
+	import resServer from 'actionurl/marketing/activity'
+	import pageLayer from "components/common/page-layer"
+	import activity from "components/marketing/activity/activity"
+	import activityAction from "actionurl/marketing/activity"
+	export default {
+		data() {
+			return {
+				dataList: [],
+				narData: [{
+						name: "优惠活动",
+						router: "marketing.activity.index"
+					},
+					{
+						name: "发起优惠活动",
+						router: "marketing.activity.new"
+					}
+				],
+				activityList : []
+			}
+		},
+		created: function() {
+			resServer.getActivityList(this);
+		},
+		components: {
+			pageLayer,
+			activity
+		},
+		created() {
+			activityAction.getActivityList(this);
+		}
+	}
+</script>
+<style lang="less" scoped>
+	@import "../../../common/less/config.less";
+	.activity-list {
+		.clearfix();
+	}
+</style>

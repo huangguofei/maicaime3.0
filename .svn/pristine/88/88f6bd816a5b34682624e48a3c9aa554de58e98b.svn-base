@@ -1,0 +1,26 @@
+<!-- 食材 -->
+<template>
+	<div class="page-layer">
+		食材
+		<FOOTERNAR :active="3"></FOOTERNAR>
+	</div>
+</template>
+<script>
+	import FOOTERNAR from "../../components/common/footer-nar"
+	export default{
+		data() {
+			return {
+
+			}
+		},
+		components : {
+			FOOTERNAR
+		},
+		created() {
+			
+		},
+		methods : {
+			
+		}
+	}
+</script>

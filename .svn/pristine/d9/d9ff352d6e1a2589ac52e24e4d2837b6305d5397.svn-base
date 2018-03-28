@@ -1,0 +1,48 @@
+<template>
+	<article class="order-item">
+		<order-list-view ref="orderList" :order-data="orderList" @updateData="updatePageData" :no-show-num="option.prodQuantity"></order-list-view>
+	</article>
+</template>
+
+<script>
+	import orderListView from 'components/order/order-list'
+	import orderApi from 'actionurl/order/order'
+	export default {
+		data() {
+			return {
+				orderList:[],
+				option : {
+		          	pageNum : 1,
+		          	size : 10,
+		          	pages : 1,
+		          	total : 0,
+		          	orderStatusId:50,
+		          	prodQuantity:2,
+		          	sortDirection : 0
+	            }
+			}
+		},
+		components: {
+			orderListView
+		},
+		created() {
+			orderApi.getOrderListData(this);
+		},
+		watch:{
+			orderList(val){
+				console.log(val)
+			}
+		},
+		methods: {
+			updatePageData() {
+				orderApi.getOrderListData(this,(count) => {
+					this.$refs.orderList.pullingUpPage(count);
+				});
+			}
+		}
+	}
+</script>
+
+<style lang="less">
+
+</style>

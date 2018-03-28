@@ -1,0 +1,21 @@
+/**
+ * author hgf
+ * day    2017-11-8
+ * 个人中心流水明细接口
+ */
+import {integralAPI} from "apiurl/user"
+ export default{
+ 		/*获取余额内容*/
+ 		getPayInfo(vm) {
+ 			integralAPI.userIntegralAPI({walletType:0},(result) => {
+ 				vm.integralData = result;
+ 				vm.initTime(result.creationTime);
+ 			});
+ 		},/*获取流水记录内容*/
+ 		getPayList(vm) {
+ 			integralAPI.userIntegralListAPI({walletType:0},(result) => {
+ 				vm.payListData = result.resultList;
+ 			});
+ 		},
+ 		
+ }

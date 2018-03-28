@@ -1,0 +1,13 @@
+/**
+ * author pzh
+ * day    2017-9-29
+ * 公共业务接口
+ */
+ import pubilcAPI from "apiurl/public"
+ export default{
+ 		upFileImage(vm, params, callback) {
+ 			pubilcAPI.upImageAPI(params, (result)=> {
+ 					callback ? callback(result) : null;
+ 			});
+ 		}
+ }

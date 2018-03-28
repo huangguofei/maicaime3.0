@@ -1,0 +1,17 @@
+/**
+ * author hgf
+ * day    2017-11-8
+ * 个人中心积分接口
+ */
+import {integralAPI} from "apiurl/user"
+ export default{
+ 		/*获取积分内容*/
+ 		getIntegral(vm) {
+ 			
+ 			integralAPI.userIntegralAPI((result) => {
+ 				vm.integralData = result;
+ 				
+ 			});
+ 		},
+ 		
+ }

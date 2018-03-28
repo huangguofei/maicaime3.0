@@ -1,0 +1,18 @@
+<!-- 设置头部广告 -->
+<template>
+	<div class="setting-advertising">
+		<div class="adv-item">
+			<p class="title">第一张主页广告</p>
+			<el-row class="con">
+
+			</el-row>
+		</div>
+	</div>
+</template>
+<style lang="less" scoped>
+	.setting-advertising{
+		.adv-item{
+			
+		}
+	}
+</style>

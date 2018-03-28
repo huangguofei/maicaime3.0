@@ -1,0 +1,44 @@
+/**
+ *  author pzh
+ *  day  2017-9-13
+ *  订单模块路由配置
+ */
+const indexView = r => require.ensure([], () => r(require('../view/order/index')), 'Index')
+const order_all_View = r => require.ensure([], () => r(require('components/order/order-all')), 'Index')
+const order_obligation_View = r => require.ensure([], () => r(require('components/order/order-obligation')), 'Index')
+const order_waitreceiving_View = r => require.ensure([], () => r(require('components/order/order-waitreceiving')), 'Index')
+const order_accomplish_View = r => require.ensure([], () => r(require('components/order/order-accomplish')), 'Index')
+const order_datails_View = r => require.ensure([], () => r(require('../view/order/order-details')), 'deteils')
+const router = [{
+	name: "mcm.order.index",
+	path: "/order/",
+	component: indexView,
+	children: [{
+		name: "order.index.all",
+		path: "",
+		component: order_all_View
+	}, {
+		path: "all",
+		component: order_all_View,
+		children: [{
+			path: ":id",
+			component: order_datails_View
+		}]
+	}, {
+		name: "order.index.obligation",
+		path: "obligation",
+		component: order_obligation_View
+	}, {
+		name: "order.index.waitreceiving",
+		path: "waitreceiving",
+		component: order_waitreceiving_View
+	}, {
+		name: "order.index.accomplish",
+		path: "accomplish",
+		component: order_accomplish_View
+	}]
+}]
+
+export default {
+	router
+}

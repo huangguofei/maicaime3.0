@@ -1,0 +1,101 @@
+<template>
+	<page-layer :narData="narData" classs="back-color">
+		<div class="goods-details padding">
+			<div class="item padding">
+				<h3 class="title">商品参数</h3>
+				<div class="content">
+					<p class=""><span>商品名称：新疆上品胡萝卜</span><span>销售单位：斤</span><span>商品分类：新疆上品胡萝卜</span></p>
+					<p class=""><span>商品状态：斤</span><span>商品品牌：新疆上品胡萝卜</span><span>添加时间：斤</span></p>
+					<p class=""><span>&#12288;条形码：新疆上品胡萝卜</span></p>
+				</div>
+			</div>
+			<div class="item padding">
+				<h3 class="title">商品价格</h3>
+				<div class="content">
+					<p class=""><span>建议零售价：¥2.65</span></p>
+					<p class=""><span>&#12288;&#12288;&#12288;原价：新疆上品胡萝卜</span></p>
+					<p class=""><span>&#12288;&#12288;活动价：新疆上品胡萝卜</span></p>
+				</div>
+			</div>
+			<div class="item padding">
+				<h3 class="title">商品图片</h3>
+				<div class="content">
+					<div class="img-box">
+						<img src="../../../../dist/static/img/Group-err.7576de2.png" />
+						<p>主图</p>
+					</div>
+					<div class="img-box">
+						<img src="../../../../dist/static/img/Group-err.7576de2.png" />
+						<p>副图</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</page-layer>
+</template>
+
+<script>
+	import pageLayer from "components/common/page-layer"
+
+	export default {
+		data() {
+			return {
+				narData: [{
+					name: "商品详情",
+					router: "goods.goodsDetails"
+				}],
+			}
+		},
+		created() {
+
+		},
+		methods: {
+
+		},
+		components: {
+			pageLayer
+		}
+	}
+</script>
+
+<style lang="less" scoped>
+	@import "../../../common/less/config.less";
+	.goods-details {
+		.item {
+			height: 200px;
+			.clearfix();
+			border-bottom:1px solid #e0e0e0;
+			.title {
+				height: 200px;
+				float: left;
+				font-size: 24px;
+				width: 200px;
+			}
+			.content {
+				.clearfix();
+				p {
+					font-size: 16px;
+					color: #343434;
+					line-height: 40px;
+					span {
+						display: inline-block;
+						width: 25%;
+					}
+				}
+				.img-box{
+					float: left;
+					margin-right: 20px;
+					img{
+						width:100px;
+						height: auto;
+						border-radius:5px;
+						border:1px solid #F4F4F4;
+					}
+					p{
+						text-align: center;
+					}
+				}
+			}
+		}
+	}
+</style>

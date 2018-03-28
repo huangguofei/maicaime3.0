@@ -1,0 +1,398 @@
+<template>
+	<article class="page-layer">
+		<div class=" order-details padding" :class="{padding_bottom:orderData.statusId==30}" v-if="orderData.statusText">
+			<header class="padding order-status bk-white item hr">
+				<section class="relative">
+					<h3 class="text-center">{{orderData.statusText}}
+						<img src="../../images/order_details_arrow.png">
+					</h3>
+					<span class="style1">{{orderData.operationLog.timeCreatedText}}</span>
+				</section>
+				<section class="text-center style1">{{orderData.operationLog.logContent}}
+				</section>
+			</header>
+			<section class="padding bk-white linkman-info padding">
+				<img src="../../images/time.png" class="pull-left" />
+				<section class="pull-left">送达时间：{{orderData.deliveryTimeText}}
+				</section>
+			</section>
+			<section class="padding bk-white commodity-list item hr">
+				<div class="shop-item site-start">
+					<p class="commodity-name"><i></i><span>{{orderData.stationName}}</span></p>
+					<p class="price-num">地址：{{orderData.stationAddr}}</p>
+					<P class="commodity-btn" v-if="orderData.statusId==30||orderData.statusId==20">
+						<a href="javascript:;">导航<img src="../../images/map.png" /></a>
+						<a href="javascript:;" :href="'tel:'+orderData.stationMobile">联系驿站</a>
+					</P>
+				</div>
+				<div class="shop-item site-end">
+					<p class="commodity-name"><i></i><span>{{orderData.receiverName}}</span></p>
+					<p class="price-num">地址：{{orderData.receiverAddr}}</p>
+					<P class="commodity-btn" v-if="orderData.statusId==30||orderData.statusId==20">
+						<a href="javascript:;">导航<img src="../../images/map.png" /></a>
+						<a href="javascript:;" :href="'tel:'+orderData.receiverMobile">联系ta</a>
+					</P>
+				</div>
+				<article class="distance " :class="{'add-bottom':orderData.statusId==30||orderData.statusId==20}">
+					<i class="dashed"></i>
+				</article>
+			</section>
+			<section class="btn-group padding bk-white" v-if="orderData.orderStatusId!=30">
+				<p>取货号：<span>{{orderData.articleNumber}}</span></p>
+			</section>
+			<section class="shop-details gap">
+				<header class="padding bk-white">
+					<h3 class="pull-left">订单详情</h3>
+					<span class="pull-right">{{orderData.list.length}}种食材</span>
+				</header>
+				<ul class="padding">
+					<li v-for="(val,index) in orderData.list">
+						<div class="shop-item">
+							<section class="item-left pull-left"><i></i><span>{{val.prodName}}</span>
+							</section>
+							<section class="item-right pull-right">
+								<b>x{{val.actualQuantity}}</b>
+							</section>
+						</div>
+					</li>
+
+				</ul>
+			</section>
+			<section class="order-info gap">
+				<div class="padding bk-white">
+					<p><span>订单编号</span>{{orderData.deliveryOrderId}}</p>
+					<p><span>下单时间</span>{{orderData.timeCreated}}</p>
+					<p><span>配送时间</span>{{orderData.deliveryTimeText}}</p>
+					<p><span>送达时间</span>{{orderData.deliveryTimeText}}</p>
+				</div>
+			</section>
+			<footer v-if="orderData.statusId==30 ">
+				<p class="pull-left">配送费：<span>¥0.00</span></p>
+				<a href="javascript:;" v-if="isCodeOpen" class="pull-right affirm" @click="confirmReceipt">确认取货</a>
+				<a href="javascript:;" v-else class="pull-right affirm" @click="confirmReceipt">扫码取货</a>
+			</footer>
+		</div>
+		<loading v-else></loading>
+	</article>
+</template>
+
+<script>
+	import orderApi from "actionurl/order/order"
+	import commonAction from 'actionurl/common/common'
+	import { mapGetters } from 'vuex'
+	import loading from 'components/common/loading'
+	export default {
+		data() {
+			return {
+				orderData: "",
+				orderId: this.$route.params.id,
+				isCodeOpen: this.$route.query.isCodeOpen ? this.$route.query.isCodeOpen : null,
+				isDialog: false,
+				title: "请手动输入取件码",
+				contentHtml: `<input type="input" style="" id="codeDom">`
+			}
+		},
+		computed: {
+			...mapGetters({
+				thatUrl: "thatUrl"
+			})
+		},
+		created() {
+			orderApi.getOrderDetails(this);
+			if(cJs.isWeiXin() && !this.isCodeOpen) {
+				var params = {
+					url: this.thatUrl || window.location.href
+				}
+				commonAction.getJsApiInfo(params, (result) => {
+					setTimeout(function() {
+						cJs.weixinConfig(result);
+					}, 20);
+				});
+			}
+		},
+		mounted() {
+
+		},
+		methods: {
+			contactLinkman(str) {
+				confirm(str, function() {
+
+				});
+			},
+			confirmReceipt() {
+				if(this.isCodeOpen) {
+					orderApi.orderConfirm(this);
+				} else {
+					var _that = this;
+					if(cJs.isWeiXin()) {
+						cJs.wxScanQRCode(1, (result) => {
+							var resultStr = result.resultStr;
+							if(resultStr.indexOf("dynamic|") < 0) {
+								cJs.message("无效二维码!");
+								return false;
+							}
+							orderApi.getOrderId(_that, resultStr.split("|")[1]);
+						});
+					} else {
+						cJs.message("只支持微信扫一扫！");
+					}
+				}
+			},
+			offDialog() {
+				this.isDialog = false;
+			},
+			affirm() {
+				var codeDom = document.getElementById("codeDom");
+				var code = codeDom.value;
+				orderApi.getOrderId(this, code);
+			}
+		},
+		components: {
+			loading
+		}
+	}
+</script>
+
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.padding_bottom {
+		.pxrem(padding-bottom, 110);
+	}
+	
+	.hr {
+		&:before {
+			.pxrem(left, -15);
+			z-index: 1;
+		}
+		&:after {
+			.pxrem(right, -15);
+			z-index: 1;
+		}
+	}
+	
+	.order-details {
+		.bk-white {
+			background: #fff;
+		}
+		.style1 {
+			color: #666;
+			.pxrem(font-size, 28);
+		}
+		.gap {
+			margin-bottom: .15rem;
+		}
+		.order-status {
+			section {
+				span {
+					position: absolute;
+					top: 0;
+					.pxrem(right, 16);
+				}
+			}
+			section:first-child {
+				.pxrem(line-height, 80);
+				.pxrem(height, 80);
+			}
+			h3 {
+				color: #000;
+				text-align: center;
+				.pxrem(font-size, 36);
+				img {
+					.pxrem(width, 14);
+				}
+			}
+		}
+		.linkman-info {
+			border-bottom: 1px solid #f2f2f2;
+			.clearfix();
+			img {
+				.pxrem(width, 30);
+				.pxrem(margin-top, 8);
+			}
+			section {
+				.pxrem(margin-left, 20);
+				.pxrem(font-size, 32);
+			}
+		}
+		.commodity-list {
+			background: #FFF;
+			position: relative;
+			.shop-item {
+				.pxrem(margin-bottom, 35);
+				.commodity-name {
+					color: #151009;
+					.pxrem(height, 40);
+					.pxrem(line-height, 40);
+					.pxrem(font-size, 28);
+					i {
+						background: @m-c;
+						display: inline-block;
+						.pxrem(width, 12);
+						.pxrem(height, 12);
+						.pxrem(border-radius, 6);
+						.pxrem(margin-right, 6);
+					}
+				}
+				p {
+					.pxrem(margin-bottom, 5);
+				}
+				.price-num {
+					.pxrem(height, 33);
+					.pxrem(line-height, 33);
+					color: #999999;
+					.pxrem(font-size, 24);
+					.pxrem(padding-left, 22);
+					span:first-child {
+						margin-right: 0.3rem;
+					}
+				}
+				.commodity-btn {
+					.pxrem(padding-left, 22);
+					a {
+						display: inline-block;
+						color: #000;
+						.pxrem(font-size, 24);
+						.pxrem(height, 46);
+						.pxrem(line-height, 46);
+						border: 1px solid #D7D7D7;
+						.pxrem(padding-left, 24);
+						.pxrem(padding-right, 24);
+						img {
+							.pxrem(width, 40);
+							vertical-align: middle;
+						}
+					}
+				}
+			}
+			.site-end {
+				.commodity-name {
+					i {
+						background: #3084F2;
+					}
+				}
+			}
+			.distance {
+				position: absolute;
+				.pxrem(top, 35);
+				.pxrem(bottom, 115);
+				.pxrem(left, 0);
+				.pxrem(font-size, 22);
+				color: #D7D7D7;
+				text-align: center;
+				.pxrem(width, 100);
+				.dashed {
+					position: absolute;
+					.pxrem(top, 12);
+					.pxrem(bottom, 12);
+					.pxrem(left, 18);
+					width: 1px;
+					border-left: 1px dashed #D7D7D7;
+				}
+			}
+			.add-bottom {
+				.pxrem(bottom, 185);
+			}
+		}
+		.btn-group {
+			p {
+				text-align: center;
+				width: 90%;
+				margin: 0 auto;
+				.pxrem(border-radius, 5);
+				border: 1px solid #D7D7D7;
+				color: #000;
+				.pxrem(height, 70);
+				.pxrem(line-height, 70);
+				span {
+					.pxrem(font-size, 38);
+					color: #000;
+				}
+			}
+		}
+		.shop-details {
+			margin-top: .15rem;
+			header {
+				.clearfix();
+				h3 {
+					.pxrem(font-size, 32);
+				}
+				span {
+					.pxrem(font-size, 28);
+					color: #999;
+				}
+			}
+			ul {
+				padding-bottom: 0;
+				background: #F8F8F8;
+			}
+		}
+		.order-info {
+			p {
+				.pxrem(font-size, 28);
+				.pxrem(line-height, 50);
+				span {
+					color: #999;
+					.pxrem(margin-right, 40);
+				}
+			}
+		}
+		.shop-item {
+			.pxrem(margin-bottom, 26);
+			overflow: auto;
+			.item-left {
+				color: #151009;
+				.pxrem(height, 40);
+				.pxrem(line-height, 40);
+				.pxrem(font-size, 28);
+				.pxrem(margin-bottom, 5);
+				i {
+					background: @d-price;
+					vertical-align: middle;
+					display: inline-block;
+					.pxrem(width, 12);
+					.pxrem(height, 12);
+					border-radius: 100%;
+					border: 1px solid @d-price;
+					.pxrem(margin-right, 6);
+				}
+			}
+			.item-right {
+				b {
+					color: #343534;
+					.pxrem(font-size, 28);
+				}
+			}
+		}
+		footer {
+			/*.clearfix();*/
+			background: #FAFAFA;
+			position: fixed;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			.pxrem(height, 100);
+			.pxrem(line-height, 100);
+			border-top: 1px solid #F3F3F3;
+			.pxrem(padding-left, 16);
+			p {
+				.pxrem(font-size, 28);
+				span {
+					.pxrem(font-size, 38);
+					color: @d-price;
+				}
+			}
+			a {
+				.pxrem(font-size, 32);
+				color: #fff;
+				.pxrem(padding-left, 56);
+				.pxrem(padding-right, 56);
+			}
+			.stockout {
+				background: #4A4A4A;
+			}
+			.affirm {
+				background: @m-c;
+			}
+		}
+	}
+</style>

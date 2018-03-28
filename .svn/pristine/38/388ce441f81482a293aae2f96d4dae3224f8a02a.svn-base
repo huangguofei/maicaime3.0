@@ -1,0 +1,51 @@
+/**
+ * author pzh 
+ * day    2017-9-20
+ * 服务站业务
+ */
+import serverAPI from "apiurl/serve"
+import cityApi from "apiurl/public"
+export default {
+	/*获取站点列表数据*/
+	getSiteList(vm) {
+		var option = vm.seachData;
+		serverAPI.agentListAPI(option,(result) => {
+			vm.tableData = result.resultList;
+			vm.totalCount = result.totalCount;
+			vm.agentList=result.resultList;
+			vm.isSelect=false;
+		});
+	},
+	getCityData(vm) {
+		cityApi.provicesAPI((result) => {
+			var areaStr = JSON.stringify(result);
+			areaStr = areaStr.replace(/,"subAreas":\[]/g,"");
+			vm.options = JSON.parse(areaStr);
+		});
+	},
+	setSearch(vm) {
+		serverAPI.agentListAPI(vm.seachData, (result) => {
+			vm.tableData = result.resultList;
+		});
+	},
+	addServer(vm, info) {
+		serverAPI.addAgentAPI(info, (result) => {
+			this.getSiteList(vm);
+			vm.$message({
+				message: '添加成功!',
+				type: 'success'
+			});
+			//this._success("添加成功");
+		});
+	},
+	editServer(vm, info) {
+		serverAPI.editAgentAPI(info,(result)=>{
+			vm.$message({
+				message: '编辑成功!',
+				type: 'success'
+			});
+			this.getSiteList(vm);
+		});
+	}
+
+}

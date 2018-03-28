@@ -1,0 +1,65 @@
+/*注册 第一步*/
+<template>
+	<article class="register-form">
+		<section class="from-item">
+			<img src="../../images/login_phone.png" />
+			<input type="number" name="phone" id="phone" value="" placeholder="请输入手机号码" />
+		</section>
+		<section class="from-item">
+			<img src="../../images/login_secret.png" />
+			<input type="password" name="psw" id="psw" value="" placeholder="请输入验证码" />
+			<a href="javascript:;" class="get-code">获取验证码</a>
+		</section>
+		<section class="from-item">
+			<img src="../../images/login_secret.png" />
+			<input type="password" name="psw" id="psw" value="" placeholder="请输入密码" />
+		</section>
+	</article>
+</template>
+
+<script>
+</script>
+
+<style lang="less" scope>
+	@import "../../common/less/config.less";
+	.register-form {
+		.from-item {
+			text-align: center;
+			margin: .3rem 0;
+			img {
+				vertical-align: middle;
+				.pxrem(width, 32);
+			}
+			input[name] {
+				width: calc(100% - 16px);
+				border: 0;
+				border-bottom: 2px solid #f0f0f0;
+				outline: none;
+				color: @p-t-c;
+				padding: .08rem 0;
+				.pxrem(font-size, 32);
+				.pxrem(margin-left, 10);
+			}
+			input[type=button] {
+				margin: .5rem 0 0;
+				border: 0;
+				background: #46c895;
+				color: #fff;
+				width: 100%;
+				.pxrem(font-size, 36);
+				.pxrem(border-radius, 44);
+				.pxrem(height, 88);
+			}
+			a {
+				color: #666666;
+				.pxrem(font-size, 32);
+			}
+			.register {
+				float: left;
+			}
+			.findpsw {
+				float: right;
+			}
+		}
+	}
+</style>

@@ -1,0 +1,62 @@
+/**
+ * author pzh
+ * day    2017-9-27
+ * 购物车业务
+ */
+ import {ordersAPI} from "apiurl/often"
+ import publicAPI from "apiurl/public"
+ export default{
+ 		/*获取订单信息*/
+ 		getOrdersInfo(vm) {
+ 			ordersAPI.cartToOrderDataAPI((result) => {
+ 				vm.addressInfo = result.address;
+ 				vm.supplierProd = result.list;
+ 			});
+ 		},
+ 		/*提交订单信息*/
+ 		saveOrdersInfo(vm) {
+ 			var params = {};
+ 			params.addressId = vm.addressInfo.addressId;
+ 			params.invoiceType = 1;
+ 			params.device = 2;
+ 			params.deliveryWay = 100;
+ 			params.deliveryEndTime = "2017-11-10 17:30:00";
+ 			params.stockoutType = 1;
+ 			params.list = [];
+ 			var len = vm.supplierProd.length, list = "";
+ 			for(var i = 0; i < len; i++) {
+ 				var supplierId = vm.supplierProd[i].supplierId;
+ 				params.list["'" + supplierId +"'"] = "备注";
+ 			}
+ 			ordersAPI.cartSubmitOrderAPI(params, (result) => {
+ 				vm.totalAmount = result.totalAmount;
+ 				vm.orderId = result.orderId;
+ 				vm.payShow = true;
+ 			});
+ 		},
+ 		/*获取积分商品订单信息*/
+ 		getIntegralOrderInfo(vm) {
+ 			var params = {
+ 				productSkuId : vm.$route.params.productId
+ 			}
+ 			ordersAPI.integralInitOrderDataAPI(params, (result) => {
+ 				vm.addressInfo = result.address;
+ 				vm.supplierProd = result.list;
+ 			});
+ 		},
+ 		/*积分商品下单*/
+ 		saveIntegralOrdersInfo(vm) {
+ 			var params = {
+ 				addressId : vm.addressInfo.addressId,
+	 			invoiceType : 1,
+	 			device : 2,
+	 			productSkuId : vm.$route.params.productId
+ 			}
+ 			ordersAPI.integralSubmitOrderAPI(params, (result) => {
+ 				vm.totalAmount = result.totalAmount;
+ 				vm.orderId = result.orderId;
+ 				vm.payShow = true;
+ 			});
+ 		}
+ 		
+ }

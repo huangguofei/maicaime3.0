@@ -1,0 +1,25 @@
+/**
+ * author pzh
+ * day    2017-9-28
+ * 食材业务
+ */
+import {foodAPI} from "apiurl/food"
+ export default{
+ 	/*获取食材分类*/
+ 	getCategoryList(vm) {
+        var _that = this;
+        foodAPI.categoryAPI((result) => {
+            if(result[0]) {
+                 var categoryId = result[0].categoryId;
+                _that.getProdList(vm,);
+                vm.categoryData = result;
+            }
+        });
+ 	},
+    /*获取商品列表*/
+    getProdList(vm, params) {
+         foodAPI.categoryProdAPI(params, (result) => {
+            vm.prodData = result;
+        });
+    }
+ }

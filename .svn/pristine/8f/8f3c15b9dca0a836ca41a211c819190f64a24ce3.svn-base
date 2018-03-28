@@ -1,0 +1,12 @@
+/**
+ * author pzh 
+ * day    2017-9-27
+ * 常用清单模块接口
+ */
+ import https from "../axios/https"
+ export const cartAPI = {
+		/*购物车列表*/
+		cartListAPI : (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/p/shoppingcart/list", v)),
+		/*修改购物车的数量*/
+		updateCartNumAPI : (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/p/shoppingcart/changeNum", v)),
+ }

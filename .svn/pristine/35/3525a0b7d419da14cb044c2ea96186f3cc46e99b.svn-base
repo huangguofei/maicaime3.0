@@ -1,0 +1,217 @@
+/**
+* author pzh 
+* day    2017-9-13
+* 公共样式
+*/
+
+@import "./config.less";
+html,
+body,
+button,
+dd,
+dl,
+dt,
+fieldset,
+form,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+hr,
+input,
+legend,
+li,
+ol,
+p,
+pre,
+td,
+textarea,
+th,
+ul {
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    font-family: 12px/1.5 arial, "微软雅黑", "PingFangSC-Regular", "SimHei", "黑体", "SimSun", "宋体", Arial, sans-serif, sans-serif;
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    .pxrem(font-size, 26);
+    background: #f3f3f3;
+}
+
+a {
+    text-decoration: none;
+}
+
+li {
+    list-style: none;
+}
+
+span,
+p,
+div,
+a,
+i,
+button,
+input,
+textarea {
+    -webkit-tap-highlight-color: rgba(255, 255, 255, 0)
+}
+
+#app,
+.page-layer {
+    width: 100%;
+    height: 100%;
+}
+h1,h2,h3,h4{
+    font-weight: normal;
+}
+/*清除表单默认样式ios ipad*/
+input[type=button],textarea,select{
+      -webkit-appearance: none;
+}
+.footer-page {
+    .pxrem(padding-bottom, 110)
+}
+input:focus, textarea:focus,select:focus {
+    outline: none;
+}
+/*显隐公共类*/
+
+.hide {
+    display: none;
+}
+
+.show {
+    display: initial;
+}
+/*白色背景*/
+.bk-white{
+    background: #fff;
+}
+/*浮动公共类*/
+
+.pull-left {
+    float: left;
+}
+
+.pull-right {
+    float: right;
+}
+
+
+/*文字位置类*/
+
+.text-center {
+    text-align: center;
+}
+
+
+/*内边距16px*/
+
+.padding {
+    .pxrem(padding, 16);
+}
+/*定位*/
+.relative{
+    position: relative;
+}
+
+/*白色全屏背景(登录注册用)*/
+
+.page-layers {
+    background: #fff;
+    height: 100%;
+    position: fixed;
+    width: 100%;
+}
+
+
+/*提示框*/
+
+.message-fixed {
+    position: fixed;
+    z-index: 10000;
+    width: 100%;
+    top: 50%;
+    left: 0;
+    margin-top: -50px;
+    .layer {
+        position: fixed;
+        z-index: -1;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.2);
+    }
+    .m-content {
+        text-align: center;
+        padding: 0 20px;
+        .mes {
+            display: inline-block;
+            background: rgba(0, 0, 0, 0.5);
+            color: #FFF;
+            padding: 10px 20px;
+            border-radius: 8px;
+        }
+    }
+    .a-fade-in {
+        animation: messageFadeIn 1s ease 0s 1;
+    }
+    .a-fade-out {
+        animation: messageFadeOut 1s ease 0s 1;
+    }
+}
+
+.clearfix() {
+    &:after {
+        content: "";
+        display: block;
+        clear: both
+    }
+    zoom:1
+}
+
+
+/*登录注册表单样式*/
+
+.from-item {
+    text-align: center;
+    margin: .3rem 0;
+    img {
+        vertical-align: middle;
+        .pxrem(width, 32);
+    }
+    input[name] {
+        width: calc(~"100% - 32px");
+        border: 0;
+        border-bottom: 1px solid #f0f0f0;
+        outline: none;
+        color: #000;
+        padding: .08rem 0;
+        .pxrem(font-size, 32);
+        .pxrem(margin-left, 10);
+    }
+    input[type=button] {
+        margin: .5rem 0 0;
+        border: 0;
+        background: @m-c;
+        color: #fff;
+        width: 100%;
+        .pxrem(font-size, 36);
+        .pxrem(border-radius, 44);
+        .pxrem(height, 88);
+    }
+    a {
+        color: #666666;
+        .pxrem(font-size, 32);
+    }
+}

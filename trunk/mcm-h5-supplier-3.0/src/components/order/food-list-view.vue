@@ -1,0 +1,250 @@
+<template>
+	<article class="order-list padding">
+		<scroll 
+			:pullingDown="true" 
+			:pullUpLoad="true"
+			@pullingUp="onPullingUp"
+			ref="scroll"
+			:delayTime="20"
+			:startY="scrollTop"
+			:listenScroll="true" 
+			@scrollEnd="orderScroll"   
+			 v-if="orderData.length > 0">
+			<section  class="s-item"  v-for="(item,key) in orderData">
+				<header class="padding" @click="selectOrder(item)">
+					<div class="pull-left">
+						<!-- <span class="select_radio" :class="{active:item.isSelect}" v-if="item.items"></span> -->
+						<!--<img src="../../images/order_icon.png" />-->
+						<span>{{item.prodName}}</span>
+					</div>
+				</header>
+				<section class="shop-list padding" @click="orderDateils(item)">
+					<div class="shop-item" v-for="(val,key) in item.items" :class="{hide:key>1&&!item.isShow}">
+						<section class="item-left pull-left">
+							<p class="commodity-name"><i></i><span>{{val.purchaserName}}</span></p>
+							<p class="price-num"><span>单价:¥{{(val.totalAmount * 1).toFixed(2)}}</span><span>数量:{{val.prodQuantity}}</span></p>
+						</section>
+						<section class="item-right pull-right">
+							<a @click="callPhone(val.purchaserMobile)" href="javascript:void(0)"><img src="../../images/order_details_tele.png" /></a>
+						</section>
+					</div>
+					<p class="remark" v-if="item.items&&item.items.length-2>0" @click="showShop(item)">{{item.msg}}</p>
+				</section>
+				<footer class="padding">
+					<p class="pull-left">数量：<span>{{item.prodQuantity}}</span>
+					</p>
+					<span class='pull-right'>小计：<b>¥{{(item.totalAmount * 1).toFixed(2)}}</b></span>
+				</footer>
+
+			</section>
+
+		</scroll>
+
+	</article>
+</template>
+
+<script>
+	import scroll from "components/common/scroll"
+	import { mapGetters } from 'vuex'
+	export default {
+		data() {
+			return {
+				btnStr: '确认付款'
+			}
+		},
+		props: ['noShowNum'],
+		computed : {
+			...mapGetters({
+				orderData : "orderList",
+				scrollTop : "scrollTop"
+			})
+		},
+		components : {
+			scroll
+		},
+		methods: {
+			orderDateils(item) {
+				return false;
+				this.$router.push({
+					name: "order.detail",
+					params: {
+						id: item.orderId
+					},
+					query: {
+						noShowNum: (item.skuCount - this.noShowNum)
+					}
+				})
+			},selectOrder(val){
+				val.isSelect=!val.isSelect;
+				this.$emit("select");
+			},
+			onPullingUp() {
+				var _that = this;
+				setTimeout(() => {
+					_that.$emit("updateData");
+				}, 500);
+			},
+			pullingUpPage(count) {
+				if(count >= 10) {
+					this.$refs.scroll.forceUpdate();
+				} else {
+					setTimeout(() => {
+						this.$refs.scroll.forceUpdate(true);
+					}, 20);
+				}
+			},showShop(data){
+				data.isShow=!data.isShow;
+				if(data.isShow){
+					data.msg="(收起)";
+				}else{
+					data.msg="(还有"+(data.items.length-2)+"家餐馆)";
+				}
+			},
+			orderScroll(pos) {
+				this.$store.commit("RECORD_LAST_SCROLL_TOP", pos.y);
+			},
+			callPhone(mobile) {
+				try{
+					window.android.call(mobile);
+				} catch(e) {
+					window.location.href = "tel:" + mobile;
+				}
+			}	
+		}
+	}
+</script>
+
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.order-list {
+		/*.pxrem(margin-top, 20);*/
+		padding-top:0;
+		height:100%;
+		&>section {
+			.pxrem(margin-top, 20)
+		}
+		header {
+			background: #fff;
+			.rem(50);
+			.pxrem(font-size, 32);
+			.pxrem(height, 64);
+			.pxrem(line-height, 64);
+			img {
+				/*.pxrem(width,50);*/
+				width: @rem;
+				border-radius: @rem/2;
+				vertical-align: middle;
+			}
+			.order-status {
+				.pxrem(font-size, 28);
+				color: @m-c;
+			}
+		}
+		.s-item{
+			.pxrem(margin-top, 26);
+		}
+		.shop-list {
+			background: #F8F8F8;
+			.shop-item {
+				.pxrem(margin-bottom, 15);
+				overflow: auto;
+				.item-left {
+					.commodity-name {
+						color: #151009;
+						.pxrem(height, 40);
+						.pxrem(line-height, 40);
+						.pxrem(font-size, 28);
+						.pxrem(margin-bottom, 5);
+						i {
+							background: @m-c;
+							display: inline-block;
+							.pxrem(width, 12);
+							.pxrem(height, 12);
+							.pxrem(border-radius, 6);
+							.pxrem(margin-right, 6);
+						}
+					}
+					.price-num {
+						.pxrem(height, 33);
+						.pxrem(line-height, 33);
+						color: #999999;
+						.pxrem(font-size, 24);
+						.pxrem(padding-left, 22);
+						span:first-child {
+							margin-right: 0.3rem;
+						}
+					}
+				}
+				.item-right {
+					.pxrem(height, 74);
+					.pxrem(line-height, 74);
+					b {
+						color: #343534;
+						.pxrem(font-size, 28);
+					}
+					a {
+						display: inline-block;
+						img {
+							.pxrem(width, 50);
+						}
+					}
+				}
+			}
+			.remark {
+				color: #343534;
+				text-align: center;
+				.pxrem(font-size, 24);
+			}
+		}
+		footer {
+			.pxrem(height, 64);
+			.pxrem(line-height, 64);
+			background: #fff;
+			.pxrem(font-size, 28);
+			p {
+				color: #000;
+				span {
+					.pxrem(font-size, 28);
+					color: @ass-c;
+				}
+			}
+			input {
+				.pxrem(width, 150);
+				.pxrem(height, 58);
+				.pxrem(margin-left, 12);
+				text-align: center;
+				border: 1px solid @m-c;
+				.pxrem(font-size, 28);
+			}
+			.order-btn {
+				background: @m-c;
+				color: #fff;
+			}
+			.order-btns {
+				background: #fff;
+				color: @m-c;
+			}
+			span {
+				color: #4a4a4a;
+				.pxrem(font-size, 24);
+				b {
+					color: #000;
+					.pxrem(font-size, 32);
+				}
+			}
+		}
+		.select_radio {
+			display: inline-block;
+			.pxrem(width, 32);
+			.pxrem(height, 32);
+			border: 1px solid #a4a4a4;
+			.pxrem(border-radius, 16);
+			vertical-align: sub;
+		}
+		.active {
+			background: url(../../images/order_check.png) no-repeat -1px -1px;
+			background-size: 120% auto;
+			border-color: #3084F2;
+		}
+	}
+</style>

@@ -1,0 +1,22 @@
+/**
+ * author hgf 
+ * day    2017-9-25
+ * 公共模块接口
+ */
+import https from "../axios/https"
+export default {
+	/*获取所有省市县数据*/
+	provicesAPI: (...v) => https.commAjax({
+		method: "post",
+		url: "/area/getProvices",
+		success: v[0],
+		error: v[1]
+	}),
+	/*使用余额支付订单*/
+	payByBalance : (...v) => https.commAjax({
+		method: "post",
+		url: "/pay/payByBalance",
+		success: v[0],
+		error: v[1]
+	}),
+}

@@ -1,0 +1,24 @@
+<template>
+	<article class="order-null">
+		<img src="../../images/order-null.png" />
+		<p>您还未接到任何订单</p>
+	</article>
+</template>
+
+<script>
+</script>
+
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	img{
+		width: 40%;
+		display: block;
+		margin: .2rem auto;
+		margin-top: 1rem;
+	}
+	p {
+		.pxrem(font-size, 32);
+		text-align: center;
+		color: #666;
+	}
+</style>

@@ -1,0 +1,146 @@
+<!-- 流水信息 -->
+<template>
+	<page-layer :narData="narData" classs="back-color">
+		<el-form :inline="true" ref="form" :model="queryParams" label-width="80px" style='padding-top: 10px;'>
+			<el-form-item label="商户类型">
+				<el-select v-model="queryParams.merchantTypeId" placeholder="商户类型">
+					<el-option v-for="item in shopType" :key="item.value" :label="item.name" :value="item.value">
+					</el-option>
+				</el-select>
+			</el-form-item>
+			<el-form-item label="提现状态">
+				<el-select v-model="queryParams.status" placeholder="提现状态">
+					<el-option v-for="item in statusType" :key="item.value" :label="item.name" :value="item.value">
+					</el-option>
+				</el-select>
+			</el-form-item>
+			<el-form-item label="提现时间">
+				<el-col :span="11">
+					<el-date-picker type="date" placeholder="开始时间" v-model="queryParams.beginDate" style="width: 100%;"  value-format="yyyy-MM-dd"></el-date-picker>
+				</el-col>
+				<el-col class="line" style="text-align: center;" :span="2">-</el-col>
+				<el-col :span="11">
+					<el-date-picker type="date" placeholder="结束时间" v-model="queryParams.endDate" style="width: 100%;"  value-format="yyyy-MM-dd"></el-date-picker>
+				</el-col>
+			</el-form-item>
+			<el-form-item label="账单">
+				<el-input v-model="queryParams.billId"></el-input>
+			</el-form-item>
+			<el-form-item label="关键字">
+				<el-input v-model="queryParams.keyword"></el-input>
+			</el-form-item>
+			<el-form-item>
+				<el-button type="primary" style="margin-left:20px;" @click="queryInfo()">查询</el-button>
+			</el-form-item>
+		</el-form>
+		<el-table :data="tableData" style="width: 100%">
+			<el-table-column type="index" width="60">
+			</el-table-column>
+			<el-table-column prop="billId" label="账单号" width="190">
+			</el-table-column>
+			<el-table-column label="商户信息" width="150">
+				<template scope="scope">
+					<p>{{scope.row.merchantName }}</p>
+					<p>{{scope.row.merchantMobile }}</p>
+				</template>
+			</el-table-column>
+			<el-table-column prop="bankName" label="银行名称">
+			</el-table-column>
+			<el-table-column prop="ownerUserName" label="申请人">
+			</el-table-column>
+			<el-table-column prop="statusText" label="状态">
+			</el-table-column>
+			<el-table-column label="交易金额">
+				<template scope="scope">
+					<p class="price" :class="{active:scope.row.amount>0}">{{scope.row.amount>0?"+"+scope.row.amount:scope.row.amount|ms}}</p>
+				</template>
+			</el-table-column>
+			<el-table-column prop="timeCreated" label="提现时间">
+			</el-table-column>
+			<el-table-column prop="userNote" label="备注">
+			</el-table-column>
+
+		</el-table>
+		<pagination :pagings="queryParams" :totalCount="totalCount" @changePageSize="changePageSize"></pagination>
+	</page-layer>
+</template>
+<script>
+	import SETTINGAREA from "action/data/depositApply"
+	import pageLayer from "components/common/page-layer"
+	import pagination from "components/common/pagination"
+	export default {
+		data() {
+			return {
+				narData: [{
+					name: "提现记录",
+					router: ""
+				}],
+				queryParams: {
+					merchantTypeId: 300,
+					status: "",
+					beginDate: "",
+					endDate: "",
+					keyword: "",
+					billId:"",
+					pageSize : 10,
+	  	 			pageNum : 1,
+				},
+				tableData: [],
+				totalCount : 0,
+				shopType: [{
+					name: '供应商',
+					value: 300
+				}, {
+					name: '驿站',
+					value: 600
+				}, {
+					name: '配送商',
+					value: 700
+				}],
+				statusType: [{
+					name: '选择提现状态',
+					value: ""
+				}, {
+					name: '申请中',
+					value: "0"
+				}, {
+					name: '正在转账',
+					value: 1
+				}, {
+					name: '转账成功',
+					value: 2
+				}, {
+					name: '转账失败',
+					value: -1
+				}, {
+					name: '金额异常',
+					value: -5
+				}]
+			}
+		},
+		created() {
+			SETTINGAREA.getDepositApplyAPIList(this);
+		},
+		components: {
+			pageLayer,
+			pagination
+		},
+		methods: {
+			queryInfo() {
+				SETTINGAREA.getDepositApplyAPIList(this);
+			},
+			changePageSize() {
+				SETTINGAREA.getDepositApplyAPIList(this);
+			}
+		}
+	}
+</script>
+<style lang="less" scoped>
+	@import "../../../common/less/config.less";
+	.price{
+		color:red;
+	}
+	.active{
+		color:#46CD72;
+	}
+</style>

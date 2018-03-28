@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="format-detection" content="telephone = no" />
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+		<title>买菜么-采购端</title>
+		<script type='text/javascript'>
+			var _vds = _vds || [];
+			window._vds = _vds;
+			(function() {
+				_vds.push(['setAccountId', 'b8de597a3fcaa64b']);
+				(function() {
+					var vds = document.createElement('script');
+					vds.type = 'text/javascript';
+					vds.async = true;
+					vds.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'dn-growing.qbox.me/vds.js';
+					var s = document.getElementsByTagName('script')[0];
+					s.parentNode.insertBefore(vds, s);
+				})();
+			})();
+		</script>
+		<script type='text/javascript' src='https://assets.growingio.com/sdk/wx/vds-wx-plugin.js'></script>
+		<script type="text/javascript">
+    window.zhuge = window.zhuge || [];window.zhuge.methods = "_init debug identify track trackLink trackForm page".split(" ");
+    window.zhuge.factory = function(b) {return function() {var a = Array.prototype.slice.call(arguments);a.unshift(b);
+    window.zhuge.push(a);return window.zhuge;}};for (var i = 0; i < window.zhuge.methods.length; i++) {
+    var key = window.zhuge.methods[i];window.zhuge[key] = window.zhuge.factory(key);}window.zhuge.load = function(b, x) {
+    if (!document.getElementById("zhuge-js")) {var a = document.createElement("script");var verDate = new Date();
+    var verStr = verDate.getFullYear().toString()+ verDate.getMonth().toString() + verDate.getDate().toString();
+    a.type = "text/javascript";a.id = "zhuge-js";a.async = !0;a.src = (location.protocol == 'http:' ? "http://sdk.zhugeio.com/zhuge.min.js?v=" : 'https://zgsdk.zhugeio.com/zhuge.min.js?v=') + verStr;
+    a.onerror = function(){window.zhuge.identify = window.zhuge.track = function(ename, props, callback){if(callback && Object.prototype.toString.call(callback) === '[object Function]')callback();};};
+    var c = document.getElementsByTagName("script")[0];c.parentNode.insertBefore(a, c);window.zhuge._init(b, x)}};
+    window.zhuge.load('3394afd5365745b8afe75910ce980d36');//配置应用的AppKey
+</script>
+	</head>
+
+	<body>
+		<div id="app">
+			<router-view></router-view>
+		</div>
+
+		<script>
+			var _hmt = _hmt || [];
+			(function() {
+				var hm = document.createElement("script");
+				hm.src = "https://hm.baidu.com/hm.js?f1288948ad98593cd95f2e80b4a0c1d5";
+				var s = document.getElementsByTagName("script")[0];
+				s.parentNode.insertBefore(hm, s);
+			})();
+		</script>
+	</body>
+
+</html>

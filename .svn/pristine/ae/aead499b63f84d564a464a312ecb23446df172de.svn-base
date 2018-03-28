@@ -1,0 +1,149 @@
+<!-- 账单  信息 -->
+<template>
+	<page-layer :narData="narData" classs="back-color">
+		<el-form :inline="true" ref="form" :model="queryParams" label-width="80px" style='padding-top: 10px;'>
+			<el-form-item label="商户类型">
+				<el-select v-model="queryParams.merchantTypeId" placeholder="商户类型">
+					<el-option v-for="item in shopType" :key="item.value" :label="item.name" :value="item.value">
+					</el-option>
+				</el-select>
+			</el-form-item>
+			<el-form-item label="提现状态">
+				<el-select v-model="queryParams.status" placeholder="提现状态">
+					<el-option v-for="item in statusType" :key="item.value" :label="item.name" :value="item.value">
+					</el-option>
+				</el-select>
+			</el-form-item>
+			<el-form-item label="查询时间">
+				<el-col :span="11">
+					<el-date-picker type="date" placeholder="开始时间" v-model="queryParams.beginDate" style="width: 100%;"></el-date-picker>
+				</el-col>
+				<el-col class="line" style="text-align: center;" :span="2">-</el-col>
+				<el-col :span="11">
+					<el-date-picker type="date" placeholder="结束时间" v-model="queryParams.endDate" style="width: 100%;"></el-date-picker>
+				</el-col>
+			</el-form-item>
+			<el-form-item label="关键字">
+				<el-input v-model="queryParams.keyword"></el-input>
+			</el-form-item>
+			<el-form-item>
+				<el-button type="primary" style="margin-left:20px;" @click="queryInfo()">查询</el-button>
+			</el-form-item>
+		</el-form>
+		<el-table :data="tableData" style="width: 100%">
+			<el-table-column type="index" width="60">
+			</el-table-column>
+			<el-table-column prop="billId" label="账单号" width="190">
+			</el-table-column>
+			<el-table-column label="商户信息" width="150">
+				<template scope="scope">
+					<p>{{scope.row.merchantName }}</p>
+					<p>{{scope.row.merchantMobile }}</p>
+				</template>
+			</el-table-column>
+			<el-table-column prop="startDate" label="开始时间">
+			</el-table-column>
+			<el-table-column prop="endDate" label="结束时间">
+			</el-table-column>
+			<el-table-column prop="settlementStatusText" label="状态">
+			</el-table-column>
+			<el-table-column label="总金额">
+				<template scope="scope">
+					<p class="price" :class="{active:scope.row.totalAmount>0}">{{scope.row.totalAmount>0?"+"+scope.row.totalAmount:scope.row.totalAmount|ms}}</p>
+				</template>
+			</el-table-column>
+			<el-table-column prop="timeCreated" label="创建时间">
+			</el-table-column>
+			<el-table-column label="操作" width="150">
+				<template scope="scope">
+					<el-button type="" class="btn" @click="viewDetails(scope.row)">查看订单详情</el-button>
+				</template>
+			</el-table-column>
+
+		</el-table>
+		<el-pagination @current-change="handleCurrentChange" :current-page.sync="queryParams.pageNum" :page-size="queryParams.size" layout="total, prev, pager, next" :total="queryParams.total">
+		</el-pagination>
+	</page-layer>
+</template>
+<script>
+	import billAction from "actionurl/data/bill"
+	import pageLayer from "components/common/page-layer"
+	export default {
+		data() {
+			return {
+				narData: [{
+					name: "账单记录",
+					router: ""
+				}],
+				queryParams: {
+					merchantTypeId: 300,
+					status: "",
+					beginDate: "",
+					endDate: "",
+					keyword: "",
+					billId: "",
+					pageNum: 1,
+					size: 10,
+					pages: 1,
+					total: 0
+				},
+				tableData: [],
+				pagings: {
+
+				},
+				shopType: [{
+					name: '供应商',
+					value: 300
+				}, {
+					name: '驿站',
+					value: 600
+				}, {
+					name: '配送商',
+					value: 700
+				}],
+				statusType: [{
+					name: '选择提现状态',
+					value: ""
+				}, {
+					name: '未结算',
+					value: 0
+				}, {
+					name: '已结算',
+					value: 1
+				}]
+			}
+		},
+		created() {
+			billAction.getcheckList(this);
+		},
+		components: {
+			pageLayer
+		},
+		methods: {
+			queryInfo() {
+				billAction.getcheckList(this);
+			},
+			handleCurrentChange(value) {
+				billAction.getcheckList(this);
+			},
+			viewDetails(data) {
+				this.$router.push({
+					name: "data.bill.details",
+					params: {
+						id: data.billId
+					}
+				})
+			}
+		}
+	}
+</script>
+<style lang="less" scoped>
+	@import "../../../common/less/config.less";
+	.price {
+		color: red;
+	}
+	
+	.active {
+		color: #46CD72;
+	}
+</style>

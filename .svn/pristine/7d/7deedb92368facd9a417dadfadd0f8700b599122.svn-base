@@ -1,0 +1,117 @@
+<!-- 搜索 -->
+<template>
+<div class="search-page">
+	<header>
+		<div class="con">
+			<i class="s-icon"></i>
+			<input type="text" placeholder="搜索您想要找的食材"/>
+			<i class="clear-icon"></i>
+		</div>
+	</header>
+	<section>
+		<div class="hot item" >
+			<p class="title">热门搜索</p>
+			<div class="list">
+				<span class="l-item" v-for="s in searchList">{{s.keywordName}}</span>
+			</div>
+		</div>
+		<div class="log item" >
+			<i class="clear"></i>
+			<p class="title">搜索历史</p>
+			<div class="list">
+				<!-- <span class="l-item" v-for="p in 12">猪肉</span> -->
+			</div>
+		</div>
+	</section>
+</div>
+</template>
+<script>
+	import searchAction from "actionurl/index/search"
+	export default{
+		data() {
+			return{
+				searchList : []
+			}
+		},
+		created() {
+			searchAction.getKeyDownList(this);
+		}
+
+	}
+</script>
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.search-page{
+		header{
+			background: #222;
+			.pxrem(height, 90);
+			.con{
+				.prem(10, 20);
+				padding:@prem;
+				position: relative;
+				input{
+					width:100%;
+					.pxrem(height, 60);
+					border:0;
+					.pxrem(text-indent, 70);
+					.pxrem(font-size,26);
+				}
+				i{
+					display: inline-block;
+					position: absolute;
+					.pxrem(top,18);
+					.pxrem(width,40);
+					.pxrem(height,40);
+				}
+				.s-icon{
+					.pxrem(left,32);
+					background:rgba(255, 255, 255, 0.8) url(../../images/home_search.png) no-repeat;
+					background-size: cover;
+				}
+				.clear-icon{
+					.pxrem(right,32);
+					.pxrem(top,20);
+					background:rgba(255, 255, 255, 0.8) url(../../images/home_search_delete1.png) no-repeat;
+					background-size: cover;
+				}
+			}
+		}
+		section{
+			.item{
+				.prem(20);
+				background:#FFF;
+				padding:@prem;
+				.title{
+					color:@s-c;
+					.pxrem(font-size, 28);
+				}
+			}
+			.log{
+				.pxrem(margin-top, 20);
+				position: relative;
+				.clear{
+					position: absolute;
+					.pxrem(top, 20);
+					.pxrem(right, 20);
+					display: inline-block;
+					.pxrem(width, 40);
+					.pxrem(height, 40);
+					background:rgba(255, 255, 255, 0.8) url(../../images/home_search_delete2.png) no-repeat;
+					background-size: cover;
+				}
+			}
+			.list{
+				.l-item{
+					display: inline-block;
+					.prem(5, 26);
+					padding:@prem;
+					border:1px solid #d7d7d7;
+					background:#fafafa;
+					.pxrem(border-radius,100);
+					.pxrem(margin-top,20);
+					.pxrem(margin-right,20);
+				}
+			}
+		}
+	}
+</style>

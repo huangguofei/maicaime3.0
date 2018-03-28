@@ -1,0 +1,49 @@
+/*头部广告*/
+import homeAction from "action/marketing/home"
+const receive_header = "receive_header"
+
+const state = {
+	headerData : [],
+}
+const getters = {
+	allHeaderData : state => state.headerData,
+}
+const actions = {
+	getHeaderData({commit}) {
+		homeAction.getHeadAdList((result) => {
+			var data = [];
+			try{
+				data = JSON.parse(result.agentAdJson);
+			} catch(e) {}
+			if(data.length <= 0) {
+				data = [
+					{
+						picture : "",
+						action : {type : "none",url : "",content : ""}
+					},
+					{
+						picture : "",
+						action : {type : "none",url : "",content : ""}
+					},
+					{
+						picture : "",
+						action : {type : "none",url : "",content : ""}
+					}
+				]
+			}
+			commit(receive_header, {data});
+		});
+	},
+	
+}
+const mutations = {
+	[receive_header](state, {data}) {
+		state.headerData = data;
+	
+}
+export default{
+	state,
+	getters,
+	actions,
+	mutations
+}

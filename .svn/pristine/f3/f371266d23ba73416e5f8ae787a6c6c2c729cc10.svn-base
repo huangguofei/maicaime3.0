@@ -1,0 +1,13 @@
+/**
+* author pzh 
+* day    2017-9-13
+* less 配置文件
+*/
+@baseFontSize: 64;
+.pxrem(@name, @px){
+    @{name}: @px / @baseFontSize * 1rem;
+}
+
+/*底部导航菜单颜色*/
+@f-font-color:#333;
+@f-active-color:#0f88eb;

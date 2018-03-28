@@ -1,0 +1,102 @@
+/**
+* author pzh 
+* day    2017-9-13
+* less 配置文件
+*/
+
+
+/*主色调*/
+
+@m-c: #39C72B;
+
+/*主背景色*/
+
+@m-back: #F3F3F3;
+
+/*商品标题*/
+
+@p-t-c: #000000;
+
+/*商品价格*/
+
+@p-p-c: #F9AB0C;
+
+/*商品原价*/
+
+@p-o-c: #999999;
+
+/*搜索区域字体颜色*/
+
+@s-c: #999999;
+
+/*默认边框颜色*/
+
+@d-b-c: #999999;
+
+/*商品边框颜色*/
+
+@p-b-c: #E5E5E5;
+
+/*按钮默认色*/
+
+@btn-color: #1EC551;
+
+/*删除按钮*/
+
+@btn-d-color: #FF5B60;
+
+/*编辑按钮*/
+
+@btn-e-color: #D7D7D7;
+
+/*底部导航菜单颜色*/
+
+@f-font-color: #222222;
+@f-active-color: #1EC551;
+
+/*主页*/
+
+@index-c-color: #222222;
+@index-h-color: #060F1C;
+
+/*转换rem*/
+
+@baseFontSize: 64;
+.rem(@px) {
+    @rem : (@px / 2 + 2)/ @baseFontSize * 1rem;
+}
+
+.pxrem(@name, @px) {
+    .rem(@px);
+    @{name}: @rem;
+}
+
+.prem(@px) {
+    @prem : (@px / 2 + 2)/ @baseFontSize * 1rem;
+}
+
+.prem(@px1, @px2) {
+    @prem : (@px1 / 2 + 2)/ @baseFontSize * 1rem (@px2 / 2 + 2)/ @baseFontSize * 1rem;
+}
+
+.prem(@px1, @px2, @px3) {
+    @prem : (@px1 / 2 + 2)/ @baseFontSize * 1rem (@px2 / 2 + 2)/ @baseFontSize * 1rem (@px3 / 2 + 2)/ @baseFontSize * 1rem;
+}
+
+.prem(@px1, @px2, @px3, @px4) {
+    @prem : (@px1 / 2 + 2)/ @baseFontSize * 1rem (@px2 / 2 + 2)/ @baseFontSize * 1rem (@px3 / 2 + 2)/ @baseFontSize * 1rem (@px4 / 2 + 2)/ @baseFontSize * 1rem;
+}
+
+
+/*清除浮动*/
+
+.clearFloat {
+    content: "";
+    display: block;
+    height: 0;
+    overflow: hidden;
+    *zoom: 1;
+    clear: both;
+    visibility: hidden;
+}
+

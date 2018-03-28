@@ -1,0 +1,11 @@
+/**
+* author pzh 
+* day    2017-9-14
+* 商品模块接口
+*/
+import https from "../axios/https"
+export default{
+	/*获取顾客信息*/
+	getCustomerInfoAPI : (...v) => https.commAjax({method : "post",url : "/customerInfo/list",success : v[0],error : v[1]})
+	
+}

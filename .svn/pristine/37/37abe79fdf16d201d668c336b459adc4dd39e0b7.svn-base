@@ -1,0 +1,108 @@
+<template>
+	<el-dialog title="审批" :visible.sync="applyData.isShow" width="30%">
+		<el-form ref="form" :model="queryParams" label-width="120px" style='padding-top: 10px;'>
+			<el-form-item label="处理结果">
+				<el-select v-model="queryParams.status" placeholder="">
+					<el-option v-for="item in applyStatus" :key="item.value" :label="item.label" :value="item.value">
+					</el-option>
+				</el-select>
+			</el-form-item>
+			<el-form-item label="实际提现金额" v-show="isAmount">
+				<el-col :span="3">
+					<el-input v-model="queryParams.actualAmount"></el-input>
+				</el-col>
+			</el-form-item>
+			<el-form-item label="备注" v-show="isRemark">
+				<el-input type="textarea" v-model="queryParams.remark"></el-input>
+			</el-form-item>
+		</el-form>
+		<span slot="footer" class="dialog-footer">
+    <el-button @click="offDialog">取 消</el-button>
+    <el-button type="primary" @click="suer">确 定</el-button>
+  </span>
+	</el-dialog>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+				queryParams: {
+					status: "1",
+					withdrawRecordId: "",
+					actualAmount: "",
+					remark: ""
+				},
+				applyStatus: [{
+					label: "正在转账",
+					value: "1"
+				}, {
+					label: "转账失败",
+					value: "-1"
+				}, {
+					label: "转账成功",
+					value: "2"
+				}],
+				isAmount: false,
+				isRemark: false
+			}
+		},
+		props: ["applyData"],
+		methods: {
+			offDialog() {
+				this.applyData.isShow = false;
+			},
+			suer() {
+				this.$emit("submit", this.queryParams);
+				this.offDialog();
+			},
+			init() {
+				this.queryParams.withdrawRecordId=this.applyData.data.withdrawRecordId;
+				if(this.applyData.data.statusId == 0) {
+					this.applyStatus = [{
+						label: "正在转账",
+						value: "1"
+					}];
+					this.queryParams.status="1";
+					this.isAmount = true;
+					this.isRemark = true;
+				} else if(this.applyData.data.statusId == 1) {
+					this.applyStatus = [{
+						label: "转账失败",
+						value: "-1"
+					}, {
+						label: "转账成功",
+						value: "2"
+					}];
+					this.queryParams.status="-1";
+					this.isAmount = true;
+				} else if(this.applyData.data.statusId == -1) {
+					this.applyStatus = [{
+						label: "正在转账",
+						value: "1"
+					}, {
+						label: "转账成功",
+						value: "2"
+					}];
+					this.queryParams.status="1";
+					this.isRemark = true;
+				} else if(this.applyData.data.statusId == -5) {
+					this.applyStatus = [{
+						label: "正在转账",
+						value: "1"
+					}, {
+						label: "转账失败",
+						value: "-1"
+					}];
+					this.queryParams.status="1";
+					this.isRemark = true;
+					this.isAmount = true;
+				}
+			}
+		}
+	}
+</script>
+
+<style>
+
+</style>

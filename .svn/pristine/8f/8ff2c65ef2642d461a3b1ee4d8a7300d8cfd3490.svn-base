@@ -1,0 +1,19 @@
+/**
+* author pzh 
+* day    2017-9-21
+* 供应商业务
+*/
+import { materialAPI } from "../../api/product"
+export default {
+	/*获取素材列表*/
+	getMateialList(vm) {
+		var paging = vm.pagings;
+		var params = {};
+		params.pageNum = paging.current;
+		params.pageSize = paging.size;
+		materialAPI.mateialListAPI(params, (result) => {
+			vm.tableData = result.resultList;
+			paging.total = result.totalCount;
+		});
+	}
+}

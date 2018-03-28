@@ -1,0 +1,34 @@
+<template>
+	<div class="order-details">
+		<div class="item">
+			<span class="title">订单编号</span>
+			<section class="value">{{orderData.orderId}}</section>
+		</div>
+		<div class="item">
+			<span class="title">采购商</span>
+			<section class="value">{{orderData.orderId}}</section>
+		</div>
+	</div>
+</template>
+
+<script>
+	import orderServer from "action/order/order"
+	export default {
+		data() {
+			return {
+				orderData: '',
+				orderId: this.$route.params.id
+			}
+		},
+		created() {
+			orderServer.getOrderDetails(this);
+		},
+		methods: {
+
+		}
+	}
+</script>
+
+<style>
+
+</style>

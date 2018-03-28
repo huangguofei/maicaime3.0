@@ -1,0 +1,15 @@
+/**
+* author pzh 
+* day    2017-9-21
+* 客户模块接口
+*/
+import https from "../axios/https"
+export default{
+	/*采购商接口*/
+	/*采购商列表*/
+	purchaserListAPI : (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/purchaser/list", v)),
+	/*采购商 审核*/
+	purchaserAuditAPI : (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/purchaser/check", v)),
+	/*采购商详情*/
+	purchaserDetailAPI : (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/purchaser/detail", v)),
+}

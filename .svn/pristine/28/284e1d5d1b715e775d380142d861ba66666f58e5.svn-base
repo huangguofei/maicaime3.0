@@ -1,0 +1,64 @@
+<!-- 编辑区域信息 -->
+<template>
+	<el-dialog
+		  :title="editInfo.title"
+		  :visible.sync="editInfo.dialogShow"
+		  size="tiny"
+		  :close-on-click-modal="false"
+		  >
+		  <el-form :model="ruleForm" :rules="rules" ref="ruleForm">
+				<el-form-item label="区域名称" label-width="120px" prop="regionName">
+					<el-input v-model="ruleForm.regionName" auto-complete="off" placeholder="区域名称"></el-input>
+				</el-form-item>
+				<el-form-item label="描述" label-width="120px">
+					<el-input type="textarea" v-model="ruleForm.description" placeholder="描述"></el-input>
+				</el-form-item>
+		  </el-form>
+		  <span slot="footer" class="dialog-footer">
+		    <el-button @click="editInfo.dialogShow = false">取 消</el-button>
+		    <el-button type="primary" @click="submitForm('ruleForm')">确 定</el-button>
+		  </span>
+	</el-dialog>
+</template>
+<script>
+  export default {
+    data() {
+      return {
+        ruleForm : {},
+        rules: {
+        	 regionName: [
+	            { required: true, message: '请输入区域名称', trigger: 'blur' }
+	         ],
+        }
+      };
+    },
+    props : ["editInfo", "submitClick"],
+    created() {
+    	this.resetForm();
+    },
+    methods: {
+      	submitForm(formName) {
+      		var _that = this;
+      		_that.$refs[formName].validate((valid) => {
+	          if (valid) {
+	          		_that.submitClick(_that.ruleForm);
+	          } else {
+	           		console.log('error submit!!');
+	            	return false;
+	          }
+	        });
+      	},
+      	editFormData(formData) {
+      		if(!formData) return false;
+      		this.ruleForm = formData;
+      	},
+      	resetForm() {
+      		 this.ruleForm = {
+	        	regionName : "",
+	        	description : ""
+	        }
+      	}
+      	
+    }
+  };
+</script>

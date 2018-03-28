@@ -1,0 +1,29 @@
+/**
+*  author pzh
+*  day  2017-9-13
+*  主页路由配置
+*/
+const indexView = r => require.ensure([], () => r(require('../view/index/index')), 'Index')
+const category = r => require.ensure([], () => r(require('../view/index/category')), 'category')
+const prompt = r => require.ensure([], () => r(require('../view/index/prompt')), 'prompt')
+const router = [
+	{
+		name : "mcm.purchaser.index.index",
+		path : "/",
+		component : indexView
+	},
+	{
+		name : "index.category",
+		path : "/category",
+		component : category
+	},
+	{
+		name : "index.prompt",
+		path : "/prompt",
+		component : prompt
+	}
+]
+
+export default{
+	router
+}

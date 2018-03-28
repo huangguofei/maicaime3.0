@@ -1,0 +1,70 @@
+ import publicAPI from "apiurl/public"
+ export default{
+	/*余额支付*/
+	payByBalance(vm) {
+		if(vm.orderId == 0) {
+			cJs.message("订单异常");
+			return false;
+		}
+		var params = {
+			orderId : vm.orderId
+		}
+		publicAPI.payByBalance(params, (result) => {
+			cJs.message("支付成功！");
+			vm.$router.push({
+				name : "often.orders.success"
+			});
+		});
+	},/*上传图片*/
+	upFileImage(vm, params) {
+		publicAPI.upImageAPI(params, (result)=> {
+				vm.loading = false;
+				vm.uploadSuccess(result);
+		});
+	},
+	/*加入清单*/
+	addProdOften(productSkuId, callback) {
+		var params = {
+			productSkuId : productSkuId
+		}
+		publicAPI.addProdOftenAPI(params, (result) => {
+			callback();
+		});
+	},
+	/*获取购物车数量*/
+	getCartNum(vm) {
+		publicAPI.shoppingCartNumAPI((result) => {
+			vm.cartNum = result;
+		});
+	},
+	/*加入购物车*/
+	addCartByProd(vm, productSkuId, num, callback) {
+		var params = {
+			productSkuId : productSkuId,
+			num : num
+		};
+		publicAPI.addProdCartAPI(params, (result) => {
+			callback ? callback() : "";
+		},(error) => {
+			vm ? vm.$store.dispatch("updateCartNum") : "";
+		});
+	},
+	/*活动商品*/
+	addPromptCartByProd(vm, specialProductId, num) {
+		var params = {
+			specialProductId : specialProductId,
+			num : num
+		};
+		publicAPI.addShopCatrAPI(params, (result) => {
+		},(error)=>{
+			vm ? vm.$store.dispatch("updateCartNum") : "";
+		});
+	},
+	/*获取余额，明细*/
+	getBalanceInfo(vm) {
+		publicAPI.balanceAndTradeAPI((result) => {
+			vm.balance = result.balanceUserWallet.amount;
+			vm.statusId = result.balanceUserWallet.statusId;
+		});
+	}
+}

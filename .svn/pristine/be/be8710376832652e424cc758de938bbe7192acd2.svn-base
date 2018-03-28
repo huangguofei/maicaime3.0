@@ -1,0 +1,121 @@
+<template>
+	<article class="page-layer user-integral-details">
+		<header class="padding">
+			<section class="pull-left">
+				<h3>08月</h3>
+				<span>2016年</span>
+				<img src="../../images/register_bottom.png" />
+			</section>
+			<section class="pull-left">
+				<span class="t">合计：</span>
+				<p>-¥1564.09</p>
+			</section>
+		</header>
+		<article class="integral-list">
+			<ul>
+				<li class="padding">
+					<img src="../../images/mine_yue_details_chognzhi.png" class="pull-left add-img" />
+					<img src="../../images/mine_yue_details_order.png" class="pull-left reduce-img" />
+					<section class="pull-left">
+						<p>下单支付</p>
+						<span>08-06 14:43:30</span>
+					</section>
+					<span class="pull-right">-188.50</span>
+				</li>
+				<li class="padding active">
+					<img src="../../images/mine_yue_details_chognzhi.png" class="pull-left add-img" />
+					<img src="../../images/mine_yue_details_order.png" class="pull-left reduce-img" />
+					<section class="pull-left">
+						<p>下单支付</p>
+						<span>08-06 14:43:30</span>
+					</section>
+					<span class="pull-right">-188.50</span>
+				</li>
+			</ul>
+		</article>
+	</article>
+</template>
+
+<script>
+</script>
+
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.user-integral-details {
+		header {
+			background: #fff;
+			.pxrem(margin-bottom, 20);
+			.clearfix();
+			section:first-child {
+				position: relative;
+				width: 20%;
+				border-right: 1px solid #d7d7d7;
+				.pxrem(margin-right, 20);
+				h3 {
+					.pxrem(font-size, 36);
+				}
+				span {
+					.pxrem(font-size, 28);
+					color: #666;
+				}
+				img {
+					.pxrem(width, 40);
+					position: absolute;
+					.pxrem(top, 30);
+					.pxrem(right, 0);
+				}
+			}
+			section:last-child {
+				span {
+					.pxrem(font-size, 24);
+					color: #666;
+				}
+				p {
+					.pxrem(font-size, 32);
+				}
+			}
+		}
+		.integral-list {
+			background: #fff;
+			ul {
+				li {
+					.pxrem(height, 90);
+					.clearfix();
+					border-bottom: 1px solid #F0F0F0;
+					img {
+						.pxrem(width, 70);
+						.pxrem(margin-right, 30);
+					}
+					.reduce-img{
+						display: none;
+					}
+					section {
+						p {
+							.pxrem(font-size, 32);
+						}
+						span {
+							.pxrem(font-size, 24);
+							color: #535353;
+						}
+					}
+					&>span {
+						.pxrem(font-size, 36);
+						color:#1EC551;
+						.pxrem(line-height, 90);
+					}
+				}
+				.active{
+					img{
+						display: none;
+					}
+					.reduce-img{
+						display: inline-block;
+					}
+					&>span {
+						color:#F9AB0C;
+					}
+				}
+			}
+		}
+	}
+</style>

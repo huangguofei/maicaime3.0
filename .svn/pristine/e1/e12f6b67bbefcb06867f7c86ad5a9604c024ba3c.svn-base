@@ -1,0 +1,164 @@
+<!-- 供应商列表 -->
+<template>
+	<div class="page-layer">
+		<el-breadcrumb separator="/">
+			<el-breadcrumb-item>当前位置</el-breadcrumb-item>
+			<el-breadcrumb-item>客户管理</el-breadcrumb-item>
+			<el-breadcrumb-item>供应商列表</el-breadcrumb-item>
+		</el-breadcrumb>
+		<el-row class="search-wrap">
+		  	 <el-col :span="3" style="margin-right:20px;">
+		  	 	<el-input v-model="queryParams.supplierName" placeholder="供应商名称"></el-input>
+		  	 </el-col>
+		  	  <el-col :span="3" style="margin-right:20px;">
+		  	 	<el-input v-model="queryParams.contactName" placeholder="联系人"></el-input>
+		  	 </el-col>
+		  	  <el-col :span="3">
+		  	 	<el-input v-model="queryParams.areaName" placeholder="区域"></el-input>
+		  	 </el-col>
+		  	 <el-col :span="2">
+		  	 	<el-button style="margin-left:20px;" @click="queryInfo()">查询</el-button>
+		  	 </el-col> 
+		  	
+		</el-row>
+		<el-table
+	      :data="tableData"
+	      style="width: 100%">
+	       <el-table-column
+		      type="index"
+		      width="50">
+		    </el-table-column>
+	      <el-table-column
+	        prop="supplierName"
+	        label="供应商名"
+	        width="180">
+	      </el-table-column>
+	      <el-table-column
+	        prop="contactName"
+	        label="联系人"
+	        width="100">
+	      </el-table-column>
+	       <el-table-column
+	        prop="mobile"
+	        label="手机号码"
+	        width="130">
+	      </el-table-column>
+	       <el-table-column
+	        prop="areaName"
+	        label="区域"
+	        width="100">
+	      </el-table-column>
+	      <el-table-column
+	        prop="longitude"
+	        label="经度"
+	        width="120">
+	      </el-table-column>
+	       <el-table-column
+	        prop="dimension"
+	        label="纬度"
+	        width="120">
+	      </el-table-column>
+	      <el-table-column
+	        prop="address"
+	        label="地址">
+	      </el-table-column>
+	      <el-table-column
+	        prop="statusId"
+	        label="状态"
+	        width="100">
+        	<template scope="scope">
+				<span v-if="scope.row.statusId == 5">未审核</span>
+				<span v-if="scope.row.statusId == 1">已审核</span>
+				<span v-if="scope.row.statusId == -1">已删除</span>
+				<span v-if="scope.row.statusId == 0">禁用</span>
+				<span v-if="scope.row.statusId == -5">待激活</span>
+			</template>
+
+	      </el-table-column>
+	      <el-table-column
+	        label="操作"
+	        width="200">
+	        <template scope="scope">
+				<el-button class="el-button-audit" v-if="scope.row.statusId == 5" @click="editRowStatus(scope.row)">审核</el-button>
+				<el-button class="el-button-disable" v-if="scope.row.statusId == 1" @click="editRowStatus(scope.row)">禁用</el-button>
+				<el-button class="el-button-enabled" v-if="scope.row.statusId == 0" @click="editRowStatus(scope.row)">启用</el-button>
+				<el-button @click="setArea(scope.row)">编辑区域</el-button>
+			</template>
+	      </el-table-column>
+	    </el-table>
+	    <el-pagination
+	      @current-change="handleCurrentChange"
+	      :current-page.sync="pagings.current"
+	      :page-size="pagings.size"
+	      layout="total, prev, pager, next"
+	      :total="pagings.total">
+	    </el-pagination>
+	    <CUSTOMERSETAREA :areaDialog="areaDialog" :submitClick="editArea"></CUSTOMERSETAREA>
+	</div>
+</template>
+<script>
+	import CUSTOMERSUPPLIER from "../../../action/customer/supplier"
+	import CUSTOMERSETAREA from "../../../components/customer/set-area"
+    export default {
+      data() {
+        return {
+          queryParams : {
+          		supplierName : "",
+          		contactName : "",
+          		areaName : "",
+          },
+          tableData: [],
+          pagings : {
+          	current : 1,
+          	size : 20,
+          	pages : 1,
+          	total : 0
+          },
+          areaDialog : {
+          		title : "设置区域",
+          		dialogShow : false
+          },
+          editRowInfo : {},
+        }
+      },
+      created() {
+      		CUSTOMERSUPPLIER.getSupplierList(this);
+      },
+      components : {
+      		CUSTOMERSETAREA
+      },
+      methods : {
+      		queryInfo() {
+      			CUSTOMERSUPPLIER.getSupplierList(this);
+      		},
+      		editRowStatus(row) {
+      			var statusId = row.statusId, str = "", _that = this;
+      			if(statusId == 5) {
+      				str = "此操作审核该行";
+      			} else if(statusId == 1) {
+      				str = "此操作禁用该行";
+      			} else if(statusId == 0) {
+      				str = "此操作启用该行";
+      			}
+      			_that.$confirm(str + ', 是否继续?', '提示', {
+		          confirmButtonText: '确定',
+		          cancelButtonText: '取消',
+		          type: 'warning'
+		        }).then(() => {
+		          	CUSTOMERSUPPLIER.updateSupplierStatus(_that, row);
+		        });
+      		},
+      		handleCurrentChange(value) {
+				this.pagings.current = value;
+				CUSTOMERSUPPLIER.getSupplierList(this);
+			},
+			setArea(row) {
+				this.editRowInfo = row;
+				this.areaDialog.dialogShow = true;
+			},
+			editArea(regionId) {
+				CUSTOMERSUPPLIER.bindReginAction(this, regionId);
+			}
+      }
+    }
+  </script>

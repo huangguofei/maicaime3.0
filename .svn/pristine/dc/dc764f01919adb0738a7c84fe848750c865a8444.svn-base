@@ -1,0 +1,18 @@
+/**
+*  author pzh
+*  day  2017-9-27
+*  客户路由配置
+*/
+const indexView = r => require.ensure([], () => r(require('../view/customer/index')), 'Index')
+
+const router = [
+	{
+		name : "customer.index",
+		path : "/customer/",
+		component : indexView
+	}
+]
+
+export default{
+	router
+}

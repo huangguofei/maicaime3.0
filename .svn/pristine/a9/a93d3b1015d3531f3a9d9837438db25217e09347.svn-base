@@ -1,0 +1,14 @@
+/**
+ * author pzh
+ * day    2017-9-27
+ * 购物车业务
+ */
+ import {cartAPI} from "../../api/often"
+ export default{
+ 		/*获取购物车列表*/
+ 		getCartList(vm) {
+ 			cartAPI.cartListAPI((result) => {
+ 				
+ 			});
+ 		}
+ }

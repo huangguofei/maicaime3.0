@@ -1,0 +1,73 @@
+/*注册 第一步*/
+<template>
+	<article class="register-form">
+		<section class="from-item">
+			<img src="../../images/login_phone.png" />
+			<input type="tel" name="phone" id="phone" maxlength="11" v-model="mobile" ref="mobile" placeholder="请输入手机号码" />
+		</section>
+		<section class="from-item">
+			<img src="../../images/login_secret.png" />
+			<input type="number" name="code" id="code" v-model="verificationCode" ref="verificationCode" placeholder="请输入验证码" />
+			<a href="javascript:;" @click="sendcode" class="get-code">{{codeStr}}</a>
+		</section>
+		<section class="from-item">
+			<img src="../../images/login_secret.png" />
+			<input type="password" name="psw" id="psw" v-model="password" ref="password" placeholder="请输入密码" />
+		</section>
+	</article>
+</template>
+
+<script>
+	const timeNum=60;
+	export default{
+		data(){
+			return {
+				mobile:"18166474154",
+				verificationCode:"0262",
+				password:"3333",
+				codeStr:"获取验证码",
+				numTime:"",
+				timer:null
+			}
+		},methods:{
+			sendcode(){
+				if(!this.timer){
+					this.numTime=timeNum;
+					this.timer=setInterval(()=>{
+						console.log(this.numTime)
+						if(this.numTime>0){
+							this.numTime--;
+							this.codeStr=this.numTime+"s";
+						}else{
+							clearInterval(this.timer);
+							this.timer=null;
+							this.numTime=timeNum;
+							this.codeStr="重新获取";
+						}
+					},1000);
+				}
+			},
+			formGetFocus(index){
+				if(index){
+					this.$refs[index].focus();
+				}
+			}
+		}
+	}
+</script>
+
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.register-form {
+		.from-item {
+			position:relative;
+			.get-code{
+				position: absolute;
+				right: 0;
+				display: inline-block;
+				color: #46C895;
+				text-align: center;
+			}
+		}
+	}
+</style>

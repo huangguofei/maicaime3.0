@@ -1,0 +1,49 @@
+<!-- 营销 -->
+<template>
+	<main-page>
+		<left-main-menu 
+			slot="leftMenu" 
+			:menuData="menuData"
+			>
+		</left-main-menu>
+		<router-view slot="pageContent"></router-view>
+	</main-page>
+</template>
+<script >
+import mainPage from "components/common/main-page"
+import leftMainMenu from "components/common/left-main-menu"
+export default{
+	data() {
+		return{
+			menuData : {
+				title : "营销",
+				menus : [
+					{
+						name : "营销概况",
+						router : "marketing.overview"
+					},
+					{
+						name : "特色专区",
+						router : "marketing.feature.list"
+					},
+					{
+						name : "优惠活动",
+						router : "marketing.activity.index"
+					},{
+						name : "优惠券",
+						router : "marketing.coupon.index"
+					},
+					{
+						name : "主页管理",
+						router : "marketing.editor.home"
+					}
+				]
+			}
+		}
+	},
+	components: {
+		mainPage,
+		leftMainMenu
+	}
+}
+</script>

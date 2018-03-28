@@ -1,0 +1,40 @@
+<template>
+	<div class="page-layer">
+		<header>
+
+		</header>
+		<CATEGORYNAR></CATEGORYNAR>
+		<PREFECTURE></PREFECTURE>
+		<FOOTERNAR :active="1"></FOOTERNAR>
+	</div>
+</template>
+<script>
+	import CATEGORYNAR from "../../components/index/category-nar"
+	import PREFECTURE from "../../components/index/feature-prefecture"
+	import FOOTERNAR from "../../components/common/footer-nar"
+	export default{
+		data() {
+			return {
+
+			}
+		},
+		components : {
+			CATEGORYNAR,
+			PREFECTURE,
+			FOOTERNAR,
+		},
+		created() {
+		},
+		methods : {
+			show() {
+				cJs.message("错误信息");
+			}
+		}
+	}
+</script>
+<style lang="less" scope>
+	@import "../../common/less/config.less";
+	header{
+		.pxrem(height,358);
+	}
+</style>

@@ -1,0 +1,183 @@
+<!-- 积分专区 -->
+<template>
+	<div class="page-layer integral-page footer-page">
+		<header>
+			<div class="con">
+				<span class="val">当前积分：<span>{{balance}}</span></span>
+				<a href="javascript:void(0);" class="detail">积分明细</a>
+			</div>
+		</header>
+		<section>
+			<div class="con">
+				<header>
+					<span><img src="../../images/home_shuaihuo_time.png">积分兑换</span>
+				</header>
+				<div class="prods">
+					<div class="item" v-for="p in prodList">
+						<div class="p-img">
+							<img :src="p.skuImage">
+						</div>
+						<div class="p-info">
+							<p class="name">{{p.skuName}}</p>
+							<p class="refer-price">市场参考价: ¥{{(p.retailPrice * 1).toFixed(2)}}</p>
+							<p class="integral">{{p.integralPrice}}积分 + {{(p.extraPrice * 1).toFixed(2)}}元</p>
+							<button class="btn btn-convert" @click="submitOrder(p.productId)">我要兑换</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+	</div>
+</template>
+<script>
+	import integralAction from "actionurl/index/integral"
+	export default{
+		data() {
+			return{
+				balance : 0,
+				prodList : []
+			}
+		},
+		created() {
+			integralAction.getBalanceInfo(this);
+		},
+		mounted() {
+			integralAction.getProdList(this);
+		},
+		methods : {
+			submitOrder(prodId) {
+				this.$router.push({
+					name : "often.orders.integral",
+					params : {
+						productId : prodId
+					}
+				});
+			}
+		}
+	}
+</script>
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.integral-page{
+		header{
+			.pxrem(height, 99);
+			background: #222;
+			.prem(-4,20);
+			padding:@prem;
+			.con{
+				height:100%;
+				background: url(../../images/home_jifen_bg.png) no-repeat;
+				background-size: cover;
+				@c:#B4C4DB;
+				color:@c;
+				.val{
+					.pxrem(line-height, 109);
+					.pxrem(margin-left,66);
+					span{
+						.pxrem(font-size,42);
+					}
+				}
+				.detail{
+					color:@c;
+					border:1px solid @c;
+					display: inline-block;
+					.pxrem(border-radius,100);
+					.pxrem(width,160);
+					.pxrem(height,48);
+					text-align: center;
+					.pxrem(line-height, 48);
+					float:right;
+					position: relative;
+					.pxrem(top, 25);
+					.pxrem(right, 20);
+				}
+			}
+		}
+		section{
+			.prem(20);
+			padding:@prem;
+			.con{
+				background:#FFF;
+				header{
+					background:#FFF;
+					text-align: center;
+					.pxrem(line-height, 99);
+					.pxrem(font-size, 36);
+					border-bottom:1px solid @p-b-c;
+					span{
+						.line{
+							content : "";
+							position: relative;
+							display: inline-block;
+							.pxrem(width, 82);
+							.pxrem(height,1);
+							.pxrem(top, -15);
+							background: @p-t-c;
+						}
+						&:after{
+							.line;
+							.pxrem(margin-left,1);
+						}
+						&:before{
+							.line;
+							.pxrem(margin-right,1);
+						}
+					}
+					img{
+						.pxrem(width,40);
+						position: relative;
+						.pxrem(top, 3);
+						.pxrem(margin-right, 3);
+					}
+				}
+				.prods{
+					.prem(-4,20);
+					padding:@prem;
+				}
+				.item{
+					position: relative;
+					.prem(20,-4);
+					padding:@prem;
+					border-bottom:1px solid @p-b-c;
+					.p-img{
+						position: absolute;
+						.pxrem(width, 140);
+						.pxrem(height, 140);
+						border-radius: 50%;
+						border:1px solid @p-b-c;
+						overflow: hidden;
+						display: table-cell;
+						vertical-align: middle;
+						text-align: center;
+						img{
+							vertical-align: middle;
+							max-width: 100%;
+							height: 100%;
+						}
+					}
+					.p-info{
+						position: relative;
+						.pxrem(padding-left,150);
+						.name{
+							.pxrem(font-size, 32);
+						}
+						.refer-price{
+							color:@s-c;
+							.pxrem(font-size, 24);
+							.pxrem(margin-top, 10);
+						}
+						.integral{
+							color:@assist-color;
+							.pxrem(font-size,32);
+						}
+					}
+					.btn-convert{
+						position: absolute;
+						right:0;
+						.pxrem(bottom, 0);
+					}
+				}
+			}
+		}
+	}
+</style>

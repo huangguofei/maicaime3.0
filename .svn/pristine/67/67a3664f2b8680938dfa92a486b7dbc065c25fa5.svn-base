@@ -1,0 +1,36 @@
+<!-- 页面插槽-->
+<template>
+	<div class="page-layer">
+		<page-nar :narData="narData"></page-nar>
+		<div class="layer-content" :class="classs">
+			<slot></slot>
+		</div>
+	</div>
+</template>
+<script>
+import pageNar from "components/common/page-nar"
+export default{
+	props : {
+		narData : {
+			type : Array
+		},
+		classs : {
+			default : ""
+		}
+	},
+	components : {
+		pageNar
+	}
+}
+</script>
+<style lang="less" scoped>
+	.layer-content{
+		margin-top:20px;
+	}
+	.back-color{
+		background: #FFF;
+	}
+	.padd{
+		padding:20px;
+	}
+</style>

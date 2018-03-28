@@ -1,0 +1,259 @@
+<!-- 我的 -->
+<template>
+	<div class="page-layer" style="padding-bottom: .8rem;">
+		<section class="bg"></section>
+		<article class="user-main padding">
+			<article class="user-header item padding">
+				<section class="user-info header">
+					<img :src="userInfo.headImg?userInfo.headImg:require('../../images/user-default.png')" class="pull-left" />
+					<section class="user-name pull-left">
+						<h2 class="title ellipsis">{{userInfo.merchantName}}</h2>
+						<p>加入时间：{{userInfo.joinTime}}</p>
+					</section>
+				</section>
+				<ul>
+					<li>
+						<router-link to="user/balance/"><b class="title">¥{{userInfo.balance|ms}}</b>
+							<p>账户余额</p>
+						</router-link>
+					</li>
+					<li>
+						<router-link to="/coupon/"><b class="title">¥{{userInfo.unsettledBalance|ms}}</b>
+							<p>未结算</p>
+						</router-link>
+					</li>
+					<li>
+						<a href="/remaining/" target="_blank">
+							<b class="title">¥{{userInfo.thisMonthIncome|ms}}</b>
+							<p>本月收入</p>
+						</a>
+					</li>
+				</ul>
+				<section class="header-right">
+					<router-link to="/message/" class="message new"><img src="../../images/message-icon.png" /><i></i></router-link>
+					<router-link to="/user/info"><img src="../../images/mine_arrow1.png" /></router-link>
+				</section>
+			</article>
+			<article class="user-panel item hide">
+				<section class="header hr">
+					<img src="../../images/Group 2@2x.png" />
+					<span class="">供应商</span>
+					<img src="../../images/Group 2 Copy@2x.png" />
+				</section>
+				<section class="content">
+					<section class="pull-left">
+						<h3>0</h3><span>待送达订单数</span></section>
+					<section class="pull-right">
+						<h3>0</h3><span>待取货订单数</span></section>
+				</section>
+				<a href="javascript:cJs.message('此功能暂未开放');" class="changebtn">切换至驿站</a>
+			</article>
+			<article class="user-nav item">
+				<router-link to="/user/set"><img src="../../images/mine_setting.png" /><span class="title">设置</span><img class="pull-right" src="../../images/mine_arrow2.png" /></router-link>
+				<router-link to="/user/about"><img src="../../images/mine_aboutus.png" /><span class="title">关于我们</span><img class="pull-right" src="../../images/mine_arrow2.png" /></router-link>
+				<!--<section @click="err"><img src="../../images/mine_help.png" /><span class="title">使用帮助</span><img class="pull-right" src="../../images/mine_arrow2.png" /></section>-->
+			</article>
+			<!--<a href="javascipt:;" class="logout" @click="logout">退出登录</a>-->
+		</article>
+		<FOOTERNAR :active="3"></FOOTERNAR>
+	</div>
+</template>
+<script>
+	import FOOTERNAR from "../../components/common/footer-nar"
+	import server from "actionurl/user/user"
+	export default {
+		data() {
+			return {
+				orderNum: {
+					pay: 0,
+					receive: 0,
+					finish: 0,
+					my: 0
+				},
+				userInfo: ''
+			}
+		},
+		components: {
+			FOOTERNAR
+		},
+		created() {
+			server.getUserInfo(this);
+		},
+		methods: {
+			err() {
+				cJs.message('暂未开通此功能');
+			},
+			logout() {
+				server.logout(this);
+			}
+		}
+	}
+</script>
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.bg {
+		position: fixed;
+		top: 0;
+		width: 100%;
+		background: #19191E;
+		.pxrem(height, 130);
+		z-index: -1;
+	}
+	
+	ul {
+		.clearfix();
+		.pxrem(padding-top, 20);
+		/*.pxrem(padding-bottom, 20);*/
+		li {
+			float: left;
+			width: 33.33%;
+			text-align: center;
+			p {
+				.pxrem(font-size, 24);
+			}
+			a {
+				display: inline-block;
+				.pxrem(font-size, 34);
+			}
+		}
+	}
+	
+	.new {
+		position: relative;
+		i {
+			position: absolute;
+			.pxrem(width, 10);
+			.pxrem(height, 10);
+			border-radius: 50%;
+			background: #F74C31;
+			right: 0;
+		}
+	}
+	
+	.user-main {
+		.title {
+			.pxrem(font-size, 32);
+			color: #000;
+		}
+		.item {
+			background: #fff;
+			.pxrem(margin-bottom, 20);
+			.header {
+				border-bottom: 1px solid #E5E5E5;
+			}
+		}
+		.user-header {
+			position: relative;
+			.user-info {
+				.pxrem(padding-top, 50);
+				.pxrem(padding-bottom, 50);
+				.clearfix();
+				.user-name {
+					width: calc(~"100% - 1.6rem");
+				}
+				img {
+					.pxrem(width, 120);
+					.pxrem(height, 120);
+					.pxrem(margin-right, 20);
+					border-radius: 50%;
+				}
+				p {
+					.pxrem(font-size, 26);
+					color: #4a4a4a;
+				}
+			}
+			a {
+				color: #666;
+			}
+			.header-right {
+				position: absolute;
+				.pxrem(top, 25);
+				.pxrem(right, 25);
+				a {
+					display: block;
+					img {
+						.pxrem(width, 45);
+						height: auto;
+					}
+				}
+				a:first-child {
+					.pxrem(margin-bottom, 20);
+				}
+			}
+		}
+		.user-panel {
+			padding-bottom: .3rem;
+			.header {
+				text-align: center;
+				&:before {
+					.pxrem(left, -10);
+				}
+				&:after {
+					.pxrem(right, -10);
+				}
+				img {
+					.pxrem(width, 30);
+				}
+				span {
+					display: inline-block;
+					.pxrem(height, 100);
+					.pxrem(line-height, 100);
+					.pxrem(margin-left, 10);
+					.pxrem(margin-right, 10);
+					.pxrem(font-size, 36);
+				}
+			}
+			.content {
+				.clearfix();
+				text-align: center;
+				margin: .5rem 0;
+				section {
+					width: 50%;
+					h3 {
+						.pxrem(font-size, 50);
+						color: #F98A0C;
+					}
+					span {
+						.pxrem(font-size, 24);
+						color: #999;
+					}
+				}
+			}
+			.changebtn {
+				display: block;
+				width: 80%;
+				margin: 0 auto;
+				.pxrem(height, 70);
+				.pxrem(line-height, 70);
+				color: @m-c;
+				border: 1px solid @m-c;
+				.pxrem(border-radius, 35);
+				text-align: center;
+			}
+		}
+		.user-nav {
+			.clearfix();
+			.pxrem(padding-left, 25);
+			.pxrem(padding-right, 25);
+			a {
+				display: block;
+				.pxrem(padding-top, 25);
+				.pxrem(padding-bottom, 25);
+				border-bottom: 1px solid #E5E5E5;
+				img {
+					.pxrem(width, 40);
+					height: auto;
+					.pxrem(margin-right, 10);
+					vertical-align: text-bottom;
+				}
+				img:last-child {
+					.pxrem(width, 15);
+					height: auto;
+				}
+			}
+			section:last-child {
+				border: 0;
+			}
+		}
+	}
+</style>

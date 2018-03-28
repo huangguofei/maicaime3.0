@@ -1,0 +1,274 @@
+<!-- 流水信息 -->
+<template>
+	<page-layer :narData="narData" classs="back-color">
+		<el-form :inline="true" ref="form" :model="queryParams" label-width="80px" style='padding-top: 10px;'>
+			<el-form-item label="服务站">
+				<el-select v-model="queryParams.agentId" clearable placeholder="服务站" size="small" :disabled="isSelect">
+					<el-option v-for="item in agentList" :key="item.agentId" :label="item.agentName" :value="item.agentId">
+					</el-option>
+				</el-select>
+			</el-form-item>
+			<el-form-item label="商户类型">
+				<el-select v-model="queryParams.merchantTypeId" placeholder="商户类型" size="small">
+					<el-option v-for="item in shopType" :key="item.value" :label="item.name" :value="item.value">
+					</el-option>
+				</el-select>
+			</el-form-item>
+			<el-form-item label="提现状态">
+				<el-select v-model="queryParams.status" placeholder="提现状态" size="small">
+					<el-option v-for="item in statusType" :key="item.value" :label="item.name" :value="item.value">
+					</el-option>
+				</el-select>
+			</el-form-item>
+			<el-form-item label="提现时间">
+				<el-date-picker v-model="searchDate" format="yyyy-MM-dd HH:mm" size="small" @change="changeTime" type="datetimerange" unlink-panels :picker-options="pickerOptions" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" align="right">
+				</el-date-picker>
+			</el-form-item>
+			<el-form-item label="账单">
+				<el-input v-model="queryParams.billId" size="small"></el-input>
+			</el-form-item>
+			<el-form-item label="关键字">
+				<el-input v-model="queryParams.keyword" size="small"></el-input>
+			</el-form-item>
+			<el-form-item>
+				<el-button type="primary" style="margin-left:20px;" @click="queryInfo()" size="small">查询</el-button>
+			</el-form-item>
+		</el-form>
+		<el-table :data="tableData" style="width: 100%">
+			<el-table-column type="index" width="60">
+			</el-table-column>
+			<el-table-column prop="billId" label="账单号" width="190">
+			</el-table-column>
+			<el-table-column prop="merchantTypeText" label="商户身份" width="120">
+			</el-table-column>
+			<el-table-column label="商户信息" width="300">
+				<template scope="scope">
+					<p>{{scope.row.merchantName }}</p>
+					<p>{{scope.row.merchantMobile }}</p>
+				</template>
+			</el-table-column>
+			<el-table-column prop="bankName" label="银行名称" width="150">
+			</el-table-column>
+			<el-table-column prop="ownerUserName" label="申请人">
+			</el-table-column>
+			<el-table-column prop="statusText" label="状态">
+			</el-table-column>
+			<el-table-column label="提现金额" width="120">
+				<template scope="scope">
+					<p class="price" :class="{active:scope.row.amount>0}">{{scope.row.amount>0?"+"+scope.row.amount:scope.row.amount|ms}}</p>
+				</template>
+			</el-table-column>
+			<el-table-column label="实际提现金额" width="160">
+				<template scope="scope">
+					<p class="price" :class="{active:scope.row.actualAmount>0}">{{scope.row.actualAmount>0?"+"+scope.row.actualAmount:scope.row.actualAmount|ms}}</p>
+				</template>
+			</el-table-column>
+			<el-table-column prop="timeCreated" label="提现时间" width="180">
+			</el-table-column>
+			<el-table-column prop="opNote" label="财务备注" width="220">
+			</el-table-column>
+			<el-table-column prop="userNote" label="备注" width="220">
+			</el-table-column>
+			<el-table-column label="操作" width="250" fixed="right">
+				<template scope="scope">
+					<el-button size="mini" type="primary" @click="handleEdit(scope.row)">推进状态</el-button>
+					<el-button size="mini" type="primary" @click="handleRemark(scope.row)">修改财务备注</el-button>
+					<a :href="'/depositApply/'+scope.row.withdrawRecordId+'?billId='+scope.row.billId" class="a-btn" target="_blank">查看详情</a>
+					<!--<el-button size="mini" type="primary" @click="viewDetails(scope.row)">查看详情</el-button>-->
+				</template>
+			</el-table-column>
+		</el-table>
+		<pagination :pagings="queryParams" :totalCount="totalCount" @changePageSize="changePageSize"></pagination>
+		<dialogs :applyData="applyData" @offDialog="offDialog" @submit="submit" ref='dia'></dialogs>
+		<el-dialog title="备注" :visible.sync="isShowRemark" width="30%">
+			<el-form ref="remarkForm" :model="remarkDialogData" label-width="80px" style='padding-top: 10px;'>
+				<el-form-item label="财务备注">
+					<el-input type="textarea" v-model="remarkDialogData.remark"></el-input>
+				</el-form-item>
+			</el-form>
+			<span slot="footer" class="dialog-footer">
+    			<el-button @click="isShowRemark=false">取 消</el-button>
+   				<el-button type="primary" @click="subRemark">确 定</el-button>
+  			</span>
+		</el-dialog>
+	</page-layer>
+</template>
+<script>
+	import SETTINGAREA from "actionurl/data/depositApply"
+	import pageLayer from "components/common/page-layer"
+	import dialogs from "components/data/changeDepositStatus"
+	import pagination from "components/common/pagination"
+	import agrntServer from "actionurl/serve/agent"
+	export default {
+		data() {
+			return {
+				narData: [{
+					name: "提现记录",
+					router: ""
+				}],
+				isShowDialog: false,
+				isShowRemark: false,
+				applyData: {
+					isShow: false
+				},
+				remarkDialogData: {
+					remark: "",
+					withdrawRecordId: ""
+				},
+				searchDate: "",
+				queryParams: {
+					agentId:'',
+					merchantTypeId: 300,
+					status: "",
+					beginDate: "",
+					endDate: "",
+					keyword: "",
+					billId: "",
+					pageSize: 10,
+					pageNum: 1,
+				},
+				tableData: [],
+				agentList:[],
+				isSelect:true,
+				totalCount: 0,
+				shopType: [{
+					name: '供应商',
+					value: 300
+				}, {
+					name: '驿站',
+					value: 600
+				}, {
+					name: '配送商',
+					value: 700
+				}],
+				statusType: [{
+					name: '选择提现状态',
+					value: ""
+				}, {
+					name: '申请中',
+					value: 0
+				}, {
+					name: '正在转账',
+					value: 1
+				}, {
+					name: '转账成功',
+					value: 2
+				}, {
+					name: '转账失败',
+					value: -1
+				}, {
+					name: '金额异常',
+					value: -5
+				}],
+				pickerOptions: {
+					shortcuts: [{
+						text: '最近一周',
+						onClick(picker) {
+							const end = new Date();
+							const start = new Date();
+							start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+							picker.$emit('pick', [start, end]);
+						}
+					}, {
+						text: '最近一个月',
+						onClick(picker) {
+							const end = new Date();
+							const start = new Date();
+							start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+							picker.$emit('pick', [start, end]);
+						}
+					}, {
+						text: '最近三个月',
+						onClick(picker) {
+							const end = new Date();
+							const start = new Date();
+							start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+							picker.$emit('pick', [start, end]);
+						}
+					}]
+				}
+			}
+		},
+		created() {
+			SETTINGAREA.getDepositApplyAPIList(this);
+			agrntServer.getSiteList(this, {
+				pageSize: 50
+			});
+		},
+		components: {
+			pageLayer,
+			dialogs,
+			pagination
+		},
+		methods: {
+			queryInfo() {
+				SETTINGAREA.getDepositApplyAPIList(this);
+			},
+			changePageSize() {
+				SETTINGAREA.getDepositApplyAPIList(this);
+			},
+			handleEdit(data) {
+				this.applyData.data = data;
+				this.$refs.dia.init();
+				if(data.statusId == 2) {
+					this.$message.error('目前不能操作！');
+					return false;
+				}
+				this.applyData.isShow = true;
+			},
+			offDialog() {
+				this.isShowDialog = false;
+			},
+			submit(data) {
+				SETTINGAREA.depositApplyChange(this, data);
+			},
+			handleRemark(data) {
+				this.remarkDialogData.withdrawRecordId = data.withdrawRecordId;
+				this.remarkDialogData.remark = "";
+				this.isShowRemark = true;
+			},
+			subRemark() {
+				SETTINGAREA.depositApplyRemark(this, this.remarkDialogData);
+				this.isShowRemark = false;
+			},
+			viewDetails(data) {
+				this.$router.push({
+					name: "data.depositApply.details",
+					params: {
+						id: data.withdrawRecordId
+					}
+				})
+			},
+			changeTime(val) {
+				if(val) {
+					this.queryParams.beginDate = val.split("至")[0];
+					this.queryParams.endDate = val.split("至")[1];
+				} else {
+					this.queryParams.beginDate = "";
+					this.queryParams.endDate = "";
+					return "";
+				}
+			}
+		}
+	}
+</script>
+<style lang="less" scoped>
+	@import "../../../common/less/config.less";
+	.price {
+		color: red;
+	}
+	
+	.active {
+		color: #46CD72;
+	}
+	
+	.a-btn {
+		background: #20a0ff;
+		color: #fff;
+		font-size: 12px;
+		border-radius: 4px;
+		display: inline-block;
+		padding: 4px;
+		line-height: 12px;
+	}
+</style>

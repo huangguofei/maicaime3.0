@@ -1,0 +1,82 @@
+/**
+*  author pzh
+*  day  2017-9-13
+*  我的模块路由配置
+*/
+const indexView = r => require.ensure([], () => r(require('../view/user/index')), 'Index')
+const userMssageView = r => require.ensure([], () => r(require('../view/user/user-message')), 'Index')/*消息*/
+const userCouponView = r => require.ensure([], () => r(require('../view/user/user-coupon')), 'Index')/*优惠券*/
+const userCouponOverView = r => require.ensure([], () => r(require('../view/user/user-overdue-coupon')), 'Index')/*过期券*/
+const userIntegralView = r => require.ensure([], () => r(require('../view/user/user-integral')), 'Index')/*积分*/
+const userRemainingView = r => require.ensure([], () => r(require('../view/user/user-remaining')), 'Index')/*余额*/
+const userRemainingDetailsView = r => require.ensure([], () => r(require('../view/user/user-remaining-details')), 'Index')/*余额明细*/
+const userPaylistView = r => require.ensure([], () => r(require('../view/user/user-paylist')), 'Index')/*流水明细支付明细*/
+const userStaffManagementView = r => require.ensure([], () => r(require('../view/user/user-staffManagement')), 'Index')/*员工管理*/
+const userStaffManagementApplyDetailsView = r => require.ensure([], () => r(require('../view/user/user-staffManagement-applyDetails')), 'Index')/*员工申请详情*/
+const invitationView = r => require.ensure([], () => r(require('../view/invitation/index')), 'invitation')/*邀请*/
+const invitationApplySuccessView = r => require.ensure([], () => r(require('../view/invitation/invitation-applysuccess')), 'invitation')/*邀请成功*/
+/*充值成功*/
+const rechargeSuccessView = r => require.ensure([], () => r(require('../view/user/recharge-success')), 'rechargeSuccessView')
+const router = [
+	{
+		name : "mcm.purchaser.user.index",
+		path : "/user/",
+		component : indexView
+	},{
+		name : "mcm.purchaser.message",
+		path : "/message/",
+		component : userMssageView
+	},{
+		name : "mcm.purchaser.coupon",
+		path : "/coupon",
+		component : userCouponView
+	},{
+		name : "mcm.purchaser.coupons",
+		path : "/coupon/:type",
+		component : userCouponView
+	},{
+		name : "mcm.purchaser.overcoupon",
+		path : "/overcoupon/",
+		component : userCouponOverView
+	},{
+		name : "mcm.purchaser.integral",
+		path : "/userintegral/",
+		component : userIntegralView
+	},{
+		name : "mcm.purchaser.remaining",
+		path : "/remaining/",
+		component : userRemainingView
+	},{
+		name : "mcm.purchaser.remaining.details",
+		path : "/remainingDetails/",
+		component : userRemainingDetailsView
+	},{
+		name : "mcm.purchaser.paylist",
+		path : "/paylist/",
+		component : userPaylistView
+	},{
+		name : "mcm.purchaser.staffManagement",
+		path : "/staffManagement/",
+		component : userStaffManagementView
+	},{
+		name : "mcm.purchaser.staffManagementApplyDetails",
+		path : "/staffManagementApplyDetails/",
+		component : userStaffManagementApplyDetailsView
+	},{
+		name : "mcm.purchaser.invitation",
+		path : "/invitation/",
+		component : invitationView
+	},{
+		name : "mcm.purchaser.applysuccess",
+		path : "/applysuccess/",
+		component : invitationApplySuccessView
+	},{
+		name : "user.recharge.success",
+		path :"/recharge/success",
+		component : rechargeSuccessView
+	}
+]
+
+export default{
+	router
+}

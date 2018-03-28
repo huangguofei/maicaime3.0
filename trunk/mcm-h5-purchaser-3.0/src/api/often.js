@@ -1,0 +1,36 @@
+/**
+ * author pzh 
+ * day    2017-9-27
+ * 常用清单模块接口
+ */
+ import https from "../axios/https"
+ export const cartAPI = {
+		/*购物车列表*/
+		cartListAPI : (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/shoppingcart/list", v)),
+		/*修改购物车的数量*/
+		updateCartNumAPI : (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/shoppingcart/changeNum", v)),
+		/*购物车实时价*/
+		cartProdPriceAPI : (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/shoppingcart/latestPriceShoppingCartList", v)),
+ }
+ /*下单*/
+ export const ordersAPI = {
+ 		/*从购物车提交订单*/
+		cartSubmitOrderAPI : (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/order/submitOrder", v)),
+ 		/*在订单确认页面拉取购物车和其他数据*/
+		cartToOrderDataAPI : (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/order/shoppingCartToOrderData", v)),
+		/*积分商品-订单信息*/
+		integralInitOrderDataAPI : (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/integral/integralInitOrderData", v)),
+		/*积分商品-下单*/
+		integralSubmitOrderAPI : (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/integral/integralSubmitOrder", v)),
+		/*配送时间列表*/
+		timeSectionAPI : (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/order/timeSection", v)),
+ }
+
+ /*清单*/
+ export const oftenAPI = {
+		/*一级分类*/
+		stairCategoryAPI : (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/collect/category", v)),
+		/*采购清单列表，包含分类信息*/
+		categoryProdAPI : (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/collect/list", v)),
+		
+ }

@@ -1,0 +1,11 @@
+<template>
+	<div class="page-layer">
+		概况
+	</div>
+</template>
+<script>
+	
+</script>
+<style lang="less" scoped>
+	
+</style>

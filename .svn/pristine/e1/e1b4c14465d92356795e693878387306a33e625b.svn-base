@@ -1,0 +1,33 @@
+/**
+ * author pzh 
+ * day    2017-9-27
+ * 首页业务接口
+ */
+import {indexAPI} from "apiurl/index"
+ export default{
+ 	/*主页数据*/
+ 	getHomeData(vm) {
+ 		var _returnJson = (result) => {
+ 			var home = result.homeAdBO;
+			vm.adList = JSON.parse(home.agentAdJson);
+			vm.narList = JSON.parse(result.categoryJson);
+			vm.featureData = JSON.parse(result.featureAreaJson);
+ 		}
+ 		if(!sessionStorage.homeData || JSON.parse(sessionStorage.homeData).length <= 0) {
+ 			indexAPI.homeDataAPI((result) => {
+ 				sessionStorage.homeData = JSON.stringify(result);
+	 			_returnJson(result);
+			});
+ 		} else {
+ 			var data = JSON.parse(sessionStorage.homeData);
+ 			_returnJson(data);
+ 		}
+ 		
+ 	},
+ 	/*获取首页食材*/
+ 	getHomeProds(vm) {
+ 		indexAPI.homeProdAPI((result) => {
+ 			vm.prodList = result
+		});
+ 	}
+ }

@@ -1,0 +1,151 @@
+<!-- 找回密码 -->
+<template>
+	<article class="page-layers find-psw">
+		<article class="content">
+			<p>忘记登录密码？</p>
+			<h3>输入要找回的买菜么账号</h3>
+			<article class="form">
+				<section class="item">
+					<img src="../../images/login_mobile.png" />
+					<input type="text" class="phone" maxlength="11" v-model="mobile" placeholder="请输入手机号" />
+				</section>
+				<section class="item">
+					<img src="../../images/register_code.png" />
+					<input type="text" class="code" v-focus="isfocus" maxlength="6" placeholder="输入验证码" v-model="verificationCode" />
+					<span class="code-status" @click="sendCode">{{codeStatus}}</span>
+				</section>
+				<section class="item">
+					<img src="../../images/login_secret.png" />
+					<input type="password" class="phone" id="" placeholder="输入密码" v-model="newPwd" />
+				</section>
+			</article>
+			<button type="button" @click="post">确定</button>
+		</article>
+	</article>
+</template>
+
+<script>
+	import server from 'actionurl/login/find-psw'
+	import MD5 from "../../../static/md5.js"
+	const timeNum = 60;
+	export default {
+		data() {
+			return {
+				codeStatus: "获取验证码",
+				mobile: "",
+				verificationCode: "",
+				newPwd: "",
+				timer: null,
+				isfocus:false
+			}
+		},
+		methods: {
+			sendCode() {
+				if(!this.mobile) {
+					cJs.message("请输入手机号");
+					return;
+				}
+				var _that = this;
+				if(!this.timer) {
+					server.getCode(this, function(data) {
+						if(data.countDown < 60) {
+							if(data.countDown > 0) {
+								_that.numTime = data.countDown;
+							} else {
+								_that.numTime = timeNum;
+							}
+							cJs.message(data.msg);
+							/*_that.isfocus=true;*/
+							_that.timer = setInterval(() => {
+								if(_that.numTime >= 0) {
+									_that.numTime--;
+									_that.codeStatus = _that.numTime + "s";
+								} else {
+									clearInterval(_that.timer);
+									_that.timer = null;
+									_that.numTime = timeNum;
+									_that.codeStatus = "重新获取";
+								}
+							}, 1000);
+						} else {
+							cJs.message(data.msg);
+						}
+					});
+				}
+			},
+			post() {
+				if(!this.mobile) {
+					cJs.message("手机号不能为空！");
+					return;
+				}
+				if(!this.verificationCode) {
+					cJs.message("验证码不能为空！");
+					return;
+				}
+				if(!this.newPwd) {
+					cJs.message("新密码不能为空！");
+					return;
+				}
+				this.newPwd = MD5(this.newPwd);
+				server.findPsw(this);
+			}
+		}
+	}
+</script>
+
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.find-psw {
+		padding-top: 20%;
+		.content {
+			width: 80%;
+			margin: 0 auto;
+			p {
+				.pxrem(font-size, 28);
+				color: #4A4A4A;
+			}
+			h3 {
+				.pxrem(font-size, 40);
+				.pxrem(margin-bottom, 80);
+			}
+			.form {
+				.pxrem(margin-bottom, 90);
+				.item {
+					.pxrem(margin-bottom, 40);
+					position: relative;
+					img {
+						.pxrem(width, 36);
+						.pxrem(margin-right, 20);
+						vertical-align: middle;
+					}
+					input {
+						.pxrem(font-size, 36);
+						width: 85%;
+						border: 0;
+						border-bottom: 1px solid #f0f0f0;
+						.pxrem(padding-bottom, 10);
+					}
+					.code-status {
+						position: absolute;
+						top: 0;
+						right: 5%;
+						color: @m-c;
+					}
+				}
+			}
+			button {
+				display: block;
+				width: 96%;
+				margin: 0 auto;
+				.pxrem(height, 90);
+				.pxrem(line-height, 90);
+				.pxrem(font-size, 36);
+				text-align: center;
+				border: 0;
+				color: #fff;
+				.pxrem(border-radius, 45);
+				background: @m-c;
+			}
+		}
+	}
+</style>

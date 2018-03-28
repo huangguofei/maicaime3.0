@@ -1,0 +1,54 @@
+<!-- 积分 -->
+<template>
+	<page-layer :narData="narData" class="edit-page">
+		<el-table :data="tableData" style="width: 100%">
+			<el-table-column prop="agentName" label="服务站名称">
+			</el-table-column>
+			<el-table-column prop="cityName" label="服务站地址">
+			</el-table-column>
+			<el-table-column prop="contact" label="服务站负责人">
+			</el-table-column>、
+			<el-table-column prop="statusText" label="服务站状态">
+			</el-table-column>
+		</el-table>
+		<el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-size="pagings.size" :current-page.sync="pagings.current" layout="total, prev, pager, next" :total="pagings.total">
+		</el-pagination>
+	</page-layer>
+</template>
+<script>
+	import pageLayer from "components/common/page-layer"
+	import resServer from "actionurl/marketing/integral"
+	export default {
+		data() {
+			return {
+				narData: [{
+					name: "积分"
+				}],
+				tableData: [],
+				pagings: {
+					current: 1,
+					size: 10,
+					total: 0
+				},
+			}
+		},
+		created() {
+			resServer.getIntegralList(this);
+		},
+		methods: {
+			handleSizeChange() {
+
+			},
+			handleCurrentChange(value) {
+				this.pagings.current = value;
+				resServer.getIntegralList(this);
+			},
+		},
+		components: {
+			pageLayer
+		}
+	}
+</script>
+<style lang="less" scoped>
+
+</style>

@@ -1,0 +1,28 @@
+<!-- 对账 -->
+<template>
+	<div class="page-layers">
+		<err msg="对账"></err>
+		<FOOTERNAR :active="2"></FOOTERNAR>
+	</div>
+</template>
+<script>
+	import FOOTERNAR from "components/common/footer-nar"
+	import err from "components/common/err"
+	export default{
+		data() {
+			return {
+
+			}
+		},
+		components : {
+			FOOTERNAR,
+			err
+		},
+		created() {
+			
+		},
+		methods : {
+			
+		}
+	}
+</script>

@@ -1,0 +1,70 @@
+<!-- 活动列表 -->
+<template>
+	<page-layer :narData="narData" classs="">
+		<div class="activity-list">
+			<activity v-for="a in activityList" :activityInfo="a" @changeStatus="changeStatus"></activity>
+		</div>
+		<el-pagination
+	      @current-change="handleCurrentChange"
+	      :current-page.sync="pagings.current"
+	      :page-size="pagings.size"
+	      layout="total, prev, pager, next"
+	      :total="pagings.total">
+	    </el-pagination>
+	</page-layer>
+</template>
+<script>
+	import resServer from 'actionurl/marketing/activity'
+	import pageLayer from "components/common/page-layer"
+	import activity from "components/marketing/activity/activity"
+	import activityAction from "actionurl/marketing/activity"
+	export default {
+		data() {
+			return {
+				dataList: [],
+				narData: [{
+						name: "优惠活动",
+						router: "marketing.activity.index"
+					},
+					{
+						name: "发起优惠活动",
+						router: "marketing.activity.new"
+					}
+				],
+				activityList : [],
+				pagings : {
+		          	current : 1,
+		          	size : 10,
+		          	pages : 1,
+		          	total : 0
+		        },
+			}
+		},
+		created: function() {
+			resServer.getActivityList(this);
+		},
+		components: {
+			pageLayer,
+			activity
+		},
+		created() {
+			activityAction.getActivityList(this);
+		},
+		methods : {
+			handleSizeChange(page) {
+			},
+			handleCurrentChange(value) {
+				this.pagings.current = value;
+				resServer.getActivityList(this);
+			},changeStatus(data){
+				resServer.changeActionStatus(this,data);
+			}
+		}
+	}
+</script>
+<style lang="less" scoped>
+	@import "../../../common/less/config.less";
+	.activity-list {
+		.clearfix();
+	}
+</style>

@@ -1,0 +1,433 @@
+<template>
+	<article class="page-layer">
+		<div class=" order-details padding" :class="{padding_bottom:orderDetailsInfo.orderStatusId!=100}">
+			<header class="padding order-status bk-white item hr">
+				<section class="relative">
+					<h3 class="text-center">{{orderDetailsInfo.orderStatusText}}<img src="../../images/order_details_arrow.png"></h3>
+					<span class="style1">{{orderDetailsInfo.deliveryTimeText}}</span>
+				</section>
+				<section class="text-center style1">下单时间：{{orderDetailsInfo.timeCreated}}
+				</section>
+			</header>
+			<section class="padding bk-white linkman-info item hr">
+				<img src="../../images/order_details_address.png" class="pull-left" />
+				<section class="pull-left">
+					<h4>{{orderDetailsInfo.deliveryWayId==300?orderDetailsInfo.extraData.stationName:orderDetailsInfo.receiverName}} {{orderDetailsInfo.deliveryWayId==300?orderDetailsInfo.extraData.stationMobile:orderDetailsInfo.receiverMobile}}</h4>
+					<p>地址：{{orderDetailsInfo.deliveryWayId==300?orderDetailsInfo.extraData.stationAddr:orderDetailsInfo.receiverAddr}}</p>
+				</section>
+				<img src="../../images/order_details_daohang.png" class="pull-right" @click="err" />
+			</section>
+			<section class="padding bk-white delivery-info item" :class="{hr:orderDetailsInfo.orderStatusId!=30}">
+				<p><img src="../../images/order_details_time.png">配送时间：{{orderDetailsInfo.deliveryTimeText}}</p>
+				<p v-if="orderDetailsInfo.orderStatusId==30">缺货处理：{{orderDetailsInfo.purchaserName}}({{orderDetailsInfo.purchaserMobile}})</p>
+				<p v-if="orderDetailsInfo.orderStatusId==40">配送方式：{{orderDetailsInfo.deliveryWayText}}</p>
+				<span class="order-num" v-if="isNullObject(orderDetailsInfo.extraData)"><span>{{orderDetailsInfo.articleNumber}}</span></span>
+			</section>
+			<section class="btn-group padding bk-white" v-if="orderDetailsInfo.orderStatusId!=30">
+				<!--<a class="cancel-order disabled" id="">取消订单</a>-->
+				<a class="print-order" @click="err">打印订单</a>
+				<a class="again-shop" @click="err">分享订单</a>
+			</section>
+
+			<food-list :foodData="orderDetailsInfo" :noShowNum="noShowNum"></food-list>
+			<section class="order-info gap">
+				<div class="padding bk-white item hr">
+					<p><span>订单编号</span>{{orderDetailsInfo.orderId}}</p>
+					<p><span>下单时间</span>{{orderDetailsInfo.timeCreated}}</p>
+					<p><span>订单备注</span>{{orderDetailsInfo.purchaserRemark}}</p>
+				</div>
+				<p class="invoice bk-white padding"><span>发票类型</span>{{orderDetailsInfo.invoiceTypeText}}</p>
+			</section>
+			<section class="price-info">
+				<div class="padding bk-white item hr">
+					<p>食材总额<span class="pull-right">¥{{orderDetailsInfo.payableAmount|ms}}</span></p>
+					<p>配送费<span class="pull-right">¥0.00</span></p>
+					<p>优惠金额<span class="pull-right">¥{{orderDetailsInfo.discountAmount|ms}}</span></p>
+				</div>
+				<p class="price-pay bk-white padding">应收款:<span class="pull-right">¥{{orderDetailsInfo.totalAmount|ms}}</span></p>
+			</section>
+
+			<footer v-if="orderDetailsInfo.orderStatusId==30">
+				<p class="pull-left">合计：<span>¥{{orderDetailsInfo.totalAmount|ms}}</span></p>
+				<a href="javascript:;" class="pull-right affirm" @click="confirmReceipt">确认订单</a>
+				<a href="javascript:;" class="pull-right stockout" @click="contactLinkman()">缺货处理</a>
+			</footer>
+		</div>
+		<transition name="fade">
+			<dialog-page :title="title" :content-html="content" :ok-btn-str="okBtnStr" v-show="isShowDialog" @offDialog="offDialog" @affirm="callPhone"></dialog-page>
+		</transition>
+	</article>
+</template>
+
+<script>
+	import orderApi from "actionurl/order/order"
+	import foodList from 'components/order/food-list'
+	import dialogPage from 'components/common/dialog'
+	export default {
+		data() {
+			return {
+				orderDetailsInfo: "",
+				orderId: this.$route.params.id,
+				noShowNum: this.$route.query.noShowNum,
+				isShowDialog: false,
+				content: "",
+				title: "缺货时与我电话沟通",
+				okBtnStr: "马上联系"
+			}
+		},
+		created() {
+			orderApi.getOrderDetails(this);
+		},
+		methods: {
+			contactLinkman(str) {
+				this.content = "<p>" + this.orderDetailsInfo.purchaserName + "</p><p>" + this.orderDetailsInfo.purchaserMobile + "</p>";
+				this.isShowDialog = true;
+			},
+			confirmReceipt() {
+				orderApi.orderConfirm(this);
+			},
+			offDialog() {
+				this.isShowDialog = false;
+			},
+			callPhone() {
+				window.location.href = "tel:" + this.orderDetailsInfo.purchaserMobile;
+			},
+			err() {
+				cJs.message("暂未开通此功能");
+			},
+			isNullObject(data) {
+				if(JSON.stringify(data) === '{}') {
+					return false // 如果为空,返回false
+				}
+				return true // 如果不为空，则会执行到这一步，返回true
+			}
+		},
+		components: {
+			foodList,
+			dialogPage
+		}
+	}
+</script>
+
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.padding_bottom {
+		.pxrem(padding-bottom, 110);
+	}
+	
+	.fade-enter-active,
+	.fade-leave-active {
+		transition: opacity 1s
+	}
+	
+	.fade-enter,
+	.fade-leave-to {
+		opacity: 0
+	}
+	
+	.hr {
+		&:before {
+			.pxrem(left, -15);
+			z-index: 1;
+		}
+		&:after {
+			.pxrem(right, -15);
+			z-index: 1;
+		}
+	}
+	
+	.order-details {
+		.bk-white {
+			background: #fff;
+		}
+		.style1 {
+			color: #666;
+			.pxrem(font-size, 28);
+		}
+		.gap {
+			margin-bottom: .15rem;
+		}
+		.order-status {
+			section {
+				span {
+					position: absolute;
+					top: 0;
+					.pxrem(right, 16);
+				}
+			}
+			section:first-child {
+				.pxrem(line-height, 80);
+				.pxrem(height, 80);
+			}
+			h3 {
+				color: #000;
+				text-align: center;
+				.pxrem(font-size, 36);
+				img {
+					.pxrem(width, 14);
+					.pxrem(margin-left, 13);
+					vertical-align: middle;
+				}
+			}
+		}
+		.linkman-info {
+			border-radius: .2rem;
+			.pxrem(height, 100);
+			.clearfix();
+			img {
+				.pxrem(width, 30);
+				.pxrem(margin-top, 20);
+			}
+			img:last-child {
+				.pxrem(width, 42);
+			}
+			section.pull-left {
+				.pxrem(margin-left, 20);
+				h4 {
+					.pxrem(font-size, 32);
+					.pxrem(margin-bottom, 10);
+				}
+				p {
+					.pxrem(font-size, 26);
+					color: #4a4a4a;
+				}
+			}
+		}
+		.delivery-info {
+			p {
+				.pxrem(margin-bottom, 10);
+				.pxrem(font-size, 28);
+				color: #222;
+				img {
+					.pxrem(width, 30);
+					.pxrem(margin-right, 20);
+					vertical-align: bottom;
+				}
+				span {
+					color: #FF5F64;
+				}
+			}
+			p:first-child~p {
+				.pxrem(padding-left, 50);
+			}
+			.order-num {
+				display: block;
+				text-align: center;
+				width: 90%;
+				margin: 0 auto;
+				.pxrem(border-radius, 5);
+				border: 1px solid #D7D7D7;
+				color: #000;
+				.pxrem(height, 70);
+				.pxrem(line-height, 70);
+				span {
+					.pxrem(font-size, 38);
+					color: #000;
+				}
+			}
+		}
+		.btn-group {
+			text-align: center;
+			a {
+				width: 23%;
+				display: inline-block;
+				text-align: center;
+				.pxrem(height, 60);
+				.pxrem(line-height, 60);
+				.pxrem(font-size, 28);
+				.pxrem(border-radius, 5);
+				color: #222;
+				border: 1px #D7D7D7 solid;
+				margin: 0 1%;
+				background: #fff;
+			}
+			a.disabled {
+				color: #D7D7D7;
+				border-color: #D7D7D7;
+			}
+			a:last-child {
+				color: #fff;
+				background: @m-c;
+				border: 0;
+			}
+		}
+		.shop-details {
+			margin-top: .15rem;
+			header {
+				.clearfix();
+				img {
+					.pxrem(width, 50);
+					.pxrem(margin-right, 10);
+					vertical-align: middle;
+				}
+				h3 {
+					.pxrem(font-size, 32);
+				}
+			}
+			ul {
+				padding-bottom: 0;
+			}
+			.look-more {
+				text-align: center;
+				img {
+					.pxrem(width, 50);
+					vertical-align: middle;
+				}
+			}
+		}
+		.order-info {
+			p {
+				.pxrem(font-size, 28);
+				.pxrem(line-height, 50);
+				span {
+					color: #999;
+					.pxrem(margin-right, 40);
+				}
+			}
+			.invoice {
+				.pxrem(height, 30);
+				.pxrem(line-height, 30);
+			}
+		}
+		.price-info {
+			p {
+				.pxrem(font-size, 28);
+				color: #999;
+				.pxrem(line-height, 50);
+				span {
+					.pxrem(font-size, 32);
+					color: #000;
+				}
+			}
+			.price-pay {
+				.pxrem(height, 30);
+				.pxrem(line-height, 30);
+				span {
+					color: @d-price;
+				}
+			}
+		}
+		.shop-item {
+			.pxrem(margin-bottom, 26);
+			overflow: auto;
+			.item-left {
+				.commodity-name {
+					color: #151009;
+					.pxrem(height, 40);
+					.pxrem(line-height, 40);
+					.pxrem(font-size, 28);
+					.pxrem(margin-bottom, 5);
+					i {
+						background: @d-price;
+						vertical-align: middle;
+						display: inline-block;
+						.pxrem(width, 12);
+						.pxrem(height, 12);
+						border-radius: 100%;
+						border: 1px solid @d-price;
+						.pxrem(margin-right, 6);
+					}
+				}
+				.price-num {
+					.pxrem(height, 33);
+					.pxrem(line-height, 33);
+					color: #999999;
+					.pxrem(font-size, 24);
+					.pxrem(padding-left, 22);
+					span:first-child {
+						margin-right: 0.3rem;
+					}
+				}
+			}
+			.item-right {
+				.pxrem(height, 74);
+				.pxrem(line-height, 74);
+				b {
+					color: #343534;
+					.pxrem(font-size, 28);
+				}
+			}
+		}
+		footer {
+			.pxrem(font-size, 28);
+			background: #FAFAFA;
+			position: fixed;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			.pxrem(height, 100);
+			.pxrem(line-height, 100);
+			border-top: 1px solid #F3F3F3;
+			.pxrem(padding-left, 16);
+			z-index: 99;
+			p {
+				span {
+					color: @d-price;
+				}
+			}
+			a {
+				.pxrem(font-size, 36);
+				color: #fff;
+				.pxrem(padding-left, 16);
+				.pxrem(padding-right, 16);
+			}
+			.stockout {
+				background: #4A4A4A;
+			}
+			.affirm {
+				background: @m-c;
+			}
+		}
+		.page-modal {
+			position: fixed;
+			top: 0;
+			.pxrem(bottom, 100);
+			left: 0;
+			right: 0;
+			.page-bg {
+				background: #000;
+				opacity: 0.6;
+				position: absolute;
+				width: 100%;
+				top: 0;
+				bottom: 0;
+			}
+			.page {
+				background: #fff;
+				position: absolute;
+				bottom: 0;
+				width: 100%;
+				box-sizing: border-box;
+				h3 {
+					.pxrem(font-size, 32);
+					text-align: center;
+				}
+				ul {
+					background: #F8F8F8;
+					margin-top: .2rem;
+					img {
+						.pxrem(width, 43);
+						vertical-align: middle;
+						position: relative;
+						z-index: 2;
+					}
+					img:first-child {
+						.pxrem(margin-left, 10);
+					}
+					.item-right {
+						span {
+							display: inline-block;
+							text-align: center;
+							background: #fff;
+							.pxrem(width, 117);
+							.pxrem(height, 40);
+							.pxrem(line-height, 40);
+							margin: 0 -.2rem;
+						}
+						color: #4A4A4A;
+					}
+				}
+			}
+		}
+	}
+</style>

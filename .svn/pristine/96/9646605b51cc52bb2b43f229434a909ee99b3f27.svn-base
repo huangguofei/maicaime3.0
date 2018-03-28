@@ -1,0 +1,121 @@
+/**
+* author pzh 
+* day    2017-9-21
+* 供应商业务
+*/
+import {supplierAPI} from "../../api/customer"
+import publicAPI from "../../api/public"
+export default{
+	/*获取供应商列表*/
+	getSupplierList(vm) {
+		var paging = vm.pagings;
+		var params = vm.queryParams;
+		params.pageNum = paging.current;
+		params.pageSize = paging.size;
+		supplierAPI.supplierListAPI(params, (result) => {
+			vm.tableData = result.resultList;
+			paging.total = result.totalCount;
+		});
+	},
+	updateSupplierStatus(vm, row) {
+		var supplierId = row.supplierId,
+			statusId = row.statusId,
+			status = "",
+			params = {};
+		if(statusId == 5) {
+			status = 1;
+		} else if(statusId == 1) {
+			status = 0;
+		} else if(statusId == 0) {
+			status = 1;
+		}
+		params = {
+			supplierId : supplierId,
+			merchantStatus : status
+		}
+		supplierAPI.supplierAuditAPI(params, (result) => {
+			vm.$message("操作成功！");
+			row.statusId = status;
+		});
+	},
+	/*绑定区域*/
+	bindReginAction(vm, regionIds) {
+		var _that = this;
+		var params = {regionIds : regionIds, supplierId : vm.editRowInfo.supplierId};
+		if(vm.areaDialog.type == 1) {
+			params.merchantStatus = 1;
+			supplierAPI.supplierAuditAPI(params, (result) => {
+				vm.$message("操作成功！");
+				_that.getSupplierList(vm);
+				vm.areaDialog.dialogShow = false;
+			});
+		} else {
+			supplierAPI.bindRegionAPI(params, (result) => {
+				vm.$message("设置成功！");
+				vm.areaDialog.dialogShow = false;
+				_that.getSupplierList(vm);
+			});
+		}
+		
+	},
+	/*根据区域id获取分类树*/
+	getTreeByAreaId(vm, selectedRegionIds) {
+		var params = {
+			supplierId : vm.editRowInfo.supplierId,
+			selectedRegionIdStr : selectedRegionIds
+		}
+		supplierAPI.categorysByAreasAPI(params, (result)=> {
+			var disableCategoryIds = result.disableCategoryIds;
+			var selectedCategoryIds = result.selectedCategoryIds;
+			vm.categoryTree.forEach((nodes) => {
+				nodes.subCategoryList.forEach((item) => {
+					var categoryId = item.categoryId;
+					if(disableCategoryIds.length > 0) {
+						disableCategoryIds.forEach((dis) => {
+								if(dis == categoryId) {
+									item.disabled = true;
+									return;
+								}
+						});
+					}
+				});
+			});
+			vm.$refs.tree.setCheckedKeys(selectedCategoryIds);
+		});
+	},
+	/*保存区域和分类*/
+	saveAreaAndCategory(vm, params) {
+		var _that = this;
+		supplierAPI.settingBSAPI(params, (result)=> {
+			if(vm.areaDialog.type) {
+				_that.supplierAudit(vm, vm.editRowInfo.supplierId);
+			} else {
+				vm.$message("设置成功");
+				vm.areaDialog.dialogShow = false;
+				_that.getSupplierList(vm);
+			}
+			
+		});
+	},
+	/*获取所有分类*/
+	getAllCategory(vm) {
+		publicAPI.categoryAPI((result) => {
+			result.forEach((nodes) => {
+				nodes.subCategoryList.forEach((item) => {
+					item.disabled = false;
+				});
+			});
+			vm.categoryTree = result;
+		});
+	},
+	/*供应商审核*/
+	supplierAudit(vm, supplierId) {
+		var params = {
+			supplierId : supplierId
+		}
+		supplierAPI.supplierAuditAPI(params, (result) => {
+			vm.$message("审核成功并设置区域成功");
+			vm.areaDialog.dialogShow = false;
+		});
+	}
+}

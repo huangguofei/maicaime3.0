@@ -1,0 +1,183 @@
+<template>
+	<article class="order-item">
+		<section class="menu">
+			<span @click="selects('1')" :class="{active:selectIndex==1}">全部</span>
+			<span @click="selects('2')" :class="{active:selectIndex==2}">即将送达</span>
+			<span @click="selects('3')" :class="{active:selectIndex==3}">忘记收货</span>
+		</section>
+		<loading v-if="!isLoad"></loading>
+		<order-list-view v-else ref="orderList" @cancelSelectAll="cancelSelectAll" :isSelect="'true'" :isdivide="selectIndex" @updateData="updatePageData" :no-show-num="option.prodQuantity"></order-list-view>
+		<section class="check-box padding">
+			<span class="pull-left" :class="{active:isSelect}" @click="selectAll"><i></i>全选</span>
+			<a href="javascript:;" class="allSelect pull-right" @click="allDelivery">批量收货</a>
+		</section>
+		<dialogs v-if="showDialog" :title="'来自买菜么的温馨提示'" :okBtnStr="'确定批量收货'" :contentHtml="'批量收货不能修改实际到货数量<br/>您仍然确定批量收货吗？'" @offDialog="offDialog" @affirm="affirm"></dialogs>
+	</article>
+</template>
+
+<script>
+	import orderListView from 'components/order/order-list'
+	import orderApi from 'actionurl/order/order'
+	import dialogs from "components/common/dialog"
+	import scroll from "components/common/scroll"
+	import loading from 'components/common/loading'
+	import { mapGetters } from 'vuex'
+	export default {
+		data() {
+			return {
+				orderList: [],
+				isLoad: false,
+				selectIndex: 1,
+				option: {
+					pageNum: 1,
+					size: 10,
+					pages: 1,
+					total: 0,
+					orderStatus: [30, 40],
+					prodQuantity: 2
+				},
+				isSelect: false,
+				showDialog: false
+			}
+		},
+		components: {
+			orderListView,
+			scroll,
+			loading,
+			dialogs
+		},
+		computed: {
+			...mapGetters([
+				"orderType",
+				"pageNum"
+			])
+		},
+		created() {
+			this.loadData();
+		},
+		methods: {
+			updatePageData() {
+				orderApi.getOrderListData(this, (count) => {
+					this.$refs.orderList.pullingUpPage(count);
+				});
+			},
+			selectAll() {
+				this.isSelect = !this.isSelect;
+				this.$refs.orderList.selectAll(this.isSelect);
+			},
+			cancelSelectAll() {
+				this.isSelect = false;
+			},
+			allDelivery() {
+				this.$refs.orderList.countSelect((datas) => {
+					if(!datas) {
+						cJs.message("请选择批量的订单！");
+						return false;
+					}
+					this.showDialog = true;
+				});
+			},
+			affirm() { /*批量收货*/
+				var _that = this;
+				this.$refs.orderList.countSelect((datas) => {
+					orderApi.orderAllConfirmReceipt(this, datas);
+				});
+			},
+			offDialog() {
+				this.showDialog = false;
+			},
+			selects(index) {
+				this.selectIndex = index;
+//				if(this.selectIndex == 2) {
+//					this.option.orderStatus = 30;
+//				} else if(this.selectIndex == 3) {
+//					this.option.orderStatus = 40;
+//				} else {
+//					this.option.orderStatus = [30, 40];
+//				}
+				this.$store.commit("UPDATE_ORDER_LIST", []);
+				this.$store.commit("RECORD_THAT_PAGE", 1);
+				this.option.pageNum=1;
+				this.loadData();
+			},
+			loadData() {
+				if(this.option.orderStatus.toString() != this.orderType||this.selectIndex) {
+					orderApi.getOrderListData(this);
+					this.$store.commit("RECORD_LAST_SCROLL_TOP", 0);
+				} else {
+					this.isLoad = true;
+					this.option.pageNum = this.pageNum;
+				}
+			}
+		}
+	}
+</script>
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.order-item {
+		height: 100%;
+		position: relative;
+	}
+	
+	.menu {
+		margin: 2px auto;
+		color: #4a4a4a;
+		background: #FFf;
+		text-align: center;
+		span {
+			background: #F3F3F3;
+			.pxrem(height, 60);
+			.pxrem(line-height, 60);
+			display: inline-block;
+			width: 25%;
+			text-align: center;
+			margin: 5px 0;
+		}
+		span:first-child {
+			border-radius: 3px 0 0 3px;
+		}
+		span:last-child {
+			border-radius: 0 3px 3px 0;
+		}
+		.active {
+			color: @m-c;
+		}
+	}
+	
+	.check-box {
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		.clearfix();
+		background: #f8f8f8;
+		.pxrem(height, 60);
+		.pxrem(line-height, 60);
+		i {
+			display: inline-block;
+			border: 1px solid #222;
+			.pxrem(width, 30);
+			.pxrem(height, 30);
+			.pxrem(border-radius, 15);
+			.pxrem(margin-right, 10);
+			vertical-align: middle;
+			background: #fff;
+		}
+		.active {
+			i {
+				background: url(../../images/order_check.png) no-repeat -1px -1px;
+				background-size: 120% auto;
+				border-color: @m-c;
+			}
+		}
+		a {
+			background: @m-c;
+			color: #fff;
+			.pxrem(width, 150);
+			.pxrem(height, 58);
+			text-align: center;
+			border: 1px solid @m-c;
+			.pxrem(font-size, 28);
+		}
+	}
+</style>

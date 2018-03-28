@@ -1,0 +1,139 @@
+<!-- 添加到购物车 -->
+<template>
+	<span class="cart-wrap " :class="prodNum > 0 ? 'cart-active' : ''">
+		<i class="minus c-i" v-show="prodNum > 0" @click="editSkuNum(1)"></i>
+		<span class="num" v-show="prodNum > 0">
+			<input type="number" :value="prodNum.toString().indexOf('.') == -1 ? prodNum : (prodNum * 1).toFixed(1)" @change="changeNum" />
+		</span>
+		<i class="add c-i"  @click="editSkuNum(2)"></i>
+	</span>
+</template>
+<script>
+	import commonAction from "actionurl/common/common"
+	import { mapGetters } from 'vuex'
+	export default{
+		data() {
+			return {
+				prodNum : 0
+			}
+		},
+		props : ["row", "num"],
+		computed : {
+			...mapGetters({
+				cartNum : "getCartNum"
+			})
+		},
+		mounted() {
+			this.prodNum = this.num;
+		},
+		methods : {
+			editSkuNum(state) {
+				var num = this.num, 
+				cartNum = this.cartNum;
+				if(state == 1 && num >= 1) {
+					--num; 
+					this.prodNum = num;
+					if(cartNum >= 0) this.$store.commit("minusCatrNum");
+				} else if(state == 2) {
+					++ num;
+					this.prodNum = num;
+					if(cartNum >= 0) this.$store.commit("addCartNum");
+					window.$ref_parabold ? window.$ref_parabold.drop(event.target) : null;
+				}
+				this.$emit("changeProdNum", this.row, num);
+				this.debounceSkuNum(num);
+			},
+			/*防止快速操作*/
+			debounceSkuNum:_.debounce(function(num) {
+					this.updateSkuNum(num);
+			},500),
+			updateSkuNum(num) {
+				var row = this.row, _that = this;
+				if(row.specialProductId) {
+					/*活动商品*/
+					var specialProductId = row.specialProductId;
+					commonAction.addPromptCartByProd(this, specialProductId, num);
+				} else {
+					/*正常商品*/
+					var	skuId = row.productSkuId;
+					commonAction.addCartByProd(this, skuId, num, (result) => {
+						if(result && !isNaN(result)) {
+							_that.$store.commit("modificationCartNum", result);
+						}
+					});
+				}
+				
+			},
+			changeNum(event) {
+				let value = event.target.value, error = "", _that = this;
+				if(value == "") {
+					error = "数量不能为空！";
+				} else if(!cJs.checkPrice(value)) {
+					error = "数量必须为数字！";
+				} else {
+					var ary = value.split(".");
+					if(ary.length > 1) {
+						var lastVal = ary[1];
+						if(lastVal.length > 1) {
+							error = "只能保留小数一位！";
+						}
+					}
+				}
+				if(error != "") {
+					cJs.message(error);
+					event.target.value = _that.prodNum;
+					return false;
+				} else {
+					_that.prodNum = value;
+					_that.$emit("changeProdNum", this.row, value);
+					_that.updateSkuNum(value);
+				}
+				
+			}
+		}
+	}
+</script>
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.cart-wrap{
+		.pxrem(bottom, 20);
+		display: inline-block;
+		.pxrem(height, 49);
+		position:relative;
+		z-index:2;
+		.c-i{
+			float:left;
+			display: inline-block;
+			.pxrem(width, 47);
+			.pxrem(height, 47);
+			border-radius: 50%;
+			margin-top:0.5px;
+		}
+		.num{
+			float:left;
+			display: inline-block;
+			.pxrem(height, 47);
+			.pxrem(min-width, 65);
+			input{
+				text-align:center;
+				.pxrem(width, 65);
+				border:0;
+				.pxrem(font-size, 28);
+				.pxrem(line-height, 48);
+				color:#000;
+			}
+		}
+		.minus{
+			background: url(../../images/market_minus.png) no-repeat;
+			background-size: cover;
+		}
+		.add{
+			background: url(../../images/market_plus.png) no-repeat;
+			background-size: cover;
+		}
+	}
+	.cart-active{
+		border:1px solid #EEEEEE;
+		.pxrem(border-radius,80);
+	}
+</style>

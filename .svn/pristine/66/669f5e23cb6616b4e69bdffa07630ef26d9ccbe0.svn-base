@@ -1,0 +1,140 @@
+<!-- 付款方式 -->
+<template>
+<div class="payment-type" >
+	<div class="bg" @click="close" ></div>
+	<div class="type-info">
+		<header>付款方式</header>
+		<div class="pay-list pay-inte" v-if="prodType == 1">
+			<span>需要支付{{firstIntegralProd.integralPrice}}积分 + ¥{{(firstIntegralProd.extraPrice*1).toFixed(2)}}</span>
+		</div>
+		<div class="pay-list" v-else>
+			<div class="p-item">
+				<i class="p-icon"></i>
+				<div class="p-con">
+					<p class="header">余额支付</p>
+					<p class="value">可用余额：¥{{(balance * 1).toFixed(2)}}</p>
+				</div>
+				<i class="check-active"></i>
+			</div>
+		</div>
+		<footer>
+			<button @click="returnSubmitPay()">
+				确定支付<span v-if="!prodType">¥{{(totalAmount * 1).toFixed(2)}}</span>
+			</button>
+		</footer>
+	</div>
+</div>
+</template>
+<script>
+	import commonAction from "actionurl/common/common"
+	export default{
+		data(){
+			return{
+				balance : 0
+			}
+		},
+		props : ["totalAmount", "submitPay", "prodType", "firstIntegralProd"],
+		created() {
+			commonAction.getBalanceInfo(this);
+		},
+		methods : {
+			returnSubmitPay() {
+				this.submitPay();
+			},
+			close() {
+				this.$emit("closePay");
+			}
+		}
+	}
+</script>
+<style lang="less" scoped>
+@import "../../common/less/config.less";
+.p-f{
+	position: fixed;
+	top:0;
+	left:0;
+	width:100%;
+	height:100%;
+}
+.payment-type{
+	.p-f;
+	z-index:100;
+	.bg{
+		.p-f;
+		z-index:99;
+		background: rgba(0, 0, 0, 0.5);
+	}
+	.type-info{
+		background: #FFF;
+		position: absolute;
+		width:100%;
+		bottom:0;
+		z-index:101;
+		header{
+			.pxrem(height, 100);
+			.pxrem(line-height, 100);
+			.pxrem(font-size,32);
+			text-align: center;
+			border-bottom:1px solid #E9E9E9;
+		}
+		
+		.pay-list{
+			.prem(-4,20);
+			padding:@prem;
+			.p-item{
+				.prem(20,-4);
+				padding:@prem;
+				position: relative;
+				.p-icon{
+					display: inline-block;
+					.pxrem(width,80);
+					.pxrem(height,80);
+					position: absolute;
+					background: url(../../images/list_order_pay_yue.png) no-repeat;
+					background-size:cover;
+				}
+				.check-active{
+					display: inline-block;
+					position: absolute;
+					right:0;
+					.pxrem(top,45);
+					.pxrem(width,34);
+					.pxrem(height,34);
+					background: url(../../images/order_value_tick.png) no-repeat;
+					background-size:cover;
+				}
+				.p-con{
+					position: relative;
+					.pxrem(padding-left,100);
+				}
+				.header{
+					.pxrem(font-size,32);
+				}
+				.value{
+					.pxrem(font-size,24);
+					color:#666666;
+				}
+			}
+		}
+		.pay-inte{
+			text-align: center;
+			.prem(20, -4);
+			padding:@prem;
+		}
+		footer{
+			.prem(20);
+			padding:@prem;
+			button{
+				width:100%;
+				border:0;
+				background: @m-c;
+				color:#FFF;
+				.pxrem(font-size,36);
+				.pxrem(height,88);
+				.pxrem(line-height,88);
+				.pxrem(border-radius,8);
+			}
+		}
+	}
+}
+</style>

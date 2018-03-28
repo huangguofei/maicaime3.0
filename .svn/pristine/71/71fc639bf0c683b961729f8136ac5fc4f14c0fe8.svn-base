@@ -1,0 +1,111 @@
+<template>
+	<article class="dialog-page">
+		<article class="bg"></article>
+		<article class="dialog-content">
+			<header>{{title}}</header>
+			<section class="padding" v-html="contentHtml">电话122222</section>
+			<footer>
+				<a href="javascript:;" class="cancel pull-left" @click="cancel">取消</a>
+				<a href="javascript:;" class="okbtn pull-left" @click="affirm">{{okBtnStr}}</a>
+			</footer>
+		</article>
+	</article>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+				
+			}
+		},
+		props:{
+			title:{
+				default:"确认"
+			},
+			okBtnStr:{
+				default:"确认"
+			},
+			contentHtml:{
+				default:""
+			}
+		},
+		created() {},
+		wacth: {
+		},
+		methods: {
+			affirm() {
+				this.offDialog();
+				this.$emit("affirm");
+			},
+			cancel(){
+				this.offDialog();
+				this.$emit("cancel");
+			},
+			offDialog(){
+				this.$emit("offDialog");
+			}
+		}
+	}
+</script>
+
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.dialog-page {
+		position: fixed;
+		width: 100%;
+		top: 0;
+		bottom: 0;
+		z-index:99;
+		.bg {
+			position: absolute;
+			width: 100%;
+			top: 0;
+			bottom: 0;
+			background: #000;
+			opacity: 0.5;
+		}
+		.dialog-content {
+			position: absolute;
+			top: 30%;
+			left: 10%;
+			right: 10%;
+			width: 80%;
+			header {
+				background: @m-c;
+				color: #fff;
+				.pxrem(font-size, 32);
+				text-align: center;
+				border-radius: 18px 18px 0 0;
+				.pxrem(height, 100);
+				.pxrem(line-height, 100);
+			}
+			section {
+				text-align: center;
+				background: #fff;
+				.pxrem(line-height, 50);
+				.pxrem(min-height, 150);
+				.pxrem(font-size, 32);
+			}
+			footer {
+				background: #fff;
+				border-top: 1px solid #e5e5e5;
+				border-radius: 0 0 18px 18px;
+				.clearfix();
+				a {
+					width: 50%;
+					.pxrem(font-size, 32);
+					text-align: center;
+					color: #000;
+					.pxrem(height, 100);
+					.pxrem(line-height, 100);
+				}
+				.okbtn {
+					border-left: 1px solid #e5e5e5;
+					color: @m-c;
+					box-sizing: border-box;
+				}
+			}
+		}
+	}
+</style>

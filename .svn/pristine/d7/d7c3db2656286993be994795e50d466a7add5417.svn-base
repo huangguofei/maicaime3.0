@@ -1,0 +1,55 @@
+<template>
+	<article class="page-layer offter-sucess">
+		<img src="../../images/offter-icon.png" />
+		<p>您已成功下单，请到待付款出继续完成下单操作</p>
+		<a href="/order/1" class="btn" >继续完成</a>
+	</article>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+
+			}
+		},
+		props: [],
+		created() {
+
+		},
+		methods: {
+
+		},
+	}
+</script>
+
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.offter-sucess {
+		img {
+			width: 50%;
+			display: block;
+			margin: 0 auto;
+			margin-top: .5rem;
+		}
+		p{
+			margin: .3rem auto;
+			text-align: center;
+			width: 50%;
+			color: #a4a4a4;
+		}
+		a{
+			.pxrem(font-size,24);
+			padding-left: .1rem;
+			padding-right: .1rem;
+			margin: 0 auto;
+			display: block;
+			color:@m-c;
+			background:#F3F3F3;
+			width: 1rem;
+			border: 1px solid @m-c;
+			.pxrem(border-radius,5);
+			text-align: center;
+		}
+	}
+</style>

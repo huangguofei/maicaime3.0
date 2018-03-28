@@ -1,0 +1,15 @@
+/**
+ * author hgf
+ * day    2017-11-8
+ * 个人中心接口
+ */
+import {orderAPI} from "apiurl/user"
+ export default{
+ 		/*获取订单数量*/
+ 		getOrderNum(vm) {
+ 			orderAPI.orderNumAPI((result) => {
+ 				vm.orderNum = result.newOrder;
+ 			});
+ 		},
+ 		
+ }

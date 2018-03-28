@@ -1,0 +1,44 @@
+/**
+ * author 余额
+ * day    2017-11-9
+ * 余额业务处理
+ */
+import {balanceAPI} from "apiurl/user"
+import publicAPI from "apiurl/public"
+export default{
+	/*获取充值活动*/
+	getActivityList(vm) {
+		var params = {
+			activityType : 4
+		}
+		balanceAPI.rechargeActivityAPI(params, (result) => {
+			vm.activityList = result.resultList;
+		});
+	},
+	/*充值*/
+	saveRechargeAmount(vm) {
+		var params = {
+			amount : vm.amount,
+			specialOfferId : vm.specialOfferId
+		}
+		balanceAPI.rechargeAmountAPI(params, (result) => {
+			vm.balance = result;
+			cJs.message("充值成功");
+		});
+	},
+	/*余额支付*/
+	payByBalance(vm, orderId) {
+		if(vm.orderId == 0) {
+			cJs.message("订单异常");
+			return false;
+		}
+		var params = {
+			orderId : orderId
+		}
+		publicAPI.payByBalance(params, (result) => {
+			vm.paySuccess = 1
+		},(error) => {
+			vm.paySuccess = 2;
+		});
+	},
+}

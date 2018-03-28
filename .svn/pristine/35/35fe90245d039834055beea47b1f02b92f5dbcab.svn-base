@@ -1,0 +1,138 @@
+<!-- 限时商品 -->
+<template>
+	<div class="prompt-prod">
+		<div class="item" v-for="p in prodData">
+			<i class="prod-img"><router-link :to="{name : 'market.detail'}"><img :src="p.skuImage"></router-link></i>
+			<div class="prod-info">
+				<p class="prod-name">{{p.skuName}}</p>
+				<!-- <p class="inventory">库存：</p> -->
+				<p class="p-info">
+					<span class="price">¥{{(p.promotionPrice * 1).toFixed(2)}}/{{p.skuUnit}}</span>
+					<span class="orgin-price" v-if="p.skuPrice">¥{{(p.skuPrice * 1).toFixed(2)}}</span>
+					<span class="supplier">{{p.supplierName}}</span>
+					<add-cart v-if="activityStart == 1" :row="p" :num="p.skuQuantity" class="cart" @changeProdNum="changeProdNum"></add-cart>
+					<button class="btn btn-dis" v-if="activityStart == 0">即将开放</button>
+					<button class="btn btn-dis" v-if="activityStart == 2">已结束</button>
+				</p>
+				
+			</div>
+		</div>
+		<cart-parabola ref="parabola">
+			 <div class="inner inner-hook">
+             </div>
+		</cart-parabola>
+	</div>
+</template>
+<script>
+	import cartParabola from "components/common/cart-parabola"
+	import addCart from "components/common/add-cart"
+	export default{
+		props : ["prodData", "activityStart"],
+		components : {
+			addCart,
+			cartParabola
+		},
+		methods : {
+			changeProdNum(row, num) {
+				row.skuQuantity = num;
+			}
+		}
+	}
+</script>
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.prompt-prod{
+		.prem(-4, 20);
+		padding:@prem;
+		background:#FFF;
+		height:100%;
+		.item{
+			position: relative;
+			.prem(20, 0);
+			padding:@prem;
+			border-bottom:0.5px solid #E9E9E9;
+			.prod-img{
+				position: absolute;
+				display: inline-block;
+				.pxrem(width,150);
+				.pxrem(height,150);
+				border:0.5px solid #E5E5E5;
+				display: table-cell;
+				vertical-align: middle;
+				img{
+					max-width: 100%;
+					max-height: 100%;
+					text-align: center;
+					vertical-align: middle;
+				}
+			}
+			.prod-info{
+
+				.pxrem(height, 150);
+				.pxrem(padding-left, 170);
+				.p-info{
+					.pxrem(margin-top, 45);
+				}
+				.prod-name{
+					color:@p-t-c;
+					.pxrem(font-size, 32);
+					.pxrem(min-height, 50);
+					.pxrem(width, 500);
+					overflow: hidden;
+					text-overflow:ellipsis;
+					white-space: nowrap;
+				}
+				.inventory{
+					color:#666;
+					display: inline-block;
+					.prem(2,10);
+					padding:@prem;
+					background: #EEE;
+					.pxrem(border-radius, 100)
+				}
+				.price{
+					.pxrem(font-size, 36);
+				}
+				.orgin-price{
+					.pxrem(font-size, 28);
+				}
+				.supplier{
+					float:right;
+					color:#222222;
+					.pxrem(width, 240);
+					overflow: hidden;
+					text-overflow:ellipsis;
+					white-space: nowrap;
+					&:before{
+						content : "";
+						display: inline-block;
+						position: relative;
+						.pxrem(top, 4);
+						.pxrem(margin-right, 4);
+						.pxrem(width, 34);
+						.pxrem(height, 30);
+						background: url(../../images/home_shuaihuo_store.png) no-repeat;
+						background-size:cover;
+					}
+				}
+				.cart,.btn-dis{
+					position: absolute;
+					right:0;
+					.pxrem(bottom,80);
+				}
+				.btn-dis{
+					background: #999999;
+					border-color:#999999;
+				}
+			}
+		}
+		.inner{
+			.pxrem(width, 30);
+			.pxrem(height, 30);
+			border-radius: 50%;
+			transition: all 0.4s linear;
+			overflow: hidden;
+			background: @m-c;
+		}
+	}
+</style>

@@ -1,0 +1,255 @@
+<!-- 注册 -->
+<template>
+	<div class="page-layers">
+		
+		<article class="register">
+			<scroll 
+				:listenScroll="true"
+				:probe-type="probeType"
+				@scroll="scroll"
+				ref="scroll"
+				:listenBeforeScroll = "true"
+				@beforeScrollStart="beforeScrollStart"
+				>
+				<header></header>
+				<article class="register-status" ref="items">
+					<section class="one-status" @click="backOne">
+						<img src="../../images/register_one_y.png" />
+						<p class="action"></p>
+					</section>
+					<section class="two-status" @click="changeStatus">
+						<p :class="{action:fromStatus!=1}"></p>
+						<img src="../../images/register_two_n.png" :class="{hide:fromStatus!=1}" />
+						<img src="../../images/register_two_y.png" :class="{hide:fromStatus==1}" />
+					</section>
+				</article>
+				<article class="form">
+					<register-one v-show="fromStatus==1" ref="register1" @scrollView="scrollView"></register-one>
+					<register-two v-show="fromStatus==2"
+						 ref="register2"
+						 @scrollView="scrollView" 
+						 @selectCity="selectCity"
+						 :locationData="locationData"></register-two>
+				</article>
+				<article class="register_fooler">
+					<a href="javascript:void(0)" class="btn"  id="btn" @click="changeStatus" >{{fromStatus==1?'下一步':'提交信息'}}</a>
+					<p>已有账号，
+						<!-- <router-link class="login" to="/login/">立即登录</router-link> -->
+						<a href="javascript:void(0)" class="login" @click="jumpLogin">立即登录</a>
+					</p>
+				</article>
+			</scroll>
+			<city-agent ref="cityselect" @selectAgent="selectAgent" :locationData="locationData"></city-agent>
+		</article>
+	</div>
+</template>
+<script>
+	import registerOne from 'components/login/register-one'
+	import registerTwo from 'components/login/register-two'
+	import registerApi from 'actionurl/login/login'
+	import scroll from "components/common/scroll"
+	import cityAgent from 'components/common/city-agent'
+	import MD5 from '../../../static/md5'
+	export default {
+		data() {
+			return {
+				registerData: {},
+				fromStatus: 1,
+				locationData: {
+					areaName : "请选择",
+					areaId : ""
+				},
+				probeType : 3
+			}
+		},
+		components: {
+			registerOne,
+			registerTwo,
+			scroll,
+			cityAgent
+		},
+		mounted() {
+			var regionId = this.$route.query.regionId;
+			if(regionId) {
+				localStorage.setItem("regionId", regionId)
+			}
+		},
+		methods: {
+			changeStatus(event) {
+				event.stopPropagation();
+				if(this.fromStatus == 1) {
+					this.registerData = {
+						mobile: this.$refs.register1.mobile,
+						verificationCode: this.$refs.register1.verificationCode,
+						password: MD5(this.$refs.register1.password)
+					}
+					if(!this.registerData.mobile) {
+						cJs.message("手机号不能为空！");
+						return false;
+					}
+					if(!this.registerData.verificationCode) {
+						cJs.message("验证码不能为空！");
+						return false;
+					}
+					if(!this.registerData.password) {
+						cJs.message("密码不能为空！");
+						return false;
+					}
+					if(!cJs.checkMobile(this.registerData.mobile)) {
+						cJs.message("手机号格式不正确！");
+						return false;
+					}
+					/*临时存储*/
+					this.fromStatus = 2;
+				} else if(this.fromStatus == 2) {
+					this.registerData.purchaserName = this.$refs.register2.purchaserName;
+					this.registerData.contact = this.$refs.register2.contact;
+					this.registerData.address = this.$refs.register2.address;
+					this.registerData.areaId = this.locationData.areaId;
+					this.registerData.longitude = this.$refs.register2.longitude;
+					this.registerData.dimension = this.$refs.register2.dimension;
+					if(!this.registerData.purchaserName) {
+						cJs.message("店铺名不能为空！");
+						return false;
+					}
+					if(!this.registerData.contact) {
+						cJs.message("联系人不能为空！");
+						return false;
+					}
+					if(!this.registerData.areaId) {
+						cJs.message("请选择地址！");
+						return false;
+					}
+					if(!this.registerData.address) {
+						cJs.message("地址不能为空！");
+						return false;
+					}
+					//提交信息
+					registerApi.register(this);
+				}
+
+			},
+			registerInfo(data) {
+				console.log(data)
+			},
+			backOne() {
+				this.fromStatus = 1;
+			},
+			backTwo() {
+				this.fromStatus = 2;
+			},
+			selectCity() {
+				//this.$refs.cityselect.choseAdd();
+				var _that = this;
+				setTimeout(function() {
+					_that.$refs.cityselect.show = true;
+				}, 100);
+				
+			},
+			getCityData(data){
+				this.locationData.provinceId=data.provinceId;
+				this.locationData.provinceName=data.provinceName;
+				this.locationData.cityId=data.cityId;
+				this.locationData.cityName=data.cityName;
+				this.locationData.countyId=data.countyId;
+				this.locationData.countyName=data.countyName;
+			},
+			scroll(pos) {
+				
+			},
+			scrollView() {
+				if(cJs.isAndroid()) {
+					var _that = this;
+					setTimeout(function() {
+						_that.$refs.scroll.scrollToElement(_that.$refs.items, 100);
+					}, 1000);
+				}
+			},
+			beforeScrollStart() {
+				let inputList = this.$refs.items.querySelectorAll('.text-input');
+		        inputList.forEach((item) => {
+		           item.blur()
+		        })
+			},
+			jumpLogin() {
+				this.$router.push({
+					name : "login.index"
+				});
+			},
+			selectAgent(item) {
+				this.locationData.areaId = item.areaId;
+				this.locationData.areaName = item.provinceName + item.cityName + item.areaName;
+			}
+		}
+	}
+</script>
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.page-layer {
+		background: #fff;
+	}
+	
+	.rem(54);
+	.register {
+		height:100%;
+		padding: .5rem .7rem;
+		header {
+			.pxrem(height, 293);
+			background: url(../../images/register-header.png);
+			background-size: cover;
+		}
+		.register-status {
+			margin: .5rem 0 0;
+			.pxrem(height, 50);
+			section {
+				width: 50%;
+				float: left;
+				height: 30px;
+				position: relative;
+				p {
+					height: 2px;
+					.pxrem(margin-top, 15);
+					background: #D8D8D8;
+				}
+				p.action {
+					background: @m-c;
+				}
+				img {
+					position: absolute;
+					top: 0px;
+					width: @rem;
+				}
+			}
+			.two-status {
+				text-align: right;
+				img{
+					right: 0;
+				}
+			}
+		}
+		.register_fooler {
+			.btn {
+				display: inline-block;
+				margin: .5rem 0 0;
+				border: 0;
+				background: @m-c;
+				color: #fff;
+				width: 100%;
+				.pxrem(font-size, 36);
+				.pxrem(border-radius, 44);
+				.pxrem(height, 88);
+				.pxrem(line-height, 88);
+				text-align: center;
+			}
+			p {
+				color: #666666;
+				text-align: center;
+				margin: .3rem 0;
+				.pxrem(font-size, 28);
+				a {
+					color: @m-c;
+				}
+			}
+		}
+	}
+</style>

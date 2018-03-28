@@ -1,0 +1,78 @@
+<template>
+	<article class="page-layer deposit-list">
+		<article class="list bk-white padding">
+			<section class="item" v-for="(v,k) in depositList" @click="lookDetails(v)">
+				<section class="pull-left">
+					<h3>{{v.bankName}}</h3>
+					<span class="time">{{v.timeCreated}}</span>
+				</section>
+				<span class="price pull-right">¥{{v.amount}}</span>
+				<span class="status" :class="{active:v.statusId==-1}">{{v.statusId==-5?"申请中":v.statusText}}</span>
+			</section>
+		</article>
+	</article>
+</template>
+
+<script>
+	import depositServer from 'actionurl/user/deposit'
+	export default {
+		data() {
+			return {
+				depositList:[]
+			}
+		},
+		created() {
+			depositServer.getDepositList(this);
+		},
+		methods: {
+			lookDetails(data) {
+				this.$router.push({
+					name: "user.depositDetails",
+					params: {
+						id: data.withdrawRecordId
+					}
+				})
+			}
+		}
+	}
+</script>
+
+<style lang="less" scoped>
+	@import "../../../common/less/config.less";
+	.list {
+		.item {
+			position:relative;
+			.clearfix();
+			.pxrem(height, 90);
+			border-bottom: 1px solid #eee;
+			.pxrem(padding-bottom, 16);
+			.pxrem(padding-top, 16);
+			h3 {
+				.pxrem(font-size, 32);
+				.pxrem(margin-bottom, 10);
+			}
+			.time {
+				.pxrem(font-size, 24);
+				color: #666;
+			}
+			.price {
+				.pxrem(font-size, 38);
+				color: @m-c;
+				.pxrem(line-height, 90);
+			}
+			.status{
+				position:absolute;
+				.pxrem(top,0);
+				.pxrem(right,0);
+				.pxrem(font-size,24);
+				color:#1EC551;
+			}
+			.active{
+				color:red;
+			}
+		}
+		.item:last-child {
+			border: 0;
+		}
+	}
+</style>

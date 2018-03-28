@@ -1,0 +1,156 @@
+<!-- 商品分类 -->
+<template>
+	<page-layer :narData="narData" classs="back-color">
+		<el-row class="search-wrap">
+			 <el-col :span="24" style="margin-right:20px;">
+		  	 	<label class="title">{{detailInfo.supplierName}}商品分类</label>
+		  	 	<el-button  @click="addCategory" class="btn-add" style="float:right">添加分类</el-button>
+		  	 </el-col>
+		</el-row>
+		<el-table
+	      :data="tableData"
+	      style="width: 100%">
+	       <el-table-column
+		      type="index"
+		      width="50">
+		    </el-table-column>
+	      <el-table-column
+	        prop="categoryName"
+	        label="分类名称"
+	        >
+	      </el-table-column>
+	      <el-table-column
+	        prop="parentCategoryName"
+	        label="父分类"
+	        >
+	      </el-table-column>
+	      
+	      <el-table-column
+	        label="操作"
+	        width="240">
+	        <template scope="scope">
+				<el-button @click="setCategory(scope.row)">设置分类</el-button>
+			</template>
+	      </el-table-column>
+	    </el-table>
+	    <el-pagination
+	      @current-change="handleCurrentChange"
+	      :current-page.sync="pagings.current"
+	      :page-size="pagings.size"
+	      layout="total, prev, pager, next"
+	      :total="pagings.total">
+	    </el-pagination>
+
+	    <el-dialog
+		  title="选择分类"
+		  :visible.sync="dialogVisible"
+		  size="medium"
+		  :before-close="handleClose">
+		  <span>
+  		 	<el-cascader
+			    :options="allCategory"
+			    v-model="selectOptions"
+			    :props="props"
+			    filterable
+			    @change="handleChange">
+			  </el-cascader>
+		  </span>
+		  <span slot="footer" class="dialog-footer">
+		    <el-button @click="dialogVisible = false">取 消</el-button>
+		    <el-button type="primary" @click="submitForm">确 定</el-button>
+		  </span>
+		</el-dialog>
+	</page-layer>
+</template>
+<script>
+	import categoryAction from "action/customer/category"
+	import pageLayer from "components/common/page-layer"
+    export default {
+      data() {
+        return {
+    	 narData : [
+    	  	{
+    	  		name : "供应商商品分类",
+    	  		router : ""
+    	  	}
+    	  ],
+    	  detailInfo : {},
+          tableData: [],
+          pagings : {
+          	current : 1,
+          	size : 20,
+          	pages : 1,
+          	total : 0
+          },
+          supplierId : "",
+          allCategory : [],
+          dialogVisible: false,
+          subCategoryId : "",
+          props : {
+          		label : "categoryName",
+          		value : "categoryId",
+          		children : "subCategoryList"
+          },
+          selectOptions : [],
+          relationId : ""
+        }
+      },
+      created() {
+      		this.supplierId = this.$route.query.supplierId;
+      		if(!this.supplierId) {
+      			this.$router.push({
+      				name : "customer.supplier.list"
+      			});
+      		}
+      		categoryAction.getSupplierDefault(this);
+      		categoryAction.getCatergoryList(this);
+      },
+      mounted() {
+      		categoryAction.getAllProdCatrgory(this);
+      },
+      components : {
+      		pageLayer
+      },
+      methods : {
+      		handleCurrentChange(value) {
+				this.pagings.current = value;
+				categoryAction.getCatergoryList(this);
+			},
+			addCategory() {
+				this.selectOptions = [];
+				this.relationId = "";
+				this.dialogVisible = true;
+			},
+			setCategory(row) {
+				this.relationId = row.relationId;
+				this.selectOptions = [];
+				this.dialogVisible = true;
+			},
+			handleChange(value) {
+				this.subCategoryId = value[1];
+			},
+			handleClose() {
+				this.dialogVisible = false;
+			},
+			submitForm() {
+				if(this.subCategoryId == "") {
+					this.$message("请选择分类");
+					return false;
+				}
+				var params = {
+					supplierId : this.supplierId,
+					subCategoryId : this.subCategoryId
+				}
+				if(this.relationId) {
+					params.relationId = this.relationId;
+				}
+				categoryAction.saveCategoryInfo(this, params);
+			}
+      }
+    }
+  </script>
+  <style lang="less" scoped>
+  	.title{
+  		font-size : 24px;
+  	}
+  </style>

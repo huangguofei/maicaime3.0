@@ -1,0 +1,141 @@
+<!-- 登录 -->
+<template>
+	<div class="page-layers">
+		<article class="login">
+		<scroll 
+			:listenScroll="true"
+			:listenBeforeScroll = "true"
+			:probe-type="probeType"
+			@scroll="scroll"
+			ref="scroll"
+			@beforeScrollStart="beforeScrollStart"
+			>
+			<header>
+				<!-- <img src="../../images/Rectangle 18@2x.png" /> -->
+			</header>
+			<article ref="items">
+				<section class="from-item">
+					<img src="../../images/login_phone.png" />
+					<input type="tel" name="phone" id="phone" @focus="scrollView" ref="mob" v-model="userName" class="text-input" autocomplete maxlength="11" placeholder="请输入手机号码" />
+				</section>
+				<section class="from-item">
+					<img src="../../images/login_secret.png" />
+					<input type="password" name="psw" id="psw" @focus="scrollView" ref="psw" v-model="password" class="text-input" placeholder="请输入密码" />
+				</section>
+				<section class="from-item">
+					<button id="loginBtn" @click="login" >登录</button>
+				</section>
+				<section class="from-item">
+					<a href="javascript:void(0)" class="register" @click="jumpRegister">注册</a>
+					<a href="javascript:void(0)" class="findpsw" @click="yumpFindPwd">忘记密码</a>
+					<!-- <router-link class="register" to="/register/">注册</router-link>
+					<router-link class="findpsw" to="/findpsw/">忘记密码</router-link> -->
+				</section>
+			</article>
+			
+			</scroll>
+			<select-shop v-if="isSelectShop" :userInfo="userInfo" :shop-list="shopList"></select-shop>
+		</article>
+		
+	</div>
+</template>
+<script>
+	import loginApi from "actionurl/login/login"
+	import selectShop from "components/login/select-shop"
+	import scroll from "components/common/scroll"
+	import MD5 from "../../../static/md5.js"
+	export default {
+		data() {
+			return {
+				userName: "",
+				password: "",
+				loginData: null,
+				isSelectShop: false,
+				shopList:[],
+				userInfo : {},
+				probeType : 3
+			}
+		},
+		mounted() {
+			var regionId = this.$route.query.regionId;
+			if(regionId) {
+				localStorage.setItem("regionId", regionId)
+			}
+		},
+		methods: {
+			login() {
+				if(!this.userName) {
+					cJs.message("手机号不能为空！");
+					return false;
+				}
+				if(!this.password) {
+					cJs.message("密码不能为空！");
+					return false;
+				}
+				if(!cJs.checkMobile(this.userName)) {
+					return false;
+				}
+				this.userInfo = {
+					"userName": this.userName,
+					"password": MD5(this.password)
+				}
+				loginApi.login(this, this.userInfo);
+			},
+			scroll(pos) {
+				
+			},
+			scrollView() {
+				if(cJs.isAndroid()) {
+					var _that = this;
+					setTimeout(function() {
+						_that.$refs.scroll.scrollToElement(_that.$refs.items, 100);
+					}, 1000);
+				}
+			},
+			beforeScrollStart(e) {
+				let inputList = this.$refs.items.querySelectorAll('.text-input');
+		        inputList.forEach((item) => {
+		           item.blur()
+		        })
+			},
+			jumpRegister() {
+				this.$router.push({
+					name : "login.register"
+				});
+			},
+			yumpFindPwd() {
+				this.$router.push({
+					name : "login.findpsw"
+				});
+			}
+		},
+		components: {
+			selectShop,
+			scroll
+		}
+	}
+</script>
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.login {
+		height: 100%;
+		article {
+			margin: 1rem .5rem;
+		}
+		header {
+			.pxrem(height, 460);
+			background: url(../../images/login-header.png);
+			background-size: cover;
+			img {
+				width: 100%;
+				height: auto;
+			}
+		}
+		.register {
+			float: left;
+		}
+		.findpsw {
+			float: right;
+		}
+	}
+</style>

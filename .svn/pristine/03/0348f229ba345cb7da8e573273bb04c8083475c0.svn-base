@@ -1,0 +1,89 @@
+<!-- 限时商品 -->
+<template>
+	<div class="prompt-prod">
+		<div class="item" v-for="p in 6">
+			<i class="prod-img"><router-link :to="{name : 'market.detail'}"><img src=""></router-link></i>
+			<div class="prod-info">
+				<router-link :to="{name : 'market.detail'}"><p class="prod-name">优质大白菜</p></router-link>
+				<p class="inventory">库存：40件</p>
+				<p>
+					<span class="price">¥2.02/斤</span>
+					<span class="orgin-price" >¥3.20</span>
+					<span class="supplier">农家爱联市场</span>
+				</p>
+				
+			</div>
+		</div>
+	</div>
+</template>
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.prompt-prod{
+		.prem(-4, 20);
+		padding:@prem;
+		background:#FFF;
+		.item{
+			position: relative;
+			.prem(20, 0);
+			padding:@prem;
+			border-bottom:0.5px solid #E9E9E9;
+			.prod-img{
+				position: absolute;
+				display: inline-block;
+				.pxrem(width,150);
+				.pxrem(height,150);
+				border:0.5px solid #E5E5E5;
+				display: table-cell;
+				vertical-align: middle;
+				img{
+					max-width: 100%;
+					max-height: 100%;
+					text-align: center;
+					vertical-align: middle;
+				}
+			}
+			.prod-info{
+
+				.pxrem(height, 150);
+				.pxrem(padding-left, 170);
+				.prod-name{
+					color:@p-t-c;
+					.pxrem(font-size, 32);
+					.pxrem(min-height, 60);
+				}
+				.inventory{
+					color:#666;
+					display: inline-block;
+					.prem(2,10);
+					padding:@prem;
+					background: #EEE;
+					.pxrem(border-radius, 100)
+				}
+				.price{
+					color:@p-p-c;
+					.pxrem(font-size, 36);
+				}
+				.orgin-price{
+					color:@p-o-c;
+					.pxrem(font-size, 28);
+					text-decoration:line-through;
+				}
+				.supplier{
+					float:right;
+					color:#222222;
+					&:before{
+						content : "";
+						display: inline-block;
+						position: relative;
+						.pxrem(top, 4);
+						.pxrem(margin-right, 4);
+						.pxrem(width, 30);
+						.pxrem(height, 30);
+						background: url(../../images/home_shuaihuo_store.png) no-repeat;
+						background-size:cover;
+					}
+				}
+			}
+		}
+	}
+</style>

@@ -1,0 +1,78 @@
+/**
+ * author pzh 
+ * day    2017-9-27
+ * 搜索业务接口
+ */
+ import {searchAPI} from "apiurl/index"
+ export default{
+ 	/*获取关键字列表*/
+ 	getKeyDownList(vm) {
+ 		searchAPI.searchKeyWordAPI((result) => {
+ 			vm.searchList = result
+		});
+ 	},
+ 	/*搜索商品*/
+ 	getSearchProdList(vm,callback) {
+ 		var option = vm.option, _that = this;
+ 		searchAPI.searchProductAPI(option, (result) => {
+ 			vm.load = false;
+ 			try{
+ 				var jsonData = JSON.parse(result);
+ 				if(jsonData.status == "OK") {
+ 					var items = jsonData.result.items;
+ 					var len = items.length;
+ 					if(len > 0) {
+ 						++ option.pageIndex;
+ 						var prodIds = ""
+ 						items.map((item, key) => {
+							prodIds += item.product_sku_id;
+							if(len != key + 1) {
+								prodIds += ","
+ 							}
+	 						/*item.skuImage = item.sku_image;
+	 						item.skuName = item.sku_name;
+	 						item.skuQuantity = 0;
+	 						item.skuPrice = item.sku_price;
+	 						item.skuUnit = item.sku_unit;*/
+	 						_that.queryProdsByProdIds(prodIds);
+	 					});
+ 					}
+ 				}
+ 			}catch(e) {}
+		},() => {
+			vm.load = false;
+		});
+ 	},
+ 	/*查询关键字*/
+ 	queryKeyword(vm) {
+ 		var params = {
+ 			keyword : vm.keyword
+ 		}
+ 		searchAPI.searchSuggestAPI(params, (result)=> {
+ 			try{
+ 				var data = JSON.parse(result);
+ 				if(data.suggestions.length > 0) {
+ 					vm.layer = true;
+ 				}
+ 				vm.keys = data.suggestions;
+ 			}catch(e) {
+ 				vm.keys = [];
+ 				vm.layer = false;
+ 			}
+ 		})
+ 	},
+ 	/*根据商品id查询商品*/
+ 	queryProdsByProdIds(vm, prodIds) {
+ 		if(!prodIds) return vm.prodList;
+ 		var params = {
+ 			productId : prodIds
+ 		}
+ 		searchAPI.prodListByProdIdsAPI(params, (result) => {
+ 			var len = result.length;
+ 			if(len > 0) {
+ 				vm.prodList = vm.prodList.concat(result);
+ 			}
+			callback ? callback(len) : "";
+ 		});
+ 	}
+ }

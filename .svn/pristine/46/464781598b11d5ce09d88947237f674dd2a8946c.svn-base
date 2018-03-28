@@ -1,0 +1,24 @@
+/**
+ * hgf 2017年11月1日09:29:22
+ */
+import https from "../axios/https"
+/*优惠活动*/
+export const activityAPI = {
+	/*获取活动列表*/
+	activityListAPI: (...v) => https.commAjax(cJs.apiDataReturnParams("get", "/special_offer/list", v)),
+}
+/*优惠券*/
+export const ticketAPI = {
+	/*获取活动列表*/
+	ticketListAPI: (...v) => https.commAjax(cJs.apiDataReturnParams("get", "/coupon/list", v)),
+} /*热门搜索*/
+export const searchAPI = {
+	/*获取搜索列表*/
+	searchListAPI: (...v) => https.commAjax(cJs.apiDataReturnParams("get", "/keyword/list", v)),
+	/*新增搜索*/
+	searchNewAPI: (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/keyword/add", v)),
+	/*编辑搜索*/
+	searchEditAPI: (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/keyword/edit", v)),
+	/*删除搜索*/
+	searchDeleteAPI: (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/keyword/del", v)),
+}

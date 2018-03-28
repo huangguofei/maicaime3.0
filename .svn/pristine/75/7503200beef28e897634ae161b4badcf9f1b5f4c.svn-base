@@ -1,0 +1,32 @@
+/*路由*/
+import Vue from 'vue'
+import VueRouter from 'vue-router'
+import CommonJs from '../common/js/common'
+import OrderRouter from './order'
+import UserRouter from './user'
+import QuoteRouter from './quote'
+import CustomerRouter from './customer'
+import FoodRouter from './food'
+import LoginRouter from './login'
+Vue.use(VueRouter);
+
+window.cJs = CommonJs;
+cJs.adaptiveRem();
+
+const routes = [];
+/*合并路由配置*/
+const routesArray = routes.concat(OrderRouter.router).
+					concat(UserRouter.router).
+					concat(QuoteRouter.router).
+					concat(CustomerRouter.router).
+					concat(LoginRouter.router).
+					concat(FoodRouter.router);
+export const router = new VueRouter({
+	mode : "history",
+	base: __dirname,
+	routes : routesArray
+})
+
+new Vue({
+	router
+}).$mount("#app")

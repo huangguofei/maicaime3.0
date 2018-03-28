@@ -1,0 +1,52 @@
+/**
+ * author pzh
+ * day    2017-9-27
+ * 购物车业务
+ */
+ import {ordersAPI} from "apiurl/often"
+ import publicAPI from "apiurl/public"
+ export default{
+ 		/*获取订单信息*/
+ 		getOrdersInfo(vm) {
+ 			ordersAPI.cartToOrderDataAPI((result) => {
+ 				vm.addressInfo = result.address;
+ 				vm.supplierProd = result.list;
+ 			});
+ 		},
+ 		/*提交订单信息*/
+ 		saveOrdersInfo(vm) {
+ 			var params = {};
+ 			params.addressId = vm.addressInfo.addressId;
+ 			params.invoiceType = 1;
+ 			params.device = 2;
+ 			params.deliveryWay = 100;
+ 			params.deliveryEndTime = "2017-09-28 17:30:00";
+ 			params.stockoutType = 1;
+ 			params.list = [];
+ 			var len = vm.supplierProd.length, list = "";
+ 			for(var i = 0; i < len; i++) {
+ 				var supplierId = vm.supplierProd[i].supplierId;
+ 				params.list["'" + supplierId +"'"] = "备注";
+ 			}
+ 			ordersAPI.cartSubmitOrderAPI(params, (result) => {
+ 				vm.totalAmount = result.totalAmount;
+ 				vm.orderId = result.orderId;
+ 				vm.payShow = true;
+ 			});
+ 		},
+ 		/*余额支付*/
+ 		payByBalance(vm) {
+ 			if(vm.orderId == 0) {
+ 				cJs.message("订单异常");
+ 				return false;
+ 			}
+ 			var params = {
+				orderId : vm.orderId
+ 			}
+ 			publicAPI.payByBalance(params, (result) => {
+ 				vm.$router.push({
+ 					name : "often.orders.success"
+ 				});
+ 			});
+ 		}
+ }

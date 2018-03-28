@@ -1,0 +1,16 @@
+/**
+ * author 黄hgf 
+ * day    2017-9-25
+ * 登录注册模块接口
+ */
+import https from "httpurl/https"
+export default {
+	/*登录*/
+	loginAPI: (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/user/login", v)),
+	/*注册*/
+	registerAPI:(...v) => https.commAjax(cJs.apiDataReturnParams("post", "/user/register", v)),
+	/*选择店铺*/
+	selectShopAPI:(...v) => https.commAjax(cJs.apiDataReturnParams("post", "/user/auditSwitch", v)),
+	/*找回密码*/
+	findPswAPI:(...v) => https.commAjax(cJs.apiDataReturnParams("post", "/api/common/pwd/forgetPwd", v),"orginUrl"),
+}

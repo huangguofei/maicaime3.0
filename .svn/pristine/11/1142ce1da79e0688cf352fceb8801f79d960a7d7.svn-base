@@ -1,0 +1,252 @@
+<!-- 流水信息 -->
+<template>
+	<page-layer :narData="narData" classs="back-color">
+		<el-form :inline="true" ref="form" :model="queryParams" label-width="80px" style='padding-top: 10px;'>
+			<el-form-item label="服务站">
+				<el-select v-model="queryParams.agentId" placeholder="服务站">
+					<el-option v-for="item in agentList" :key="item.agentId" :label="item.agentName" :value="item.agentId">
+					</el-option>
+				</el-select>
+			</el-form-item>
+			<el-form-item label="商户类型">
+				<el-select v-model="queryParams.merchantTypeId" placeholder="商户类型">
+					<el-option v-for="item in shopType" :key="item.value" :label="item.name" :value="item.value">
+					</el-option>
+				</el-select>
+			</el-form-item>
+			<el-form-item label="交易类型">
+				<el-select v-model="queryParams.tradeType" placeholder="交易类型">
+					<el-option v-for="item in dealType" :key="item.value" :label="item.name" :value="item.value">
+					</el-option>
+				</el-select>
+			</el-form-item>
+			<el-form-item label="支付方式">
+				<el-select v-model="queryParams.paymentType" placeholder="支付方式">
+					<el-option v-for="item in payType" :key="item.value" :label="item.name" :value="item.value">
+					</el-option>
+				</el-select>
+			</el-form-item>
+			<el-form-item label="结算状态">
+				<el-select v-model="queryParams.status" placeholder="结算状态">
+					<el-option v-for="item in statusType" :key="item.value" :label="item.name" :value="item.value">
+					</el-option>
+				</el-select>
+			</el-form-item>
+			<el-form-item label="钱包类型">
+				<el-select v-model="queryParams.walletType" placeholder="钱包类型">
+					<el-option v-for="item in walletType" :key="item.value" :label="item.name" :value="item.value">
+					</el-option>
+				</el-select>
+			</el-form-item>
+			<el-form-item label="交易时间">
+				<el-date-picker v-model="searchDate" format="yyyy-MM-dd HH:mm" @change="changeTime" type="datetimerange" unlink-panels :picker-options="pickerOptions" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" align="right">
+				</el-date-picker>
+			</el-form-item>
+			<el-form-item label="交易号">
+				<el-input v-model="queryParams.paymentId"></el-input>
+			</el-form-item>
+			<el-form-item label="关键字">
+				<el-input v-model="queryParams.keyword"></el-input>
+			</el-form-item>
+			<el-form-item>
+				<el-button type="primary" style="margin-left:20px;" @click="queryInfo()">查询</el-button>
+			</el-form-item>
+		</el-form>
+		<el-table :data="tableDatas" style="width: 100%">
+			<el-table-column type="index" width="60">
+			</el-table-column>
+			<el-table-column prop="refId" label="订单号" width="190">
+			</el-table-column>
+			<el-table-column label="商户信息" width="150">
+				<template scope="scope">
+					<p>{{scope.row.merchantName }}</p>
+					<p>{{scope.row.merchantMobile }}</p>
+				</template>
+			</el-table-column>
+			<el-table-column prop="merchantTypeText" label="商户类型">
+			</el-table-column>
+			<el-table-column prop="typeText" label="交易类型">
+			</el-table-column>
+			<el-table-column prop="statusText" label="状态">
+			</el-table-column>
+			<el-table-column prop="walletTypeText" label="钱包类型">
+			</el-table-column>
+			<el-table-column prop="paymentTypeText" label="支付方式">
+			</el-table-column>
+			<el-table-column label="交易金额">
+				<template scope="scope">
+					<p class="price" :class="{active:scope.row.amount>0}">{{scope.row.amount>0?'+'+scope.row.amount:scope.row.amount|ms}}</p>
+				</template>
+			</el-table-column>
+			<el-table-column prop="approachText" label="交易用途">
+			</el-table-column>
+			<el-table-column prop="timeCreated" label="交易时间">
+			</el-table-column>
+			<el-table-column prop="description" label="备注">
+			</el-table-column>
+
+		</el-table>
+		<pagination :pagings="queryParams" :totalCount="totalCount" @changePageSize="changePageSize"></pagination>
+	</page-layer>
+</template>
+<script>
+	import SETTINGAREA from "actionurl/data/check"
+	import agrntServer from "actionurl/serve/agent"
+	import pageLayer from "components/common/page-layer"
+	import pagination from "components/common/pagination"
+	export default {
+		data() {
+			return {
+				narData: [{
+					name: "流水明细",
+					router: ""
+				}],
+				searchDate: "",
+				queryParams: {
+					agentId: "",
+					merchantTypeId: 200,
+					paymentId: "",
+					tradeType: "",
+					paymentType: "",
+					status: "",
+					walletType: "",
+					beginDate: "",
+					endDate: "",
+					keyword: "",
+					pageSize : 10,
+ 					pageNum : 1,
+				},
+				tableDatas: [],
+				agentList: [],
+				totalCount : 0,
+				shopType: [{
+					name: '采购商',
+					value: 200
+				}, {
+					name: '供应商',
+					value: 300
+				}, {
+					name: '驿站',
+					value: 600
+				}, {
+					name: '配送商',
+					value: 700
+				}],
+				dealType: [{
+					name: '选择交易类型',
+					value: ""
+				}, {
+					name: '支出',
+					value: 0
+				}, {
+					name: '收入',
+					value: 1
+				}, {
+					name: '充值',
+					value: 3
+				}, {
+					name: '退款',
+					value: 5
+				}, {
+					name: '提现',
+					value: 6
+				}],
+				payType: [{
+					name: '选择支付方式',
+					value: ""
+				}, {
+					name: '微信',
+					value: 20
+				}, {
+					name: '支付宝',
+					value: 30
+				}],
+				statusType: [{
+					name: '选择结算状态',
+					value: ""
+				}, {
+					name: '未结算',
+					value: 0
+				}, {
+					name: '已结算',
+					value: 1
+				}],
+				walletType: [{
+					name: '选择钱包类型',
+					value: ""
+				}, {
+					name: '余额',
+					value: "0"
+				}, {
+					name: '积分',
+					value: "1"
+				}],
+				pickerOptions: {
+					shortcuts: [{
+						text: '最近一周',
+						onClick(picker) {
+							const end = new Date();
+							const start = new Date();
+							start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+							picker.$emit('pick', [start, end]);
+						}
+					}, {
+						text: '最近一个月',
+						onClick(picker) {
+							const end = new Date();
+							const start = new Date();
+							start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+							picker.$emit('pick', [start, end]);
+						}
+					}, {
+						text: '最近三个月',
+						onClick(picker) {
+							const end = new Date();
+							const start = new Date();
+							start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+							picker.$emit('pick', [start, end]);
+						}
+					}]
+				}
+			}
+		},
+		created() {
+			SETTINGAREA.getcheckList(this);
+			agrntServer.getSiteList(this, {
+				pageSize: 50
+			});
+		},
+		components: {
+			pageLayer,
+			pagination
+		},
+		methods: {
+			queryInfo() {
+				SETTINGAREA.getcheckList(this);
+			},
+			changePageSize() {
+				SETTINGAREA.getcheckList(this);
+			},
+			changeTime(val) {
+				if(val) {
+					this.queryParams.beginDate = val.split("至")[0];
+					this.queryParams.endDate = val.split("至")[1];
+				} else {
+					this.queryParams.beginDate = "";
+					this.queryParams.endDate = "";
+					return "";
+				}
+			}
+		}
+	}
+</script>
+<style lang="less" scoped>
+	@import "../../../common/less/config.less";
+	.price {
+		color: red;
+	}
+	
+	.active {
+		color: #46CD72;
+	}
+</style>

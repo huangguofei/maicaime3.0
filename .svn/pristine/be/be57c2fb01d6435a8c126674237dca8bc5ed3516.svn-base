@@ -1,0 +1,155 @@
+<template>
+	<div class="page-layer footer-page">
+		
+		<div v-if="!notData">
+         		<header>
+					<div class="search" @click="jumpSeach">搜索您想要找的食材</div>
+					<images-slider :adList="adList" :adHQ="adHQ" v-if="adList.length || adHQ.length"></images-slider>
+					<CATEGORYNAR :narList="narList"></CATEGORYNAR>
+				</header>
+				<div class="wrap" v-if="featureData.data && featureData.data.length">
+					<h1>特色专区</h1>
+					<PREFECTURE :featureData="featureData" ></PREFECTURE>
+				</div>
+				
+		</div>
+		<div class="not-data" v-else>
+			<div class="con">
+				<p class="icon">
+					<img src="../../images/home-not-data.png">
+				</p>
+				<p class="m1">
+					首页正在建设中…
+				</p>
+				<p class="m2">
+					敬请期待
+				</p>
+			</div>
+			
+		</div>
+		<div class="wrap prod-list" v-if="prodList.length > 0">
+			<h1>推荐食材</h1>
+			<prodList :prodData="prodList"  @previewImgEvent="previewImgEvent"></prodList>
+		</div>
+		<footer-nar :active="1" v-show="footerShow"></footer-nar>
+		<cartSuspend v-show="footerShow"></cartSuspend>
+		<img-preview :imgSrc="previewImg" ref="preview"></img-preview>
+	</div>
+</template>
+<script>
+	import CATEGORYNAR from "components/index/category-nar"
+	import PREFECTURE from "components/index/feature-prefecture"
+	import footerNar from "components/common/footer-nar"
+	import imagesSlider from "components/common/images-slider"
+	import indexAction from "actionurl/index/index"
+	import cartSuspend from "components/common/cart-suspend"
+	import prodList from "components/market/prod-list"
+	import imgPreview from "components/common/img-preview"
+	export default{
+		data() {
+			return {
+				adList : [],
+				adHQ : [],
+				narList : [],
+				featureData : {},
+				prodList : [],
+				notData : true,
+				footerShow : true,
+				previewImg : ""
+			}
+		},
+		components : {
+			CATEGORYNAR,
+			PREFECTURE,
+			footerNar,
+			imagesSlider,
+			cartSuspend,
+			prodList,
+			imgPreview,
+		},
+		created() {
+			indexAction.getHomeData(this);
+		},
+		mounted() {
+			var _that = this;
+			this.$nextTick(function() {
+				indexAction.getHomeProds(_that);
+			});
+			cJs.resizeToggleFooter(this);
+		},
+		methods : {
+			jumpSeach() {
+				this.$router.push({
+					name : "index.search"
+				});
+			},
+			onPullingDown() {
+			},
+			onPullingUp() {
+			},
+			previewImgEvent(src) {
+				this.previewImg = src;
+				this.$refs.preview.show = true;
+			}
+		}
+	}
+</script>
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	header{
+		overflow: hidden;
+	}
+	.search{
+		position: absolute;
+		.pxrem(top, 20);
+		z-index: 9999;
+		.pxrem(height, 58);
+		width:94%;
+		left:3%;
+		.pxrem(line-height, 58);
+		.pxrem(text-indent, 60);
+		color:#999;
+		background:rgba(255, 255, 255, 0.8) url(../../images/home_search.png) no-repeat 5px 3px;
+		background-size:auto 70%;
+	}
+	.wrap{
+		background: #FFF;
+		.prem(20);
+		margin-top:@prem;
+		h1{
+			text-align:center;
+			color:@index-h-color;
+			.pxrem(font-size,32);
+			.prem(20);
+			padding-top:@prem;
+
+		}
+	}
+	.prod-list{
+		h1{
+			border-bottom: 1px solid #E9E9E9;
+			.pxrem(padding-bottom, 20);
+		}
+	}
+
+	.not-data{
+		background: #FFF;
+		.con{
+			.prem(20, -4);
+			padding:@prem;
+		}
+		p{
+			text-align: center;
+			img{
+				width: 90%;
+			}
+		}
+		.m1{
+			color:#939393;
+			.pxrem(margin-top, 50);
+		}
+		.m2{
+			.pxrem(font-size, 32);
+		}
+	}
+</style>

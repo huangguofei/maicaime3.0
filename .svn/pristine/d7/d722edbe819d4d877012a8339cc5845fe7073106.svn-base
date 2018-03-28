@@ -1,0 +1,55 @@
+/*
+ * author pizhenhua
+ * day 2017-9-8
+  */
+.cheap-page{
+	
+	.title{
+		font-size:36px;
+		color:#FFF;
+		font-weight: normal;
+	}
+	.reamk{
+		font-size:16px;
+		color:#FFF;
+		margin-top:30px;
+		line-height:26px;
+	}
+	.p-1{
+		height:800px;
+		background:url(http://yydd.oss-cn-shenzhen.aliyuncs.com/yydd-product/47baa3a620d44460a32a8895ba96f638.png) no-repeat center center;
+		background-size:cover;
+		.right{
+			max-width: 800px;
+			float:right;
+			text-align: left;
+			padding-top:260px;
+		}
+		
+	}
+
+	.p-2{
+		background: #292928;
+		text-align: center;
+		padding:60px 0;
+		.tea-img{
+			padding:30px 0;
+		}
+		.t-1{
+			width:33.33%;
+			float:left;
+			height:300px;
+			display: inline-block;
+			img{
+				max-width:100%;
+				max-height:100%;
+			}
+		}
+	}
+	.p-3{
+		background: #292928;
+		text-align: center;
+		padding:60px 0;
+	}
+	
+}

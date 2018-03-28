@@ -1,0 +1,70 @@
+/**
+* author pzh 
+* day    2017-9-21
+* 采购商业务
+*/
+import {purchaserAPI} from "../../api/customer"
+export default{
+	/*获取采购商列表*/
+	getPurchaserList(vm) {
+		var params = vm.queryParams;
+		purchaserAPI.purchaserListAPI(params, (result) => {
+			vm.tableData = result.resultList;
+			vm.totalCount = result.totalCount;
+		});
+	},
+	updatePurchaserStatus(vm, row) {
+		var purchaserId = row.purchaserId,
+			statusId = row.statusId,
+			status = "",
+			params = {};
+		if(statusId == 5) {
+			status = 1;
+		} else if(statusId == 1) {
+			status = 0;
+		} else if(statusId == 0) {
+			status = 1;
+		}
+		params = {
+			purchaserId : purchaserId,
+			merchantStatus : status
+		}
+		purchaserAPI.purchaserAuditAPI(params, (result) => {
+			vm.$message("操作成功！");
+			row.statusId = status;
+		});
+	},
+	/*绑定区域*/
+	bindReginAction(vm, regionId) {
+		var _that = this;
+		var params = {regionId : regionId, purchaserId : vm.editRowInfo.purchaserId};
+		if(vm.areaDialog.type == 1) {
+			params.merchantStatus = 1;
+			purchaserAPI.purchaserAuditAPI(params, (result) => {
+				vm.$message("操作成功！");
+				vm.areaDialog.dialogShow = false;
+				_that.getPurchaserList(vm);
+			});
+		} else {
+			purchaserAPI.bindRegionAPI(params, (result) => {
+				vm.$message("设置成功！");
+				vm.areaDialog.dialogShow = false;
+				_that.getPurchaserList(vm);
+			});
+		}
+		
+	},
+	/*编辑收货地址*/
+	editAdress(vm) {
+		var _that = this;
+		purchaserAPI.editAdressAPI({
+			purchaserId:vm.dialogData.purchaserId,
+			defaultDeliveryAddress:vm.dialogData.adress
+		}, (result) => {
+				vm.$message("修改成功！");
+				vm.dialogData.dialogShow = false;
+				_that.getPurchaserList(vm);
+			});
+		
+	}
+}

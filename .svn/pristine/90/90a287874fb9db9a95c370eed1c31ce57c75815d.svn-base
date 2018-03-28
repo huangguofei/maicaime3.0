@@ -1,0 +1,30 @@
+<template>
+	<article class="order-item">
+		<order-list-view></order-list-view>
+		<order-list-view></order-list-view>
+	</article>
+</template>
+
+<script>
+	import orderListView from 'components/order/order-list'
+	export default {
+		data() {
+			return {
+				orderList:[]
+			}
+		},
+		components: {
+			orderListView
+		},
+		created() {
+
+		},
+		methods: {
+
+		}
+	}
+</script>
+
+<style lang="less">
+
+</style>

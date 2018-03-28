@@ -1,0 +1,222 @@
+<!-- 食材列表-图片模式 -->
+<template>
+<div class="prod-list-pic">
+	<div class="c-item">
+		<header>
+			<span class="category-name">猪肉</span>
+		</header>
+		<section>
+			<div class="p-item">
+				<div class="img f-l">
+
+				</div>
+				<div class="p-info f-l">
+					<p class="name">汕尾巨大火龙果 150g</p>
+					<span class="out-mes">已下架</span>
+				</div>
+				<div class="event f-r">
+					<p class="price-wrap">
+						<span class="icon">¥</span>
+						<input type="text" value="12.00"/>
+					</p>
+					<button class="sold sold-up">上架</button>
+				</div>
+			</div>
+			<div class="p-item">
+				<div class="img f-l">
+
+				</div>
+				<div class="p-info f-l">
+					<p class="name">汕尾巨大火龙果 150g</p>
+					<span class="out-mes">已下架</span>
+				</div>
+				<div class="event f-r">
+					<p class="price-wrap">
+						<span class="icon">¥</span>
+						<input type="text" value="12.00"/>
+					</p>
+					<button class="sold sold-up">上架</button>
+				</div>
+			</div>
+		</section>
+	</div>
+	<div class="c-item">
+		<header>
+			<span class="category-name">猪肉</span>
+		</header>
+		<section>
+			<div class="p-item">
+				<div class="img f-l">
+
+				</div>
+				<div class="p-info f-l">
+					<p class="name">汕尾巨大火龙果 150g</p>
+					<span class="out-mes">已下架</span>
+				</div>
+				<div class="event f-r">
+					<p class="price-wrap">
+						<span class="icon">¥</span>
+						<input type="text" value="12.00"/>
+					</p>
+					<button class="sold sold-up">上架</button>
+				</div>
+			</div>
+			<div class="p-item">
+				<div class="img f-l">
+
+				</div>
+				<div class="p-info f-l">
+					<p class="name">汕尾巨大火龙果 150g</p>
+					<span class="out-mes">已下架</span>
+				</div>
+				<div class="event f-r">
+					<p class="price-wrap">
+						<span class="icon">¥</span>
+						<input type="text" value="12.00"/>
+					</p>
+					<button class="sold sold-up">上架</button>
+				</div>
+			</div>
+		</section>
+	</div>
+
+	<div class="c-item">
+		<header>
+			<span class="category-name">猪肉</span>
+		</header>
+		<section>
+			<div class="p-item">
+				<div class="img f-l">
+
+				</div>
+				<div class="p-info f-l">
+					<p class="name">汕尾巨大火龙果 150g</p>
+					<span class="out-mes">已下架</span>
+				</div>
+				<div class="event f-r">
+					<p class="price-wrap">
+						<span class="icon">¥</span>
+						<input type="text" value="12.00"/>
+					</p>
+					<button class="sold sold-up">上架</button>
+				</div>
+			</div>
+			<div class="p-item">
+				<div class="img f-l">
+
+				</div>
+				<div class="p-info f-l">
+					<p class="name">汕尾巨大火龙果 150g</p>
+					<span class="out-mes">已下架</span>
+				</div>
+				<div class="event f-r">
+					<p class="price-wrap">
+						<span class="icon">¥</span>
+						<input type="text" value="12.00"/>
+					</p>
+					<button class="sold sold-up">上架</button>
+				</div>
+			</div>
+		</section>
+	</div>
+</div>
+</template>
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.prod-list-pic{
+			.c-item{
+				background: #FFF;
+				.pxrem(margin-bottom,20);
+			}
+			header{
+				.pxrem(height,70);
+				.pxrem(line-height,70);
+				.pxrem(font-size,28);
+				.prem(-4, 20);
+				padding:@prem;
+				border-bottom:1px solid #d7d7d7;
+			}
+			section{
+				.prem(-4, 20);
+				padding:@prem;
+				.p-item{
+					.prem(20, -4);
+					padding:@prem;
+					border-bottom: 1px solid @b-c;
+					.f-l{
+						float:left;
+					}
+					.f-r{
+						float:right;
+					}
+					.img{
+						.pxrem(width,120);
+						.pxrem(height,120);
+						border:1px solid #EEEEEE;
+						.pxrem(border-radius,5);
+						img{
+							max-width:100%;
+							max-height:100%;
+						}
+					}
+					.p-info{
+						.pxrem(padding-left,10);
+						.name{
+							.pxrem(font-size,28);
+							.pxrem(min-height,70);
+						}
+						.out-mes{
+							display: inline-block;
+							.prem(2, 10);
+							padding:@prem;
+							.pxrem(line-height,38);
+							.pxrem(font-size,20);
+							background: @m-c;
+							color:#FFF;
+							text-align:center;
+							.pxrem(border-radius,5);
+						}
+					}
+					.event{
+						.price-wrap{
+							position: relative;
+							.pxrem(width,130);
+							.pxrem(height,50);
+							border:1px solid #d7d7d7;
+							.pxrem(border-radius,5);
+							.pxrem(line-height,50);
+							.icon{
+								position: absolute;
+								.pxrem(font-size,28);
+								.pxrem(left,3);
+							}
+							input{
+								.pxrem(width,120);
+								.pxrem(height,40);
+								border:0;
+								.pxrem(text-indent,20);
+								.pxrem(font-size,28);
+							}
+						}
+						.sold{
+							background: @m-c;
+							border:0;
+							color:#FFF;
+							.pxrem(width,130);
+							.pxrem(height,56);
+							text-align:center;
+							.pxrem(font-size,24);
+							.pxrem(border-radius,6);
+							.pxrem(margin-top,8);
+						}
+					}
+				}
+				.p-item:last-child{
+					border-bottom:0;
+				}
+				.p-item:after{
+					.clearFloat;
+				}
+			}
+	}
+</style>

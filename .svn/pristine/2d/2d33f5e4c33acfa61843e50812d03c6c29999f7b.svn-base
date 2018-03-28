@@ -1,0 +1,28 @@
+<!-- 我的 -->
+<template>
+	<div class="page-layer">
+		<err msg="个人中心"></err>
+		<FOOTERNAR :active="3"></FOOTERNAR>
+	</div>
+</template>
+<script>
+	import FOOTERNAR from "components/common/footer-nar"
+	import err from "components/common/err"
+	export default{
+		data() {
+			return {
+
+			}
+		},
+		components : {
+			FOOTERNAR,
+			err
+		},
+		created() {
+			
+		},
+		methods : {
+			
+		}
+	}
+</script>

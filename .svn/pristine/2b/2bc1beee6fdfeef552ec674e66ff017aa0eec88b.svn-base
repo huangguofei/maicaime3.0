@@ -1,0 +1,61 @@
+<template>
+	<article class="coupon padding">
+		<ul>
+			<li class="padding">
+				<article class="item-left pull-left padding">
+					<p>¥<b>28</b></p>
+					<span class="remark">满150使用</span>
+				</article>
+				<article class="item-right pull-left padding">
+					<p class="title">中秋特惠券<img src=""/></p>
+					<p class="time">2017.07.01-2017.08.3</p>
+					<p class="remark"><i></i>限龙岗地区使用</p>
+				</article>
+			</li>
+			
+		</ul>
+	</article>
+</template>
+
+<script>
+	import FOOTERNAR from "../../components/common/footer-nar"
+	export default {
+		data() {
+			return {
+
+			}
+		},
+		components: {
+			FOOTERNAR
+		},
+		created() {
+
+		},
+		methods: {
+
+		}
+	}
+</script>
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.coupon {
+		ul {
+			li {
+				width: 100%;
+				border: 1px solid #E9E9E9;
+				.pxrem(border-radius, 14);
+				background: #fff;
+				.pxrem(margin-bottom, 20);
+				box-sizing: border-box;
+				.item-left {
+					width: 38%;
+					border-right: 1px dashed #D7D7D7;
+					border-radius:0 .2rem .2rem 0;
+				}
+				.item-right{
+					
+				}
+			}
+		}
+	}
+</style>

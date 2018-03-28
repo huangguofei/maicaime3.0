@@ -1,0 +1,85 @@
+<!-- 设置活动范围 -->
+<template>
+	<div class="setting-scope">
+		<el-row class="r-item">
+			<label>品类范围</label><br/><br/>
+			<el-radio-group v-model="form.radio">
+				<el-radio class="radio" label="10">显示限制</el-radio>
+	  			<el-radio class="radio" label="20">参与限制</el-radio>
+	  			<el-radio class="radio" label="30">使用限制</el-radio>
+	  		</el-radio-group>
+  			<br/><br/>
+  			<el-row>
+	  			<span class="p-item">肉类<i class="del-icon el-icon-circle-cross"></i></span>
+	  			<span class="p-item">肉类<i class="del-icon el-icon-circle-cross"></i></span>
+	  		</el-row>
+		</el-row>
+		<!-- <el-row class="r-item">
+			<label>参加的区域范围</label><br/><br/>
+			<el-radio class="radio" v-model="form.radio" label="1">不限</el-radio>
+  			<el-radio class="radio" v-model="form.radio" label="2">指定品类</el-radio>
+  			<br/><br/>
+  			<el-row>
+	  			<span class="p-item">肉类<i class="del-icon el-icon-circle-cross"></i></span>
+	  			<span class="p-item">肉类<i class="del-icon el-icon-circle-cross"></i></span>
+	  		</el-row>
+		</el-row>
+		<el-row class="r-item">
+			<label>供应商范围</label><br/><br/>
+			<el-radio class="radio" v-model="form.radio" label="1">不限</el-radio>
+  			<el-radio class="radio" v-model="form.radio" label="2">指定供应商</el-radio>
+  			
+		</el-row> -->
+	</div>
+</template>
+<script>
+export default{
+	data() {
+		return{
+			form : {
+				radio : "10"
+			}
+		}
+	}
+}
+</script>
+<style lang="less">
+@import "../../../../common/less/config.less";
+	.r-item{
+		margin-bottom:10px;
+		label{
+			font-size: @size-title;
+		}
+		.p-item{
+			display: inline-block;
+			position: relative;
+			padding:5px 15px;
+			border:1px solid @color-border;
+			margin-right:3px;
+			.del-icon{
+				display: inline-block;
+				position: absolute;
+				color: @color-yellow;
+				top:-8px;
+				right:-8px;
+				z-index:1;
+				font-size:@size-gen;
+			}
+		}
+		.el-tag--gray{
+			background: #FFF;
+			border:1px solid @color-border;
+			height: 28px;
+   			line-height: 26px;
+   			.el-icon-close{
+				background: @color-yellow;
+				top:-15px;
+				width:16px;
+				height:16px;
+				color:#FFF;
+				right:-12px;
+			}
+		}
+		
+	}
+</style>

@@ -1,0 +1,48 @@
+/**
+ * author pzh 
+ * day    2017-9-27
+ * 分类业务接口
+ */
+import {promptAPI} from "apiurl/index"
+export default{
+	/*获取限时产品分类*/
+	getCategoryList(vm) {
+		var refId = vm.$route.params.refId, _that = this;
+		if(!refId) {
+			cJs.message("未找到活动商品分类！");
+			return false;
+		}
+		var params = {
+			monthlySpecialId : refId
+		}
+		promptAPI.categoryListAPI(params, (result) => {
+			vm.categoryData = result;
+			var first = result[0];
+			if(first) {
+				_that.getProdList(vm, first.categoryId);
+			}
+		});
+	},
+	/*获取产品*/
+	getProdList(vm,categoryId) {
+		var refId = vm.$route.params.refId;
+		var params = {
+			monthlySpecialId : refId,
+			categoryId : categoryId
+		}
+		promptAPI.propListAPI(params, (result) => {
+			vm.prodData = result.resultList;
+		});
+	},
+	/*获取活动详情*/
+	getDetailInfo(vm) {
+		var refId = vm.$route.params.refId;
+		var params = {
+			monthlySpecialId : refId
+		}
+		promptAPI.promptDetailInfoAPI(params, (result) => {
+			vm.detailInfo = result;
+			vm.countDown();
+		});
+	}
+}

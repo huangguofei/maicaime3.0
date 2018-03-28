@@ -1,0 +1,29 @@
+/**
+ * author pzh 
+ * day    2017-9-27
+ * 市场业务接口
+ */
+ import {marketAPI} from "apiurl/market"
+ export default{
+ 		/*获取购市场分类*/
+ 		getCateGoryList(vm) {
+ 			var _that = this;
+ 			marketAPI.hierarchyListAPI((result) => {
+ 				vm.categoryData = result;
+ 				if(result[0]) {
+ 					var categoryId = result[0].categoryId;
+ 					var params = {
+ 						categoryId : categoryId
+ 					}
+ 					_that.getProdList(vm, params);
+ 				}
+ 				
+ 			});
+ 		},
+ 		/*获取市场分类商品*/
+ 		getProdList(vm, params) {
+ 			marketAPI.prodListAPI(params, (result) => {
+ 				vm.prodData = result.resultList;
+ 			});
+ 		}
+ }

@@ -1,0 +1,18 @@
+/**
+*  author pzh
+*  day  2017-9-20
+*  服务站模块路由配置
+*/
+const agentList = r => require.ensure([], () => r(require('../view/serve/agent/list')), 'agentList')
+
+const router = [
+	{
+		name : "serve.agent.list",
+		path : "/serve",
+		component : agentList
+	}
+]
+
+export default{
+	router
+}

@@ -1,0 +1,17 @@
+/**
+*  author pzh
+*  day  2017-9-21
+*  设置模块路由配置
+*/
+const areaList = r => require.ensure([], () => r(require('../view/setting/area/list')), 'areaList')
+const router = [
+	{
+		name : "setting.area.list",
+		path : "/setting/area/list",
+		component : areaList
+	}
+]
+
+export default{
+	router
+}

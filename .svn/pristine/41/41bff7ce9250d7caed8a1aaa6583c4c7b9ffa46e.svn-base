@@ -1,0 +1,18 @@
+/*
+*  author pzh
+*  day  2017-9-27
+*  食材路由配置
+*/
+const indexView = r => require.ensure([], () => r(require('../view/food/index')), 'Index')
+
+const router = [
+	{
+		name : "food.index",
+		path : "/food/",
+		component : indexView
+	}
+]
+
+export default{
+	router
+}

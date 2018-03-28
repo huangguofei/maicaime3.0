@@ -1,0 +1,18 @@
+ import publicAPI from "apiurl/public"
+ export default{
+	/*余额支付*/
+	payByBalance(vm) {
+		if(vm.orderId == 0) {
+			cJs.message("订单异常");
+			return false;
+		}
+		var params = {
+			orderId : vm.orderId
+		}
+		publicAPI.payByBalance(params, (result) => {
+			vm.$router.push({
+				name : "often.orders.success"
+			});
+		});
+	}
+}

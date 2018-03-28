@@ -1,0 +1,93 @@
+<template>
+	<div class="page-layer footer-page">
+		<header>
+			<div class="search" @click="jumpSeach">搜索您想要找的食材</div>
+			<images-slider :adList="adList" :adHQ="adHQ" v-if="adList.length"></images-slider>
+			<CATEGORYNAR :narList="narList"></CATEGORYNAR>
+		</header>
+		
+		<div class="wrap">
+			<h1>特色专区</h1>
+			<PREFECTURE :featureData="featureData" v-if="featureData.data && featureData.data.length"></PREFECTURE>
+		</div>
+		<div class="wrap">
+			<h1>推荐食材</h1>
+			<referrals-prod :prodList="prodList" v-if="prodList.length"></referrals-prod>
+		</div>
+		<footer-nar :active="1"></footer-nar>
+	</div>
+</template>
+<script>
+	import CATEGORYNAR from "components/index/category-nar"
+	import PREFECTURE from "components/index/feature-prefecture"
+	import footerNar from "components/common/footer-nar"
+	import imagesSlider from "components/common/images-slider"
+	import referralsProd from "components/index/referrals-prod"
+	import indexAction from "actionurl/index/index"
+	export default{
+		data() {
+			return {
+				adList : [],
+				adHQ : [],
+				narList : [],
+				featureData : {},
+				prodList : []
+			}
+		},
+		components : {
+			CATEGORYNAR,
+			PREFECTURE,
+			footerNar,
+			imagesSlider,
+			referralsProd
+		},
+		created() {
+			indexAction.getHomeData(this);
+		},
+		mounted() {
+			var _that = this;
+			this.$nextTick(function() {
+				indexAction.getHomeProds(_that);
+			});
+		},
+		methods : {
+			jumpSeach() {
+				this.$router.push({
+					name : "index.search"
+				});
+			}
+		}
+	}
+</script>
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	header{
+		overflow: hidden;
+	}
+	.search{
+		position: absolute;
+		.pxrem(top, 20);
+		z-index: 9999;
+		.pxrem(height, 58);
+		width:94%;
+		left:3%;
+		.pxrem(line-height, 58);
+		.pxrem(text-indent, 60);
+		color:#999;
+		background:rgba(255, 255, 255, 0.8) url(../../images/home_search.png) no-repeat 5px 3px;
+		background-size:auto 70%;
+	}
+	.wrap{
+		background: #FFF;
+		.prem(20);
+		margin-top:@prem;
+		h1{
+			text-align:center;
+			color:@index-h-color;
+			.pxrem(font-size,32);
+			.prem(20);
+			padding-top:@prem;
+
+		}
+	}
+</style>

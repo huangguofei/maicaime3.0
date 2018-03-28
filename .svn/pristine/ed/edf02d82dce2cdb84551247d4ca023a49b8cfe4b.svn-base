@@ -1,0 +1,146 @@
+<template>
+	<article class="page-layer sales-rank">
+		<header>
+			<ul>
+				<li :class="{active:rankType==1}" @click="changeRank('1')">菜品排行</li>
+				<li :class="{active:rankType==2}" @click="changeRank('2')">客户排行</li>
+				<li :class="{active:rankType==3}" @click="changeRank('3')">订单排行</li>
+			</ul>
+			<router-link :to="{path:'/user/salesTimeSearch',query:{type:1}}" class="select-time"><img src="../../../images/mine_rank_calendar2@2x.png" /></router-link>
+		</header>
+		<nav class="padding">
+			<span class="title">菜品排行榜</span>
+			<!--<span class="title">客户排行榜</span><span class="title">订单排行榜</span>-->
+			<span class="search pull-right" @click="isShowSearch=!isShowSearch">{{searchStatus}}<img src="../../../images/order_arrow.png" /></span>
+			<ul class="search-list padding" v-if="isShowSearch">
+				<li @click="changeSearh('七天排行榜')">7天排行榜</li>
+				<li @click="changeSearh('三十天排行榜')">30天排行榜</li>
+				<li @click="changeSearh('九十天排行榜')">90天排行榜</li>
+			</ul>
+		</nav>
+		<article class="list bk-white">
+			<rank-list v-for="(v,k) in listData" :listData="v" :index="k" :rankType="rankType"></rank-list>
+		</article>
+	</article>
+</template>
+
+<script>
+	import rankList from "components/user/saleRankList"
+	export default {
+		data() {
+			return {
+				listData: [1, 2, 3, 4, 5],
+				rankType: 1,
+				isShowSearch: false,
+				searchStatus:"七天排行榜"
+			}
+		},
+		components: {
+			rankList
+		},
+		methods: {
+			changeRank(type) {
+				this.rankType = type;
+			},changeSearh(status){
+				this.searchStatus=status;
+				this.isShowSearch=false;
+			}
+		}
+	}
+</script>
+
+<style lang="less" scoped>
+	@import "../../../common/less/config.less";
+	.sales-rank {
+		header {
+			position: relative;
+			background: #222222;
+			.pxrem(height, 80);
+			.pxrem(padding-top, 10);
+			ul {
+				width: 70%;
+				margin: 0 auto;
+				display: flex;
+				color: #fff;
+				border: 1px solid #fff;
+				.pxrem(border-radius, 8);
+				li {
+					width: 33.3333%;
+					.pxrem(height, 60);
+					.pxrem(line-height, 60);
+					.pxrem(padding-left, 25);
+					.pxrem(padding-right, 25);
+					border-left: 1px solid #fff;
+					box-sizing: border-box;
+				}
+				li:first-child {
+					border: 0;
+				}
+				li.active {
+					background: #fff;
+					color: #222;
+				}
+			}
+			.select-time {
+				position: absolute;
+				.pxrem(right, 20);
+				.pxrem(top, 18);
+				.pxrem(width, 45);
+				img {
+					width: 100%;
+				}
+			}
+		}
+		nav {
+			.pxrem(height, 90);
+			position: relative;
+			box-sizing: border-box;
+			span {
+				display: inline-block;
+				.pxrem(line-height, 58);
+				.pxrem(font-size, 28);
+			}
+			.search {
+				img {
+					.pxrem(margin-left, 5);
+				}
+			}
+			.search-list {
+				position: absolute;
+				.pxrem(right, 10);
+				.pxrem(top, 110);
+				background: #fff;
+				box-shadow: 0px 0px 10px #ccc;
+				z-index: 1;
+				&:before {
+					content: '';
+					display: inline-block;
+					border-left: 10px solid transparent;
+					border-right: 10px solid transparent;
+					border-bottom: 10px solid hsla(0, 0%, 80%, 0.41);;
+					/*border-bottom-color: rgba(0, 0, 0, 0.2);*/
+					position: absolute;
+					.pxrem(top,-25);
+					.pxrem(right,10);
+					
+				}
+				&:after {
+					content: '';
+					display: inline-block;
+					border-left: 9px solid transparent;
+					border-right: 9px solid transparent;
+					border-bottom: 9px solid #ffffff;
+					position: absolute;
+					.pxrem(top,-24);
+					.pxrem(right,12);
+				}
+				li {
+					.pxrem(width, 200);
+					.pxrem(height, 60);
+					.pxrem(line-height, 60);
+					text-align: center;
+				}
+			}
+		}
+	}
+</style>

@@ -1,0 +1,124 @@
+<template>
+	<article class="page-layer invitation">
+		<header></header>
+		<article class="content">
+			<section class="header hr">
+				<img src="../../images/home_vagetable.png" />
+				<p>老汪邀请你加入</p>
+				<h3>牛先森和猫小姐的店</h3>
+			</section>
+			<section class="form padding">
+				<section class="item">
+					<img src="../../images/mine_yuangong_tele.png" />
+					<input type="text" name="" class="phone" placeholder="电话" />
+				</section>
+				<section class="item">
+					<img src="../../images/mine_yuangong_name.png" />
+					<input type="text" name="" class="name" placeholder="真实姓名" />
+				</section>
+				<section class="item" style="position: relative;">
+					<img src="../../images/register_code.png" />
+					<input type="text" name="" class="code" placeholder="输入验证码" />
+					<span class="get-code">获取验证码</span>
+				</section>
+				<section class="item">
+					<img src="../../images/mine_yuangong_nima.png" />
+					<input type="password" name="" class="psw" placeholder="输入密码" />
+				</section>
+				<section class="item">
+					<img src="../../images/mine_yuangong_reason.png" />
+					<input type="text" name="" class="reason" placeholder="申请理由" />
+				</section>
+				<section class="btn">
+					申请加入
+				</section>
+			</section>
+		</article>
+	</article>
+</template>
+
+<script>
+</script>
+
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.invitation {
+		header {
+			background: url(../../images/login-header.png);
+			background-size: cover;
+			height: 4rem;
+			img {
+				width: 100%;
+			}
+		}
+		.content {
+			background: #fff;
+			position: absolute;
+			top: 3rem;
+			width: 90%;
+			margin: 0 5%;
+			.pxrem(border-radius, 14);
+			.header {
+				text-align: center;
+				.pxrem(padding-bottom, 20);
+				&:before {
+					.pxrem(left, -15);
+				}
+				&:after {
+					.pxrem(right, -15);
+				}
+				img {
+					.pxrem(width, 160);
+					.pxrem(height, 160);
+					.pxrem(margin-top, 50);
+					.pxrem(margin-bottom, 20);
+				}
+				p {
+					.pxrem(font-size, 32);
+					color: #222;
+				}
+				h3 {
+					.pxrem(font-size, 40);
+				}
+			}
+			.form {
+				.item {
+					img {
+						.pxrem(width, 36);
+						.pxrem(margin-right, 15);
+						vertical-align: middle;
+					}
+					input {
+						.pxrem(font-size, 32);
+						width: calc(~"100% - 55px");
+						border: 0;
+						border-bottom: 1px solid #f0f0f0;
+						outline: none;
+						.pxrem(height, 100);
+						.pxrem(line-height, 100);
+					}
+					.get-code {
+						display: inline-block;
+						position: absolute;
+						text-align: right;
+						.pxrem(top, 30);
+						.pxrem(right, 40);
+						.pxrem(font-size, 28);
+						color: #46C895;
+					}
+				}
+				.btn{
+					width: 100%;
+					.pxrem(margin-top, 15);
+					text-align: center;
+					.pxrem(border-radius,8);
+					background:#1EC551;
+					.pxrem(font-size,36);
+					color:#fff;
+					.pxrem(height, 80);
+					.pxrem(line-height, 80);
+				}
+			}
+		}
+	}
+</style>

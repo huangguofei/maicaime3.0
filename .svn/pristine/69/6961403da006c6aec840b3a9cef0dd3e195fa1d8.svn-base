@@ -1,0 +1,35 @@
+<!-- 配送圈详情 -->
+<template>
+	<page-layer :narData="narData" classs="back-color padd">
+		<el-row class="search-wrap">
+		  	 <el-col :span="2" >
+		  	 	详情信息
+		  	 </el-col>
+		</el-row>
+	</page-layer>
+</template>
+<script>
+	import CIRCLEACTION from "action/customer/circle"
+	import pageLayer from "components/common/page-layer"
+	export default{
+		data() {
+			return {
+				narData : [
+		    	  	{
+		    	  		name : "配送圈详情",
+		    	  		router : ""
+		    	  	}
+		    	 ],
+				detailInfo : {}
+			}
+		},
+		created() {
+			CIRCLEACTION.getCirCleDetail(this);
+		},
+		components : {
+			pageLayer
+		}
+	
+	}
+</script>
+<style ></style>

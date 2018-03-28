@@ -1,0 +1,25 @@
+/**
+ * author pzh
+ * day    2017-9-27
+ * 购物车业务
+ */
+ import {cartAPI} from "../../api/often"
+ export default{
+ 		/*获取购物车列表*/
+ 		getCartList(vm) {
+ 			cartAPI.cartListAPI((result) => {
+ 				vm.cartData = result;
+ 			});
+ 		},
+ 		/*商品数量更新*/
+ 		cartProdNumUptate(prod) {
+ 			if(!prod) {
+ 				cJs.message("数量修改异常");
+ 			}
+ 			var params = {
+ 				cartId : prod.cartId,
+ 				num : prod.skuQuantity
+ 			};
+ 			cartAPI.updateCartNumAPI(params, (result) => {});
+ 		}
+ }

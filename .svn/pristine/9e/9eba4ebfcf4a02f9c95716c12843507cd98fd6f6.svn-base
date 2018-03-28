@@ -1,0 +1,185 @@
+<!-- 编辑素材 -->
+<template>
+	<el-dialog
+		  :title="editInfo.title"
+		  :visible.sync="editInfo.dialogShow"
+		  size="tiny"
+		  :close-on-click-modal="false"
+		  >
+		  <el-form :model="ruleForm" :rules="rules" ref="ruleForm" class="dis-info">
+		 	 <el-form-item label="商品图片" label-width="120px" prop="prodImage">
+					<el-upload
+						  class="avatar-uploader"
+						  action="/operation/admin/image/upload"
+						  :show-file-list="false"
+						   name= "imgFile"
+						  :on-success="handleAvatarSuccess"
+						  v-loading.body="loading"
+						  :before-upload="beforeAvatarUpload">
+						  <img v-if="ruleForm.prodImage" :src="ruleForm.prodImage" class="avatar">
+						  <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+					</el-upload>
+				</el-form-item>
+				<el-form-item label="商品名称" label-width="120px" prop="prodName">
+					<el-input v-model="ruleForm.prodName" auto-complete="off" placeholder="商品名称"></el-input>
+				</el-form-item>
+				<el-form-item label="商品分类" label-width="120px" prop="prodName">
+					<el-cascader
+					    :options="allCategory"
+					    v-model="selectOptions"
+					    :props="props"
+					    filterable
+					    @change="handleChange">
+					  </el-cascader>
+				</el-form-item>
+				<el-form-item label="商品单位" label-width="120px" prop="skuUnit">
+					<el-input v-model="ruleForm.skuUnit" auto-complete="off" placeholder="商品单位"></el-input>
+				</el-form-item>
+				<!-- <el-form-item label="建议零售价" label-width="120px" >
+					<el-input v-model="ruleForm.retailPrice" auto-complete="off" placeholder="建议零售价"></el-input>
+				</el-form-item> -->
+				<el-form-item label="UPC编码" label-width="120px" >
+					<el-input v-model="ruleForm.prodUpc" auto-complete="off" placeholder="UPC编码"></el-input>
+				</el-form-item>
+				<el-form-item label="排序值" label-width="120px" >
+					<el-input-number v-model="ruleForm.orderIndex"  :min="0" ></el-input-number>
+
+				</el-form-item>
+				<el-form-item label="备注" label-width="120px" >
+					<el-input v-model="ruleForm.remark" auto-complete="off" placeholder="备注"></el-input>
+				</el-form-item>
+		  </el-form>
+		  <span slot="footer" class="dialog-footer">
+		    <el-button @click="dialogShow = false">取 消</el-button>
+		    <el-button type="primary" @click="submitForm('ruleForm')">确 定</el-button>
+		  </span>
+	</el-dialog>
+</template>
+<script>
+import materialAction from "actionurl/product/material"
+  export default {
+    data() {
+      return {
+        ruleForm : {},
+        selectOptions : [],
+        allCategory : [],
+        loading : false,
+        props : {
+      		label : "categoryName",
+      		value : "categoryId",
+      		children : "subCategoryList"
+        },
+        rules: {
+        	 prodName: [
+	            { required: true, message: '请输入商品名称', trigger: 'blur' }
+	         ],
+	         prodImage: [
+	            { required: true, message: '请上传商品图片', trigger: 'blur' }
+	         ],
+	         categoryId: [
+	            { required: true, message: '请选择分类', trigger: 'blur' }
+	         ],
+	         skuUnit: [
+	            { required: true, message: '请输入商品单位', trigger: 'blur' }
+	         ]
+        }
+      };
+    },
+    props : ["editInfo", "submitClick"],
+    created() {
+    	materialAction.getAllProdCatrgory(this);
+    	this.resetForm();
+    },
+    methods: {
+      	submitForm(formName) {
+      		var _that = this;
+      		_that.$refs[formName].validate((valid) => {
+	          if (valid) {
+	          		_that.submitClick(_that.ruleForm);
+	          } else {
+	           		console.log('error submit!!');
+	            	return false;
+	          }
+	        });
+      	},
+      	resetForm() {
+      		this.ruleForm = {
+      			categoryId : "",
+      			prodImage : "",
+      			prodName : "",
+      			skuUnit : "",
+      			retailPrice : "",
+      			prodUpc : "",
+      			orderIndex : "",
+      			remark : ""
+	        }
+	    },
+      	editFormData(formData) {
+      		if(!formData) return false;
+      		var form = this.ruleForm;
+	      		form.categoryId = formData.categoryId;
+	      		form.prodImage = formData.prodImage;
+	      		form.prodName = formData.prodName;
+	      		form.skuUnit  = formData.skuUnit;
+	      		form.retailPrice = formData.retailPrice;
+	      		form.prodUpc = formData.prodUpc;
+	      		form.orderIndex = formData.orderIndex;
+	      		form.remark  = formData.remark;
+	      		form.prodTempplateId = formData.prodTempplateId;
+	      		this.selectOptions = [formData.parentCategoryId, form.categoryId];
+      	},
+      	handleChange(value) {
+			this.ruleForm.categoryId = value[1];
+		},
+		handleAvatarSuccess(res, file) {
+	      	var img = res.data;
+	      	this.ruleForm.prodImage = img;
+	      	this.loading = false;
+	      },
+	      beforeAvatarUpload(file) {
+	        	var isJPG = false;
+	      		if(file.type === "image/jpeg" || file.type === "image/png" || file.type == "image/gif") {
+	      			isJPG = true;
+	      		}
+		        const isLt2M = file.size / 1024 / 1024 < 2;
+		        if (!isJPG) {
+		          this.$message.error('上传头像图片只能是 JPG,PNG,GIT 格式!');
+		          return false;
+		        }
+		        if (!isLt2M) {
+		          this.$message.error('上传头像图片大小不能超过 2MB!');
+		        }
+		       	this.loading = true;
+		        return isJPG && isLt2M;
+	      },
+    }
+  };
+</script>
+<style lang="less">
+.dis-info{
+	.avatar-uploader .el-upload {
+	    border: 1px dashed #d9d9d9;
+	    border-radius: 6px;
+	    cursor: pointer;
+	    position: relative;
+	    overflow: hidden;
+	  }
+	  .avatar-uploader .el-upload:hover {
+	    border-color: #409EFF;
+	  }
+	  .avatar-uploader-icon {
+	    font-size: 28px;
+	    color: #8c939d;
+	    width: 120px;
+	    height: 120px;
+	    line-height: 120px;
+	    text-align: center;
+	  }
+	  .avatar {
+	    width: 120px;
+	    height: 120px;
+	    display: block;
+	  }
+}
+	
+</style>

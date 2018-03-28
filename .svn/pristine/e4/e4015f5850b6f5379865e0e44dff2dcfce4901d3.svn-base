@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name = "format-detection" content="telephone = no" />
+    <title>买菜么-服务站</title>
+    <!--[if lt IE 9]>
+      <style>
+        *,html,body,ul,li,a,p,dl,dt{margin:0;padding:0;}
+        body{background: #000;}
+        a{text-decoration:none;}
+        .container{width:990px;margin:auto;}
+        .head{width:100%;height:60px;}
+        .head .logo{display:inline-block;height:100%;width:300px;}
+        .head .logo img{width:100%;margin-top:25px;border:0;}
+        .midden{width:100%;}
+        .midden .container{text-align:center;padding:100px 0;}
+        .midden .container > h1{font-size:36px;color:#888;}
+        .midden .container > h2{font-size:30px;margin-top:20px;font-weight:normal;color:#555;}
+        .reBrowser{width:600px;margin:80px auto;}
+        .reBrowser .b1{width:180px;height:200px;display:inline-block;}
+        *+html .reBrowser .b1{float:left;}
+        .reBrowser .b1 .bLogo{width:100%;height:80px;text-align:center;}
+        .reBrowser .b1 .bLogo img{height:60px;border:0;}
+        .reBrowser .b1 > a {display:block;border:0;color:#666;}
+        .footer .container{text-align:center;color:#888;font-size:12px;}
+      </style>
+    <![endif]-->
+  </head>
+  <body>
+    <!--[if lt IE 9]>
+     <div class="midden">
+        <div class="container">
+          <h1>浏览器版本太低</h1>
+          <h2>为保障信息的安全和展现，建议升级浏览器</h2>
+          <div class="reBrowser">
+            <div class="b1">
+              <a href="http://www.google.cn/chrome/browser/desktop/index.html" title="chrome浏览器最新版">
+                <div class="bLogo">
+                  <img src="http://img3.maicaim.com/product/2793cd368dae4cecb585fbfe7bfb4af3.png"/>
+                </div>
+                <div class="tit">chrome浏览器最新版</div>
+              </a>
+            </div>
+            <div class="b1">
+              <a href="http://www.firefox.com.cn/?utm_medium=referral&utm_source=mozilla.org" title="Firefox浏览器最新版">
+                <div class="bLogo">
+                  <img src="http://img3.maicaim.com/product/026af208022c4cc09cd1b9c6d9fceaca.png" />
+                </div>
+                <div class="tit">Firefox浏览器最新版</div>
+              </a>
+            </div>
+            <div class="b1">
+              <a href="http://www.microsoft.com/china/windows/IE/upgrade/index.aspx" title="IE浏览器最新版">
+                <div class="bLogo">
+                    <img src="http://img3.maicaim.com/product/b5a0553791f04a09951aeee95923e1bc.png"/>
+                  </div>
+                  <div class="tit">IE浏览器最新版</div>
+                </div>
+              </a>
+          </div>
+        </div>
+      </div>
+    <![endif]-->
+    <div id="app">
+        <router-view ></router-view>
+    </div>
+  </body>
+</html>

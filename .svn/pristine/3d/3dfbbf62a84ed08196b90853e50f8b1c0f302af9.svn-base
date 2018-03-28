@@ -1,0 +1,30 @@
+/**
+*  author pzh
+*  day  2017-9-13
+*  常用清单路由配置
+*/
+const indexView = r => require.ensure([], () => r(require('../view/often/index')), 'Index')
+const cartView = r => require.ensure([], () => r(require('../view/often/cart')), 'cartView')
+const ordersView = r => require.ensure([], () => r(require('../view/often/orders')), 'ordersView')
+
+const router = [
+	{
+		name : "mcm.purchaser.often.index",
+		path : "/often/",
+		component : indexView
+	},
+	{
+		name : "often.cart",
+		path : "/often/cart",
+		component : cartView
+	},
+	{
+		name : "often.orders",
+		path : "/often/orders",
+		component : ordersView
+	}
+]
+
+export default{
+	router
+}

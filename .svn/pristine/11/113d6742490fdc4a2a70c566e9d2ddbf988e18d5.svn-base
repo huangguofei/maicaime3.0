@@ -1,0 +1,230 @@
+<!-- 我的 -->
+<template>
+	<div class="page-layer">
+		<section class="bg"></section>
+		<article class="user-main padding">
+			<article class="user-header item padding">
+				<section class="user-info header">
+					<img src="" class="pull-left" />
+					<section class="pull-left">
+						<h2 class="title">牛先森和猫小姐的店</h2>
+						<p>老汪-13548790620</p>
+					</section>
+				</section>
+				<ul>
+					<li>
+						<router-link to="/integral/"><b class="title">928</b>
+							<p>我的积分</p>
+						</router-link>
+					</li>
+					<li>
+						<router-link to="/coupon/"><b class="title">4</b>
+							<p>优惠券</p>
+						</router-link>
+					</li>
+					<li>
+						<router-link to="/remaining/"><b class="title">¥9.28</b>
+							<p>账户余额</p>
+						</router-link>
+					</li>
+					<li>
+						<router-link to="/coupon/"><b class="title">¥9.28</b>
+							<p>冻结金额</p>
+						</router-link>
+					</li>
+				</ul>
+				<section class="header-right">
+					<router-link to="/message/" class="message new"><img src="../../images/message-icon.png" /><i></i></router-link>
+					<a href="javascript:;"><img src="../../images/mine_arrow1.png" /></a>
+				</section>
+			</article>
+			<article class="user-order item">
+				<h2 class="header padding title">订单</h2>
+				<ul>
+					<li>
+						<router-link to="/coupon/"><span class="new"><img src="../../images/mine_pay.png" /><i></i></span>
+						<p>待付款</p></router-link>
+					</li>
+					<li>
+						<router-link to="/coupon/"><span><img src="../../images/mine_get.png" /></span>
+						<p>待收货</p></router-link>
+					</li>
+					<li>
+						<router-link to="/coupon/"><span><img src="../../images/mine_finshed.png" /></span>
+						<p>已完成</p></router-link>
+					</li>
+					<li>
+						<router-link to="/coupon/"><span><img src="../../images/mine_all.png" /></span>
+						<p>我的订单</p></router-link>
+					</li>
+				</ul>
+			</article>
+			<article class="user-nav item">
+				<router-link to="/paylist/"><section class=""><img src="../../images/mine_liushui.png" /><span class="title">流水明细</span><img class="pull-right" src="../../images/mine_arrow2.png" /></section></router-link>
+				<router-link to="/staffManagement/"><section class=""><img src="../../images/mine_yuangong.png" /><span class="title">员工管理</span><img class="pull-right" src="../../images/mine_arrow2.png" /></section></router-link>
+			</article>
+			<article class="user-nav item">
+				<section><img src="../../images/mine_setting.png" /><span class="title">设置</span><img class="pull-right" src="../../images/mine_arrow2.png" /></section>
+				<section><img src="../../images/mine_aboutus.png" /><span class="title">关于我们</span><img class="pull-right" src="../../images/mine_arrow2.png" /></section>
+				<section><img src="../../images/mine_help.png" /><span class="title">使用帮助</span><img class="pull-right" src="../../images/mine_arrow2.png" /></section>
+
+			</article>
+		</article>
+		<FOOTERNAR :active="5"></FOOTERNAR>
+	</div>
+</template>
+<script>
+	import FOOTERNAR from "../../components/common/footer-nar"
+	export default {
+		data() {
+			return {
+
+			}
+		},
+		components: {
+			FOOTERNAR
+		},
+		created() {
+
+		},
+		methods: {
+
+		}
+	}
+</script>
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.bg {
+		position: fixed;
+		top: 0;
+		width: 100%;
+		background: #19191E;
+		.pxrem(height, 130);
+		z-index: -1;
+	}
+	
+	ul {
+		.clearfix();
+		.pxrem(padding-top, 20);
+		.pxrem(padding-bottom, 20);
+		li {
+			float: left;
+			width: 25%;
+			text-align: center;
+			p {
+				.pxrem(font-size, 24);
+			}
+			a{
+				display: inline-block;
+			}
+		}
+	}
+	
+	.new {
+		position: relative;
+		i {
+			position: absolute;
+			.pxrem(width, 10);
+			.pxrem(height, 10);
+			border-radius: 50%;
+			background: #F74C31;
+			right: 0;
+		}
+	}
+	
+	.user-main {
+		.title {
+			.pxrem(font-size, 32);
+			color: #000;
+		}
+		.item {
+			background: #fff;
+			.pxrem(margin-bottom, 20);
+			.header {
+				border-bottom: 1px solid #E5E5E5;
+			}
+		}
+		.user-header {
+			position: relative;
+			.user-info {
+				.pxrem(padding-top, 50);
+				.pxrem(padding-bottom, 50);
+				.clearfix();
+				img {
+					.pxrem(width, 120);
+					.pxrem(height, 120);
+					.pxrem(margin-right, 20);
+					border-radius: 50%;
+				}
+				p {
+					.pxrem(font-size, 26);
+					color: #4a4a4a;
+				}
+			}
+			a {
+				color: #666;
+			}
+			.header-right {
+				position: absolute;
+				.pxrem(top, 25);
+				.pxrem(right, 25);
+				a {
+					display: block;
+					img {
+						.pxrem(width, 45);
+						height: auto;
+					}
+				}
+				a:first-child {
+					.pxrem(margin-bottom, 20);
+				}
+			}
+		}
+		.user-order {
+			ul {
+				li {
+					a {
+						display: inline-block;
+						width: 100%;
+						img {
+							.pxrem(width, 50);
+							height: auto;
+						}
+						span{
+							display: inline-block;
+						.pxrem(min-height, 60);
+						}
+						color:#4a4a4a;
+					}
+				}
+				li:nth-child(3) {
+					border-right: 1px solid #E5E5E5;
+					box-sizing: border-box;
+				}
+			}
+		}
+		.user-nav {
+			.clearfix();
+			.pxrem(padding-left, 25);
+			.pxrem(padding-right, 25);
+			section {
+				.pxrem(padding-top, 25);
+				.pxrem(padding-bottom, 25);
+				border-bottom: 1px solid #E5E5E5;
+				img {
+					.pxrem(width, 40);
+					height: auto;
+					.pxrem(margin-right, 10);
+					vertical-align: text-bottom;
+				}
+				img:last-child {
+					.pxrem(width, 15);
+					height: auto;
+				}
+			}
+			section:last-child {
+				border: 0;
+			}
+		}
+	}
+</style>

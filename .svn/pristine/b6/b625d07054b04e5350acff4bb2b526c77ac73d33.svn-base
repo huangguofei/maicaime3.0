@@ -1,0 +1,87 @@
+<!-- 购物车 -->
+<template>
+	<div class="page-layer often-cart-page footer-page">
+		<PRODCATEGORYLIST :cartData="cartData" :updateSkuNum="updateSkuNum"></PRODCATEGORYLIST>
+		<footer class="footer">
+			<div class="content">
+				<span>合计：</span>
+				<span class="price">¥{{cartTotal}}</span>
+				<button @click="submitOrders" class="btn">下单</button>
+			</div>
+			
+		</footer>
+	</div>
+</template>
+<script>
+	import PRODCATEGORYLIST from "components/often/prod-category-list"
+	import OFTENCART from "actionurl/often/cart"
+	export default{
+		data() {
+			return {
+				cartData : []
+			}
+		},
+		created() {
+			OFTENCART.getCartList(this);
+		},
+		computed : {
+			cartTotal() {
+				var cartData = this.cartData;
+				var len = cartData.length, sub = 0;
+				if(len > 0) {
+					for(var i = 0; i < len; i++) {
+						var prods = cartData[i].productBOList;
+						var l = prods.length;
+						for(var n = 0; n < l; n++) {
+							var prod = prods[n];
+							sub += prod.skuPrice * prod.skuQuantity;
+						}
+					}
+				}
+				return sub.toFixed(2);
+			}
+		},
+		components : {
+			PRODCATEGORYLIST
+		},
+		methods : {
+			submitOrders() {
+				alert("bug:商品全部为 0 了也能下单")
+				this.$router.push({
+					name : "often.orders"
+				});
+			},
+			updateSkuNum(prod) {
+				OFTENCART.cartProdNumUptate(prod);
+			}
+		}
+	}
+</script>
+<style lang="less">
+	@import "../../common/less/config.less";
+	.often-cart-page{
+		.footer{
+			position: fixed;
+			left:0;
+			bottom:0;
+			width:100%;
+			.pxrem(height, 98);
+			background: #FFF;
+			.pxrem(line-height, 98);
+			.content{
+				.prem(0,20);
+				padding:@prem;
+			}
+			span{
+				.pxrem(font-size,28);
+			}
+			button{
+				position: absolute;
+				top:0;
+				right:0;
+				height:100%;
+				.pxrem(width, 250);
+			}
+		}
+	}
+</style>

@@ -1,0 +1,168 @@
+<!-- 市场 -->
+<template>
+	<div class="page-layer market-index-page">
+		<div class="head" ref="head">
+			<header class="search-wrap" ref="search" @click="jumpSearch">
+				<div class="s-content">搜索您想要找的食材</div>
+			</header>
+			<PRODMENU :categoryData="categoryData" :setSelectInfo="getSelectInfo" ref="prodMenu"></PRODMENU>
+		</div>
+		<div class="content" ref="content" @click="inputBlur">
+			<scroll 
+				:pullingDown="true" 
+				:pullUpLoad="true"
+				 @pullingUp="onPullingUp" 
+				 ref="scroll" 
+				 :listenBeforeScroll = "true"
+				 @beforeScrollStart="beforeScrollStart" v-if="prodData.length > 0">
+					<PRODLIST :prodData="prodData"></PRODLIST>
+			</scroll>
+			<goods-not-data v-if="prodData.length <= 0">
+				<p>该分类暂无任何食材!</p>
+			</goods-not-data>
+		</div>
+
+		<FOOTERNAR :active="2" v-show="footerShow"></FOOTERNAR>
+		<cartSuspend v-show="footerShow"></cartSuspend>
+	</div>
+</template>
+<script>
+	import FOOTERNAR from "components/common/footer-nar"
+	import PRODMENU from "components/market/prod-menu"
+	import PRODLIST from "components/market/prod-list"
+	import MARKETACTION from "actionurl/market/market"
+	import goodsNotData from "components/common/goods-not-data"
+	import cartSuspend from "components/common/cart-suspend"
+	import scroll from "components/common/scroll"
+	export default {
+		data() {
+			return {
+				categoryData: [],
+				prodData: [],
+				show: true,
+				option: {
+					pageNum: 1,
+					size: 10,
+					pages: 1,
+					total: 0,
+					categoryId: ""
+				},
+				footerShow : true
+			}
+		},
+		components: {
+			PRODMENU,
+			FOOTERNAR,
+			PRODLIST,
+			cartSuspend,
+			scroll,
+			goodsNotData
+		},
+		created() {
+			MARKETACTION.getCategoryList(this);
+		},
+		mounted() {
+			this.calculateViewHeight();
+			cJs.resizeToggleFooter(this);
+		},
+		methods: {
+			getSelectInfo(info) {
+				var _that = this;
+				_that.option.pageNum = 1;
+				_that.option.categoryId = info.categoryId;
+				if(info.subCategoryId) {
+					_that.option.subCategoryId = info.subCategoryId
+				} else {
+					delete _that.option.subCategoryId;
+				}
+				_that.prodData = [];
+				MARKETACTION.getProdList(_that, () => {
+					_that.calculateViewHeight();
+				});
+			},
+			onPullingUp() {
+				var _that = this;
+				setTimeout(() => {
+					MARKETACTION.getProdList(_that, (count) => {
+						_that.pullingUpPage(count);
+					});
+				}, 500);
+			},
+			pullingUpPage(count) {
+				if(count >= 10) {
+					this.$refs.scroll.forceUpdate();
+				} else {
+					setTimeout(() => {
+						this.$refs.scroll.forceUpdate(true);
+					}, 20);
+				}
+			},
+			jumpSearch() {
+				this.$router.push({
+					name: "index.search"
+				});
+			},
+			calculateViewHeight() {
+				var footer = document.getElementById("footerWrap");
+				if(this.$refs.head && footer) {
+					const h = this.$refs.head.getBoundingClientRect().height;
+					var height = footer.offsetHeight ? footer.offsetHeight : 0;
+					this.$refs.content.style.height = (document.body.clientHeight - h - height - 5) + "px";
+				}
+			},
+			inputBlur() {
+//				var dom = document.getElementsByTagName("input");
+//				console.log(dom);
+//				for(var i in dom){
+//					dom[i].onblur;
+//				}
+//				dom.forEach((v, k) => {
+//					v.onblur();
+//				});
+			},
+			beforeScrollStart() {
+				let inputList = document.querySelectorAll('.text-input');
+		        inputList.forEach((item) => {
+		           item.blur()
+		        })
+			}
+		}
+	}
+</script>
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.market-index-page {
+		.search-wrap {
+			.pxrem(height, 80);
+			background: #222222;
+			.pxrem(padding-top, 16);
+			.s-content {
+				.pxrem(height, 58);
+				.pxrem(line-height, 58);
+				.pxrem(text-indent, 58);
+				width: 90%;
+				margin: auto;
+				color: #AAAAAA;
+				.pxrem(font-size, 26);
+				background: rgba(255, 255, 255, 0.17) url(../../images/home_search.png) no-repeat 5px 4px;
+				.prem(40);
+				background-size: auto @prem;
+			}
+		}
+		.no-data {
+			text-align: center;
+			position: relative;
+			top: 50%;
+			.pxrem(margin-top, -240);
+			img {
+				.pxrem(width, 248);
+				.pxrem(height, 240);
+			}
+			p {
+				.pxrem(margin-top, 20);
+				.pxrem(font-size, 32);
+				color: @d-b-c;
+			}
+		}
+	}
+</style>

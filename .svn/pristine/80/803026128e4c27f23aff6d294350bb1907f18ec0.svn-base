@@ -1,0 +1,150 @@
+<!-- 下拉刷新和分页 -->
+<template>
+	<div class="refersh wrapper" ref="wrapper">
+		<div class="content">
+			 <slot></slot>
+			 <div class="pade-load" v-if="pullUpLoad">
+			 	<div class="con" v-if="isPullUpLoad && moreData">
+			 		<img src="../../images/loading.gif">
+			 	</div>
+			 	<div class="before-con" v-else>
+			 		 <span>没有更多数据</span>
+			 	</div>
+			</div>
+		</div>
+	</div>
+</template>
+<script>
+	import BScroll from 'better-scroll'
+	export default{
+		data() {
+			return{
+				isPullUpLoad : false,
+				moreData : true
+			}
+		},
+		created() {
+			
+		},
+		props : {
+			 probeType: {
+	            type: Number,
+	            default: 1
+	         },
+	         click: {
+	            type: Boolean,
+	            default: true
+	         },
+			 pullingDown : {
+			 	type : Boolean,
+			 	default : false
+			 },
+			 pullUpLoad : {
+			 	type : Boolean,
+			 	default : false
+			 },
+			 startY : {
+			 	type : Number,
+			 	default : 0
+			 },
+			 height : {
+			 	type :Number,
+			 	default : 0
+			 },
+			 listenScroll : {
+			 	type : Boolean,
+			 	default : false
+			 },
+			 listenBeforeScroll: {
+		        type: Boolean,
+		        default: false
+		      },
+		},
+		mounted() {
+			setTimeout(() => {
+		        this._initLoadData()
+		      }, 500)
+		},
+		methods : {
+			_initLoadData() {
+				if (!this.$refs.wrapper) {
+		          return;
+		        }
+				this.scroll = new BScroll(this.$refs.wrapper, {
+	                probeType: this.probeType,
+	                click: this.click,
+	                scrollY : true,
+	                pullUpLoad : this.pullUpLoad,
+	                scrollbar : true,
+	                freeScroll : false
+	            });
+	           
+				if(this.pullUpLoad) {
+					this.scroll.on('pullingUp', () => {
+						this.isPullUpLoad = true;
+				        this.$emit("pullingUp");
+			        })
+				}
+				if (this.listenScroll) {
+			         this.scroll.on('scroll', (pos) => {
+			            this.$emit('scroll', pos)
+			        })
+		        }
+
+		        if (this.listenBeforeScroll) {
+			          this.scroll.on('beforeScrollStart', (e) => {
+				          	if(!e) {
+				          		e = window.event;
+				          	}
+				          	if(e.target.localName != "input") {
+				          		this.$emit('beforeScrollStart');
+				          	}
+			          });
+		        }
+
+			},
+			refresh() {
+		        this.scroll && this.scroll.refresh();
+		    },
+		    scrollToElement() {
+		        this.scroll && this.scroll.scrollToElement.apply(this.scroll, arguments)
+		    },
+		    forceUpdate(more) {
+		    	if(this.isPullUpLoad && this.pullUpLoad) {
+		    		this.isPullUpLoad = false;
+		    		this.scroll.finishPullUp();
+		    		this.moreData = more;
+		    		this.refresh();
+		    	} else {
+		    		this.refresh()
+		    	}
+		    }
+		}
+	}
+</script>
+<style lang="less" scoped>
+@import "../../common/less/config.less";
+.refersh{
+	height:100%;
+	overflow: hidden;
+	.load{
+		text-align: center;
+		height:0;
+		color:@elide-color;
+	}
+	.pade-load{
+		.prem(20, -4);
+		.pxrem(height,30);
+		padding:@prem;
+		text-align: center;
+		img{
+			.pxrem(height,40);
+			.pxrem(margin-top,-20);
+		}
+		.before-con{
+			.pxrem(font-size,24);
+			color:@s-c;
+		}
+	}
+}
+</style>

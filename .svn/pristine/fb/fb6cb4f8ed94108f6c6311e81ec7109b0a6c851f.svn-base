@@ -1,0 +1,9 @@
+/**
+* author pzh 
+* day    2017-9-14
+* 公共模块接口
+*/
+import https from "../axios/https"
+export default{
+	
+}

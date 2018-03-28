@@ -1,0 +1,145 @@
+<template>
+	<article class="coupon padding">
+		<ul v-if="couponData">
+			<li class="padding">
+				<article class="item-left pull-left">
+					<p>¥<b>28</b></p>
+					<span class="remark" v-if="v.coupon.preconditionTypeId==1">满150使用</span>
+					<span class="remark" v-else>无条件</span>
+				</article>
+				<article class="item-right pull-left">
+					<p class="title">中秋特惠券<img src="../../images/user_remark_no.png" /></p>
+					<p class="time">2017.07.01-2017.08.3</p>
+					<p class="remark"><i></i>限龙岗地区使用</p>
+					<span class="status">已过期</span>
+				</article>
+			</li>
+
+		</ul>
+		<p v-else class="order-null">暂无无效券</p>
+	</article>
+</template>
+
+<script>
+	import FOOTERNAR from "../../components/common/footer-nar"
+	export default {
+		data() {
+			return {
+
+			}
+		},
+		components: {
+			FOOTERNAR
+		},
+		created() {
+
+		},
+		methods: {
+
+		}
+	}
+</script>
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.coupon {
+		.order-null {
+			text-align: center;
+			color: #999;
+			.pxrem(line-height, 50);
+		}
+		ul {
+			li {
+				position: relative;
+				width: 100%;
+				.pxrem(height, 200);
+				border: 1px solid #E9E9E9;
+				.pxrem(border-radius, 14);
+				background: #fff;
+				.pxrem(margin-bottom, 20);
+				box-sizing: border-box;
+				.clearfix();
+				.item-left {
+					width: 28%;
+					text-align: center;
+					border-right: 1px dashed #D7D7D7;
+					position: relative;
+					height: 100%;
+					color: #999;
+					p {
+						.pxrem(font-size, 50);
+						.pxrem(line-height, 100);
+						.pxrem(margin-bottom, -20);
+						b {
+							.pxrem(font-size, 90);
+						}
+					}
+					span {
+						.pxrem(font-size, 24);
+					}
+					.common() {
+						content: "";
+						display: inline-block;
+						.pxrem(width, 20);
+						.pxrem(height, 20);
+						.pxrem(border-radius, 10);
+						position: absolute;
+						background: @m-back;
+						.pxrem(right, -15);
+					}
+					&:before {
+						.common();
+						.pxrem(top, -35);
+					}
+					&:after {
+						.common();
+						.pxrem(bottom, -35);
+					}
+				}
+				.item-right {
+					.pxrem(padding-left, 10);
+					.title {
+						.pxrem(font-size, 36);
+						img {
+							.pxrem(width, 100);
+							position: relative;
+							.pxrem(top, -10);
+							.pxrem(left, 10);
+						}
+					}
+					.time {
+						.pxrem(font-size, 24);
+						color: #222;
+						.pxrem(margin-bottom, 15);
+					}
+					.remark {
+						.pxrem(font-size, 24);
+						color: #999;
+						display: inline-block;
+						.pxrem(padding-left, 18);
+						.pxrem(padding-right, 18);
+						background: #F2F2F2;
+						.pxrem(height, 40);
+						.pxrem(line-height, 40);
+						.pxrem(border-radius, 20);
+						i {
+							display: inline-block;
+							.pxrem(width, 10);
+							.pxrem(height, 10);
+							.pxrem(margin-right, 5);
+							vertical-align: middle;
+							background: #666;
+							.pxrem(border-radius, 5);
+						}
+					}
+					.status {
+						position: absolute;
+						.pxrem(bottom, 20);
+						.pxrem(right, 10);
+						.pxrem(font-size, 32);
+						color: #D7D7D7;
+					}
+				}
+			}
+		}
+	}
+</style>

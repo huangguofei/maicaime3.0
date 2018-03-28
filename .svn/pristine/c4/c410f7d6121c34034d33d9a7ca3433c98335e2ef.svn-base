@@ -1,0 +1,16 @@
+/**
+ * hgf 2017年11月1日09:32:02
+ */
+import {activityAPI} from "../../api/marketing"
+export default{
+	/*获取活动列表*/
+	getActivityList(vm) {
+		var paging = vm.pagings;
+		var params = {};
+		params.pageNum = paging.current;
+		activityAPI.activityListAPI(params, (result) => {
+			vm.tableData = result.resultList;
+			paging.total = result.totalCount;
+		});
+	}
+}

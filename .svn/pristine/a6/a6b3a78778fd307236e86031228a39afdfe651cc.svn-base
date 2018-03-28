@@ -1,0 +1,101 @@
+<template>
+	<article class="invite-page">
+		<article class="bg" @click="offPage"></article>
+		<article class="page-content padding">
+			<h2>邀请同事加入<br>牛先森和猫小姐的店</h2>
+			<section class="invite-list">
+				<a href="javascript:;"><span><img src="../../images/weixin.png" /></span><span>微信邀请</span></a>
+				<a href="javascript:;"><span><img src="../../images/QQ.png" /></span><span>QQ邀请</span></a>
+				<a href="javascript:;"><span><img src="../../images/sms.png" /></span><span>短信邀请</span></a>
+			</section>
+			<section class="btn" @click="offPage">取消</section>
+		</article>
+	</article>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+				
+			}
+		},
+		components: {
+		},
+		created() {
+
+		},
+		methods: {
+			offPage:function(){
+				this.$emit("offpage");
+			}
+		}
+	}
+</script>
+
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.invite-page {
+		position: fixed;
+		top: 0;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		.bg {
+			position: absolute;
+			top: 0;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			background: #000;
+			opacity: .5;
+		}
+		.page-content {
+			background: #fff;
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			h2 {
+				.pxrem(font-size, 28);
+				text-align: center;
+				.pxrem(margin-bottom,20);
+			}
+			.invite-list {
+				.clearfix();
+				a {
+					float: left;
+					text-align: center;
+					.pxrem(width, 130);
+					span:first-child {
+						.pxrem(width, 90);
+						.pxrem(height,90);
+						position:relative;
+						.pxrem(left,15);
+						.pxrem(border-radius, 45);
+						border: 1px solid #D7D7D7;
+						vertical-align:middle;
+						display:table-cell;
+						img {
+							.pxrem(width, 50);
+						}
+					}
+					span:last-child {
+						.pxrem(line-height, 80);
+						.pxrem(font-size, 24);
+						color: #666;
+					}
+				}
+			}
+			.btn {
+				width:95%;
+				margin:0 auto;
+				.pxrem(height, 68);
+				.pxrem(line-height, 68);
+				.pxrem(font-size, 32);
+				text-align: center;
+				border: 1px solid #D7D7D7;
+			}
+		}
+	}
+</style>

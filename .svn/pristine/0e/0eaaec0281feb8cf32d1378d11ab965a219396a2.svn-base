@@ -1,0 +1,314 @@
+<!-- 食材 -->
+<template>
+	<div class="page-layer food-index-page">
+		<div class="head" ref="head" >
+			<header class="header">
+				<div class="search-wrap" ref="header">
+					<div class="s-content">搜索食材</div>
+					<span class="pattern" @click="switchPattern">
+						{{pattern == 1 ? "编辑" : "完成"}}
+					</span>
+				</div>
+			</header>
+			<PRODMENU 
+				:categoryData="categoryData" 
+				@setSelectInfo="getSelectInfo"
+				:subInfo="subInfo" 
+				v-if="categoryData.length">
+			</PRODMENU>
+		</div>
+		<div class="content" ref="content">
+			<PRODLISTPIC 
+				ref="prodListPic"
+				v-if="pattern == 2 && prodData.length > 0" 
+				:categoryProdData="prodData"  
+				@scrollCategory="scrollCategory"
+				@checkProdNum="checkProdNum"
+				:submitEditorPrice="submitEditorPrice">
+			</PRODLISTPIC>
+			<PRODLIST 
+				v-if="pattern == 1  && prodData.length > 0" 
+				:categoryProdData="prodData" 
+				:submitEditorPrice="submitEditorPrice" 
+				@scrollCategory="scrollCategory"
+				ref="prodList">
+			</PRODLIST>
+			<loading v-if="load"></loading>
+			<goods-not-data  v-if="!prodData.length && !load"><p>该分类暂无任何食材</p></goods-not-data>
+		</div>
+		<div class="footer-event" ref="footer" v-show="footerShow " v-if="pattern == 1">
+			<router-link :to="{name : 'food.add'}">
+				<button>添加食材</button>
+			</router-link>
+			
+			<button @click="pattern = 2">编辑食材</button> 
+		</div>
+		<div class="footer-event footer-edit" ref="footer" v-else>
+			<div class="left">已选<span>{{checkNum}}</span></div>
+			<div class="btn-event">
+				<a href="javascript:void(0)" class="btn btn-del"  @click="batchUpdateProdStatus(-1)">删除</a>
+				<a href="javascript:void(0)" class="btn btn-down"  @click="batchUpdateProdStatus(0)">下架</a>
+				<a href="javascript:void(0)" class="btn btn-up" @click="batchUpdateProdStatus(1)">上架</a>
+			</div>
+		</div>
+		<FOOTERNAR :active="3"  v-show="footerShow && pattern == 1"></FOOTERNAR>
+	</div>
+</template>
+<script>
+	import FOOTERNAR from "components/common/footer-nar"
+	import PRODMENU from "components/food/prod-menu"
+	import PRODLISTPIC from "components/food/prod-list-pic"
+	import PRODLIST from "components/food/prod-list"
+	import FOODACTION from "actionurl/food/food"
+	import scroll from "components/common/scroll"
+	import loading from "components/common/loading"
+	import goodsNotData from "components/common/goods-not-data"
+	import { mapGetters } from 'vuex'
+	export default{
+		data() {
+			return {
+				categoryData : [],
+				prodData : [],
+				pattern : 1,
+				load : false,
+				subInfo : {
+					index : 0
+				},
+				footerShow : true,
+				checkNum : 0,
+				selectProds : []
+			}
+		},
+		components : {
+			FOOTERNAR,
+			PRODMENU,
+			PRODLISTPIC,
+			PRODLIST,
+			scroll,
+			goodsNotData,
+			loading
+		},
+		computed : {
+			...mapGetters({
+				categoryList : "getCategoryList"
+			})
+		},
+		created() {
+			this.load = true;
+			if(this.categoryList.length > 0) {
+				this.categoryData = this.categoryList;
+				var categoryId = this.categoryData[0].categoryId;
+                var params = {categoryId : categoryId};
+                FOODACTION.getProdList(vm,params, () => {
+                	_that.calculateViewHeight();
+                });
+			} else {
+				FOODACTION.getCategoryList(this);
+			}
+		},
+		mounted() {
+			var _that = this;
+			_that.calculateViewHeight();
+			_that.clientHeight = document.body.clientHeight;
+			cJs.monitorWindowResize(() => {
+				if(_that.clientHeight > document.body.clientHeight) {
+					_that.footerShow = false;
+				} else {
+					_that.footerShow = true;
+				}
+			});
+		},
+		methods : {
+			getSelectInfo(info) {
+				if(info && info.subCategoryId) {
+					/*指定位置*/
+					if(this.pattern == 1) {
+						this.$refs.prodList.scrollToElement(info.index);
+					} else {
+						this.$refs.prodListPic.scrollToElement(info.index);
+					}
+				} else {
+					var params = {
+						categoryId : info.categoryId
+					};
+					this.load = true;
+					var _that = this;
+					FOODACTION.getProdList(this, params, () => {
+						_that.calculateViewHeight();
+						setTimeout(() => {
+							if(_that.pattern == 1) {
+								_that.$refs.prodList ? _that.$refs.prodList.updateScroll() : null;
+							} else {
+								_that.$refs.prodListPic ? _that.$refs.prodListPic.updateScroll() : null;
+							}
+						}, 100);
+						
+					});
+				}
+			},
+			submitEditorPrice(prod) {
+				var params = {
+					productSkuId : prod.productSkuId,
+					price : prod.offerPrice
+				};
+				FOODACTION.editorProductPrice(this, params);
+			},
+			switchPattern() {
+				this.pattern = this.pattern == 1 ? 2 : 1;
+				this.calculateViewHeight()
+			},
+			scrollCategory(index) {
+				this.subInfo.index = index;
+			},
+			calculateViewHeight() {
+				var _that = this;
+				setTimeout(function() {
+					var footer = document.getElementById("footerWrap");
+					if(_that.$refs.head && footer) {
+						let h = _that.$refs.head.getBoundingClientRect().height;
+						let f = _that.$refs.footer.getBoundingClientRect().height;
+						var height = footer.offsetHeight ? footer.offsetHeight : 0;
+						if(_that.pattern == 2) {
+							height = 0;
+						}
+						_that.$refs.content.style.height = (document.body.clientHeight - h - f - height) + "px";
+					}
+				},500);
+			},
+			checkProdNum() {
+				this.checkNum = 0;
+				this.prodData.forEach((prods) =>{
+					prods.supplierProductItemBOList.forEach((item) => {
+						if(item.active && item.skuStatusId != -1) {
+							++ this.checkNum;
+							this.selectProds[this.checkNum] = item.productSkuId;
+						}
+					})
+				});
+			},
+			batchUpdateProdStatus(status) {
+				var _that = this;
+				if(_that.selectProds.length > 0) {
+					var skuIds = this.selectProds.toString();
+					FOODACTION.updateProdStatus(this, skuIds, status, () => {
+						_that.prodData.forEach((prods) =>{
+							var selNum = 0;
+							prods.supplierProductItemBOList.forEach((item) => {
+								if(item.active) {
+									++ selNum;
+									item.skuStatusId = status;
+								}
+							});
+							if(selNum == prods.supplierProductItemBOList.length) {
+								prods.delItem = true;
+							}
+						});
+						if(status == -1) {
+							_that.checkProdNum();
+						}
+					});
+					
+				} else {
+					cJs.message("请勾选商品！");
+				}
+			}
+		}
+	}
+</script>
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.food-index-page{
+		.search-wrap{
+			.pxrem(height, 80);
+			background: #222222;
+			.prem(16, 120, 0, 20);
+			position: relative;
+			padding:@prem;
+			.s-content{
+				.pxrem(height, 58);
+				.pxrem(line-height, 58);
+				.pxrem(text-indent, 58);
+				color:#AAAAAA;
+				.pxrem(font-size, 26);
+
+				background: rgba(255, 255, 255, 0.17) url(../../images/food_search.png) no-repeat 5px 4px;
+				.prem(40);
+				background-size: auto @prem;
+			}
+			.pattern{
+				display: inline-block;
+				position: absolute;
+				.pxrem(right,20);
+				.pxrem(top,20);
+				.pxrem(width, 60);
+				.pxrem(height, 48);
+				.pxrem(line-height, 52);
+				color:#FFF;
+			}
+			.pattern:after{
+				content: "";
+				position: absolute;
+				.pxrem(left, -25);
+				.pxrem(top, 10);
+				.pxrem(height, 30);
+				width:1px;
+				background: rgba(255, 255, 255, 0.2);
+			}
+		}
+		.footer-event{
+			position: absolute;
+			width:100%;
+			.pxrem(height,105);
+			background: #FFF;
+			.pxrem(bottom,97);
+			text-align: center;
+			button{
+				background: @m-c;
+				.pxrem(width,194);
+				.pxrem(height,60);
+				.pxrem(font-size,28);
+				color:#FFF;
+				border:1px solid @m-c;
+				.pxrem(border-radius,100);
+				.prem(20);
+				margin:@prem;
+				box-shadow: 2px 2px 5px rgba(48,132,242,0.59);
+			}
+		}
+		.footer-edit{
+			bottom:0;
+			background-color:#FAFAFA;
+			.pxrem(line-height,105);
+			.left{
+				height:100%;
+				float:left;
+				.pxrem(margin-left,20);
+				.pxrem(font-size, 28);
+				span{
+					.pxrem(font-size, 32);
+					.pxrem(margin-left,5);
+				}
+			}
+			.btn-event{
+				float:right;
+				.btn{
+					background: none;
+					display: inline-block;
+					.pxrem(width,124);
+					.pxrem(height, 52);
+					.pxrem(line-height, 52);
+					.pxrem(border-radius, 8);
+					.pxrem(margin-right, 20);
+				}
+				.btn-del{
+					border:1px solid @ass-c;
+					color:@ass-c;
+				}
+				.btn-down,.btn-up{
+					border-color:@m-c;
+					color:@m-c;
+				}
+			}
+		}
+	}
+</style>

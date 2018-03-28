@@ -1,0 +1,121 @@
+<!-- 设置头部广告 -->
+<template>
+	<div class="setting-advertising">
+		<div class="adv-item" v-for="n in 3">
+			<p class="title">第一张主页广告</p>
+			<el-row class="con">
+				<el-col :span="10">
+					<el-upload
+						  class="avatar-uploader"
+						  action="https://jsonplaceholder.typicode.com/posts/"
+						  :show-file-list="false"
+						  :on-success="handleAvatarSuccess"
+						  :before-upload="beforeAvatarUpload">
+						  <img v-if="imageUrl" :src="imageUrl" class="avatar">
+						  <i v-else class="el-icon-plus avatar-uploader-icon"><span>上传图片</span></i>
+						</el-upload>
+				</el-col>
+				<el-col :span="14">
+					<div class="set-con">
+						<p class="title">点击动作：</p>
+						<div class="e-item">
+							<el-radio class="radio" v-model="radio" label="1">不可点击</el-radio>
+						</div>
+						<div class="e-item">
+							<el-radio class="radio" v-model="radio" label="2">跳转链接</el-radio>
+							<p>
+								<el-input v-model="input"  size="small" placeholder="请输入内容"></el-input>
+							</p>
+					 		
+						</div>
+						<div class="e-item">
+							 <el-radio class="radio" v-model="radio" label="3">富文本信息</el-radio>
+							 <p>
+							 	<el-input v-model="input"  type="textarea" placeholder="请输入内容"></el-input>
+						 	 </p>
+					 	</div>
+					</div>
+				</el-col>
+			</el-row>
+		</div>
+	</div>
+</template>
+<script>
+  export default {
+    data() {
+      return {
+        imageUrl: '',
+        radio : "2",
+        input : ""
+      };
+    },
+    methods: {
+      handleAvatarSuccess(res, file) {
+        this.imageUrl = URL.createObjectURL(file.raw);
+      },
+      beforeAvatarUpload(file) {
+        const isJPG = file.type === 'image/jpeg';
+        const isLt2M = file.size / 1024 / 1024 < 2;
+
+        if (!isJPG) {
+          this.$message.error('上传头像图片只能是 JPG 格式!');
+        }
+        if (!isLt2M) {
+          this.$message.error('上传头像图片大小不能超过 2MB!');
+        }
+        return isJPG && isLt2M;
+      }
+    }
+  }
+</script>
+<style lang="less">
+	@import "../../../../common/less/config.less";
+	.setting-advertising{
+		.adv-item{
+			.title{
+				font-size:@size-m-title;
+				color:@color-main;
+			}
+			.con{
+				margin:20px 0;
+				.avatar-uploader{
+					.el-upload{
+						width:200px;
+						height:140px;
+						border:1px solid @color-border;
+					}
+					.avatar-uploader-icon{
+						font-size: 28px;
+					    height: 120px;
+					    line-height: 120px;
+					    text-align: center;
+					    color:@color-f-assist;
+					    position: relative;
+					    span{
+					    	font-size: 16px;
+					    	position: absolute;
+					    	width:80px;
+					    	left:50%;
+					    	margin-left:-40px;
+					    	top:30px;
+					    }
+					}
+				}
+			}
+			.set-con{
+				.title{
+					font-size:@size-title;
+					color:@color-font;
+					margin-bottom:5px;
+				}
+				.e-item{
+					padding:2px 0;
+					p{
+						padding-left:20px;
+						margin:3px 0;
+					}
+				}
+			}
+		}
+	}
+</style>

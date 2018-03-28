@@ -1,0 +1,353 @@
+<template>
+<div class="setting-feature">
+	<div class="styles">
+		<ul>
+			<li class="s-item s-1" :class="featureData.scheme == 1 ? 'active' : ''" @click="selectScheme(1)">
+				<div class="con">1</div>
+				<p class="identify">方案1</p>
+			</li>
+			<li class="s-item s-2" :class="featureData.scheme == 2 ? 'active' : ''" @click="selectScheme(2)">
+				<p class="identify">方案2</p>
+				<div class="con">1</div>
+				<div class="con">2</div>
+			</li>
+			<li class="s-item s-3" :class="featureData.scheme == 3 ? 'active' : ''" @click="selectScheme(3)">
+
+				<div class="con">1</div>
+				<div class="con">
+					<div class="top">2</div>
+					<div class="bottom">3</div>
+					<p class="identify">方案3</p>
+				</div>
+			</li>
+			<li class="s-item s-4" :class="featureData.scheme == 4 ? 'active' : ''" @click="selectScheme(4)">
+				<div class="con">
+					<div class="top">1</div>
+					<div class="bottom">3</div>
+					<p class="identify">方案4</p>
+				</div>
+				<div class="con">
+					<div class="top">2</div>
+					<div class="bottom">4</div>
+				</div>
+				
+			</li>
+			<li class="s-item s-5" :class="featureData.scheme == 5 ? 'active' : ''" @click="selectScheme(5)">
+				<div class="con">
+					<div class="top">1</div>
+					<div class="bottom">4</div>
+					<p class="identify">方案5</p>
+				</div>
+				<div class="con">
+					<div class="top">2</div>
+					<div class="center">3</div>
+					<div class="bottom">5</div>
+				</div>
+				
+			</li>
+			<li class="s-item s-6" :class="featureData.scheme == 6 ? 'active' : ''" @click="selectScheme(6)">
+				<div class="con">
+					<div class="top">1</div>
+					<div class="center">3</div>
+					<div class="bottom">5</div>
+				</div>
+				<div class="con">
+					<p class="identify">方案6</p>
+					<div class="top">2</div>
+					<div class="center">4</div>
+					<div class="bottom">6</div>
+				</div>
+				
+			</li>
+		</ul>
+	</div>
+	<div class="settings">
+		<div class="s-item" v-for="(f, index) in featureData.data">
+			<p class="title">专区{{index + 1}}：</p>
+			<el-row class="con">
+				<el-col :span="9">
+					<el-upload
+						  class="avatar-uploader"
+						  action="/agent/admin/image/upload"
+						  name= "imgFile" 
+						  :show-file-list="false"
+						  :on-success="handleAvatarSuccess"
+						  :before-upload="beforeAvatarUpload">
+						  <img v-if="f.picture" :src="f.picture" class="avatar" @click="selectUpload(index)">
+						  <i v-else class="el-icon-plus avatar-uploader-icon" @click="selectUpload(index)" ><span>上传图片</span></i>
+						</el-upload>
+				</el-col>
+				<el-col :span="15">
+					<div class="set-con">
+						<p class="title">点击动作：</p>
+						<div class="e-item">
+							<el-radio class="radio" v-model="f.action.event" label="link">跳转主题活动</el-radio>
+							<p>
+								<el-select v-model="f.action.featureAreaId" placeholder="请选择" @change="changeFeature(index)">
+								    <el-option
+								      v-for="item in featureList"
+								      :key="item.featureAreaId"
+								      :label="item.title"
+								      :value="item.featureAreaId" v-if="item.marketingStatusId != -1">
+								    </el-option>
+								  </el-select>
+							</p>
+					 		
+						</div>
+						
+					</div>
+				</el-col>
+			</el-row>
+		</div>
+	</div>
+</div>
+</template>
+<script>
+  import { mapGetters } from 'vuex'
+  import homeAction from "action/marketing/home"
+  export default {
+    data() {
+	      return {
+		        featureList : [],
+		        selectIndex : 0
+	      };
+    },
+    computed : {
+    	...mapGetters({
+	      "featureData" : "featureInfo",
+	    })
+    },
+    created() {
+    	this.$store.dispatch('getSetFeatureInfo');
+    },
+    mounted() {
+    	this.$nextTick(function() {
+    		homeAction.getFeatureList(this);
+    		this.selectScheme(this.featureData.scheme);
+    	});
+    },
+    methods: {
+	      handleAvatarSuccess(res, file) {
+	        var img = res.data;
+	        var feature = this.featureData.data;
+	        feature[this.selectIndex].picture = img;
+	      },
+	      beforeAvatarUpload(file) {
+		       	var isJPG = false;
+	      		if(file.type === "image/jpeg" || file.type === "image/png" || file.type == "image/gif") {
+	      			isJPG = true;
+	      		}
+		        const isLt2M = file.size / 1024 / 1024 < 2;
+		        if (!isJPG) {
+		          this.$message.error('上传头像图片只能是 JPG,PNG,GIT 格式!');
+		          return false;
+		        }
+		        if (!isLt2M) {
+		          this.$message.error('上传头像图片大小不能超过 2MB!');
+		        }
+		        return isJPG && isLt2M;
+	      },
+	      selectScheme(index) {
+	      		this.featureData.scheme = index;
+	      		var json = '{"picture":"","action":{"event":"link","featureTypeId":"","featureAreaId":"","title":""}}', 
+      				jsonData = "";
+	      		for(var i = 0; i < index; i++) {
+	      			jsonData += json;
+	      			if(index - 1 > i) {
+	      				jsonData += ","
+	      			}
+	      		}
+	      		jsonData = "["+jsonData+"]"
+	      		this.featureData.data = [] = JSON.parse(jsonData);
+	      },
+	      selectUpload(index) {
+	      		this.selectIndex = index;
+	      },
+	      changeFeature(index) {
+	      		var data = this.featureData.data[index];
+	      		if(data) {
+	      			var featureAreaId = data.action.featureAreaId;
+	      			this.featureList.map((item) => {
+	      				if(item.featureAreaId == featureAreaId) {
+	      					data.action.title = item.title;
+	      					data.action.featureTypeId = item.featureTypeId ? item.featureTypeId : 300;
+	      					data.action.refId = item.refId;
+	      					return true;
+	      				}
+	      			});
+	      		}
+	      }
+    }
+  }
+</script>
+<style lang="less">
+@import "../../../../common/less/config.less";
+	.setting-feature{
+		.styles{
+			&:after{
+				.clearFloat;
+			}
+			@h:128px;
+			.s-item{
+				position: relative;
+				height:128px;
+				width:168px;
+				border:1px solid @color-border;
+				float:left;
+				margin:0 3px 3px 0;
+				padding:5px;
+				overflow: hidden;
+				cursor: pointer;
+				.con{
+					line-height: @h;
+					text-align: center;
+					font-size:36px;
+					color:@back-table-gen;
+				}
+				.identify{
+					position: absolute;
+					top:10px;
+					right:-30px;
+					height:20px;
+					line-height: 20px;
+					width:100px;
+					text-align: center;
+					color:#FFF;
+					background: @color-f-gen;
+					transform:rotate(45deg);
+					font-size:@size-detail;
+				}
+
+			}
+			.active{
+				border-color:@color-main;
+				.identify{
+					background: @color-main;
+				}
+			}
+			.s-1,.s-2{
+				.con{
+					background: @back-gen;
+				}
+			}
+			.s-2,.s-3,.s-4,.s-5,.s-6{
+				.con{
+					width:48%;
+					height:100%;
+					float:left;
+				}
+				.con:last-child{
+					float:right;
+				}
+			}
+			.s-3{
+				.con:first-child{
+					background: @back-gen;
+				}
+			}
+			.s-3,.s-4{
+				
+				.top{
+					height:47%;
+					line-height: @h/2;
+					background: @back-gen;
+				}
+				.bottom{
+					height:47%;
+					margin-top:8%;
+					line-height: @h/2;
+					background: @back-gen;
+				}
+			}
+			.s-5{
+				.top,.bottom,.center{
+					background: @back-gen;
+				}
+				.con:first-child{
+					.top{
+						height:65%;
+						line-height: 80px;
+					}
+					.bottom{
+						height:30%;
+						line-height: 40px;
+						margin-top:5%;
+					}
+				}
+				.con:last-child{
+					.top,.bottom,.center{
+						height:30%;
+						line-height: 40px;
+						margin-top:6%;
+					}
+					.top{
+						margin-top:0;
+					}
+				}
+			}
+			.s-6{
+				.top,.bottom,.center{
+					background: @back-gen;
+					height:30%;
+					line-height: 40px;
+					margin-top:6%;
+				}
+				.top{
+					margin-top:0;
+				}
+			}
+			
+		}
+		.settings{
+			margin-top:20px;
+			.title{
+				font-size:@size-m-title;
+				color:@color-main;
+			}
+			.con{
+				margin:20px 0;
+				.avatar-uploader{
+					.el-upload{
+						width:177px;
+						height:118px;
+						border:1px solid @color-border;
+						img{
+							max-width: 100%;
+							max-height:100%;
+						}
+					}
+					.avatar-uploader-icon{
+						font-size: 28px;
+					    height: 120px;
+					    line-height: 120px;
+					    text-align: center;
+					    color:@color-f-assist;
+					    position: relative;
+					    width:100%;
+					    span{
+					    	font-size: 16px;
+					    	position: absolute;
+					    	width:80px;
+					    	left:50%;
+					    	margin-left:-40px;
+					    	top:30px;
+					    }
+					}
+				}
+			}
+			.set-con{
+				.title{
+					font-size:@size-title;
+					color:@color-font;
+					margin-bottom:5px;
+				}
+				.e-item{
+					padding:8px 0;
+					p{
+						margin-top:15px;
+					}
+				}
+			}
+		}
+	}
+</style>

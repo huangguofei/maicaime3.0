@@ -1,0 +1,12 @@
+/**
+ * author hgf 
+ * day    2017-9-27
+ * 订单模块接口
+ */
+import https from "httpurl/https"
+export default {
+	/*获取订单列表*/
+	orderAPI: (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/p/order/getOrderList", v)),
+	/*获取订单详情*/
+	orderDetailsAPI: (...v) => https.commAjax(cJs.apiDataReturnParams("get", "/p/order/getOrderInfo", v)),
+}

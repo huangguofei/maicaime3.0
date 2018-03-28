@@ -1,0 +1,180 @@
+<!-- 注册 -->
+<template>
+	<div class="page-layers">
+		<article class="register">
+			<header></header>
+			<article class="register-status">
+				<section class="one-status" @click="backOne">
+					<img src="../../images/register_one_y.png" />
+					<p class="action"></p>
+				</section>
+				<section class="two-status" @click="changeStatus">
+					<p :class="{action:fromStatus!=1}"></p>
+					<img src="../../images/register_two_n.png" :class="{hide:fromStatus!=1}" />
+					<img src="../../images/register_two_y.png" :class="{hide:fromStatus==1}" />
+				</section>
+			</article>
+			<article class="form">
+				<register-one v-if="fromStatus==1" ref="register1"></register-one>
+				<register-two v-else ref="register2"></register-two>
+			</article>
+			<article class="register_fooler">
+				<input type="button" name="" id="btn" @click="changeStatus" :value="(fromStatus==1?'下一步':'提交信息')" />
+				<p>已有账号，
+					<router-link class="login" to="/login/">立即登录</router-link>
+				</p>
+			</article>
+		</article>
+	</div>
+</template>
+<script>
+	import registerOne from 'components/login/register-one'
+	import registerTwo from 'components/login/register-two'
+	import registerApi from 'actionurl/login/login'
+	import MD5 from '../../../static/md5'
+	export default {
+		data() {
+			return {
+				registerData: {},
+				fromStatus: 1,
+			}
+		},
+		components: {
+			registerOne,
+			registerTwo
+		},
+		methods: {
+			changeStatus() {
+				if(this.fromStatus == 1) {
+					this.registerData = {
+						mobile: this.$refs.register1.mobile,
+						verificationCode: this.$refs.register1.verificationCode,
+						password: MD5(this.$refs.register1.password)
+					}
+					if(!this.registerData.mobile) {
+						cJs.message("手机号不能为空！");
+						this.$refs.register1.formGetFocus("mobile");
+						return false;
+					}
+					if(!this.registerData.verificationCode) {
+						cJs.message("验证码不能为空！");
+						this.$refs.register1.formGetFocus("verificationCode");
+						return false;
+					}
+					if(!this.registerData.password) {
+						this.$refs.register1.formGetFocus("password");
+						cJs.message("密码不能为空！");
+						return false;
+					}
+					if(!cJs.checkMobile(this.registerData.mobile)) {
+						cJs.message("手机号格式不正确！");
+						this.$refs.register1.formGetFocus("mobile");
+						return false;
+					}
+					this.fromStatus = 2;
+				} else if(this.fromStatus == 2) {
+					this.registerData.purchaserName = this.$refs.register2.purchaserName;
+					this.registerData.contact = this.$refs.register2.contact;
+					this.registerData.address = this.$refs.register2.address;
+					this.registerData.areaId = this.$refs.register2.areaId;
+					this.registerData.cityId = this.$refs.register2.cityId;
+					this.registerData.longitude = this.$refs.register2.longitude;
+					this.registerData.dimension = this.$refs.register2.dimension;
+					if(!this.registerData.purchaserName) {
+						cJs.message("店铺名不能为空！");
+						this.$refs.register2.formGetFocus("purchaserName");
+						return false;
+					}
+					if(!this.registerData.contact) {
+						cJs.message("联系人不能为空！");
+						this.$refs.register2.formGetFocus("contact");
+						return false;
+					}
+					if(!this.registerData.address) {
+						cJs.message("地址不能为空！");
+						this.$refs.register2.formGetFocus("address");
+						return false;
+					}
+					//提交信息
+					registerApi.register(this);
+				}
+
+			},
+			registerInfo(data) {
+				console.log(data)
+			},
+			backOne() {
+				this.fromStatus = 1;
+			},
+			backTwo() {
+				this.fromStatus = 2;
+			}
+		}
+	}
+</script>
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.page-layer {
+		background: #fff;
+	}
+	
+	.rem(54);
+	.register {
+		padding: .5rem .7rem;
+		header {
+			.pxrem(height, 293);
+			background: url(../../images/register-header.png);
+			background-size: cover;
+		}
+		.register-status {
+			margin: .5rem 0 0;
+			.pxrem(height, 50);
+			section {
+				width: 50%;
+				float: left;
+				height: 30px;
+				position: relative;
+				p {
+					height: 2px;
+					.pxrem(margin-top, 15);
+					background: #D8D8D8;
+				}
+				p.action {
+					background: #46C895;
+				}
+				img {
+					position: absolute;
+					top: 0px;
+					width: @rem;
+				}
+			}
+			.two-status {
+				text-align: right;
+				img{
+					right: 0;
+				}
+			}
+		}
+		.register_fooler {
+			input {
+				margin: .5rem 0 0;
+				border: 0;
+				background: #46c895;
+				color: #fff;
+				width: 100%;
+				.pxrem(font-size, 36);
+				.pxrem(border-radius, 44);
+				.pxrem(height, 88);
+			}
+			p {
+				color: #666666;
+				text-align: center;
+				margin: .3rem 0;
+				.pxrem(font-size, 28);
+				a {
+					color: #46c895;
+				}
+			}
+		}
+	}
+</style>

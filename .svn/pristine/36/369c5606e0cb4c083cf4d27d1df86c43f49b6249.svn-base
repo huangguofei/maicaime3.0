@@ -1,0 +1,146 @@
+<!-- 食材 -->
+<template>
+	<div class="page-layer food-index-page">
+		<header class="header"  ref="head">
+			<div class="search-wrap" ref="header">
+				<div class="s-content">搜索食材</div>
+			</div>
+			<PRODMENU 
+				:categoryData="categoryData" 
+				@setSelectInfo="getSelectInfo"
+				:subInfo="subInfo" 
+				v-if="categoryData.length">
+			</PRODMENU>
+		</header>
+		<div class="f-con" ref="content">
+			<PRODLIST 
+				v-if="pattern == 1 && prodData.length > 0" 
+				ref="prodLsit" 
+				:categoryProdData="prodData" 
+				:submitEditorPrice="submitEditorPrice" 
+				:type="activityId"
+				@scrollCategory="scrollCategory"
+				>
+			</PRODLIST>
+		</div>
+	</div>
+</template>
+<script>
+	import PRODMENU from "components/food/prod-menu"
+	import PRODLISTPIC from "components/food/prod-list-pic"
+	import PRODLIST from "components/food/prod-list"
+	import FOODACTION from "actionurl/food/food"
+	import { mapGetters } from 'vuex'
+	export default {
+		data() {
+			return {
+				categoryData: [],
+				prodData: [],
+				pattern: 1,
+				activityId:this.$route.query.id,
+				subInfo : {
+					index : 0
+				}
+			}
+		},
+		components: {
+			PRODMENU,
+			PRODLISTPIC,
+			PRODLIST
+		},
+		computed: {
+			...mapGetters({
+				categoryList: "getCategoryList"
+			})
+		},
+		created() {
+			if(this.categoryList.length > 0) {
+				this.categoryData = this.categoryList;
+				var categoryId = this.categoryData[0].categoryId;
+                var params = {categoryId : categoryId};
+                FOODACTION.getProdList(vm,params);
+			} else {
+				FOODACTION.getCategoryList(this);
+			}
+		},
+		mounted() {
+			var _that = this;
+			setTimeout(function() {
+				if(_that.$refs.head) {
+					const h = _that.$refs.head.getBoundingClientRect().height;
+					_that.$refs.content.style.height = (document.body.clientHeight - h) + "px";
+				}
+			},500);
+		},
+		methods: {
+			getSelectInfo(info) {
+				if(info && info.subCategoryId) {
+					this.$refs.prodLsit.scrollToElement(info.index);
+				} else {
+					var params = {
+						categoryId: info.categoryId
+					};
+					var _that = this;
+					FOODACTION.getProdList(this, params, () => {
+						_that.$refs.prodLsit.calculateItemHeight();
+					});
+				}
+			},
+			submitEditorPrice(prod) {
+				var params = {
+					productSkuId: prod.productSkuId,
+					price: prod.offerPrice
+				};
+				FOODACTION.editorProductPrice(this, params);
+			},
+			switchPattern() {
+				this.pattern = this.pattern == 1 ? 2 : 1;
+			},
+			scrollCategory(index) {
+				this.subInfo.index = index;
+			}
+		}
+	}
+</script>
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.food-index-page {
+		.search-wrap {
+			.pxrem(height, 80);
+			background: #222222;
+			.prem(16, 20, 0, 20);
+			position: relative;
+			padding: @prem;
+			.s-content {
+				.pxrem(height, 58);
+				.pxrem(line-height, 58);
+				.pxrem(text-indent, 58);
+				color: #AAAAAA;
+				.pxrem(font-size, 26);
+				background: rgba(255, 255, 255, 0.17) url(../../images/food_search.png) no-repeat 5px 4px;
+				.prem(40);
+				background-size: auto @prem;
+			}
+			.pattern {
+				display: inline-block;
+				position: absolute;
+				.pxrem(right, 20);
+				.pxrem(top, 20);
+				.pxrem(width, 60);
+				.pxrem(height, 48);
+				background: url(../../images/food_list.png) no-repeat;
+				background-size: auto 100%;
+			}
+			.pattern:after {
+				content: "";
+				position: absolute;
+				.pxrem(left, -25);
+				.pxrem(top, 10);
+				.pxrem(height, 30);
+				width: 1px;
+				background: rgba(255, 255, 255, 0.2);
+			}
+		}
+		
+	}
+</style>

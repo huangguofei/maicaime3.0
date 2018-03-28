@@ -1,0 +1,131 @@
+<!-- 编辑商品分类信息 -->
+<template>
+	<el-dialog :title="editInfo.title" :visible.sync="editInfo.dialogShow" size="tiny" :close-on-click-modal="false">
+		<el-form :model="ruleForm" :rules="rules" ref="ruleForm">
+			<el-form-item label="服务站名称" label-width="120px" prop="agentName">
+				<el-input v-model="ruleForm.agentName" auto-complete="off" placeholder="站点名称"></el-input>
+			</el-form-item>
+			<el-form-item label="联系人" label-width="120px" prop="contact">
+				<el-input v-model="ruleForm.contact" auto-complete="off" :maxlength="8" placeholder="联系人姓名"></el-input>
+			</el-form-item>
+			<el-form-item label="联系人手机" label-width="120px" prop="mobile">
+				<el-input v-model="ruleForm.mobile" auto-complete="off" :maxlength="11" placeholder="联系人手机" :disabled="ruleForm.agentId ? true : false"></el-input>
+			</el-form-item>
+			<el-form-item label="经纬度" label-width="120px" required>
+				<el-col :span="11">
+					<el-form-item prop="longitude">
+						<el-input v-model="ruleForm.longitude" auto-complete="off" placeholder="经度" ></el-input>
+					</el-form-item>
+				</el-col>
+				<el-col class="line" :span="2">-</el-col>
+				<el-col :span="11">
+					<el-form-item prop="dimension">
+						<el-input v-model="ruleForm.dimension" auto-complete="off" placeholder="纬度"></el-input>
+					</el-form-item>
+				</el-col>
+			</el-form-item>
+			<el-form-item label="服务区域" label-width="120px" prop="areaId">
+				<el-cascader v-if="!ruleForm.agentId" placeholder="试试搜索：四川" :clearable="true" expand-trigger="hover" :props="keyobj" v-model="selectcity" :options="cityData" @change="handleChange">
+				</el-cascader>
+				<span v-else>{{ruleForm.areaName}}</span>
+			</el-form-item>
+		</el-form>
+		<span slot="footer" class="dialog-footer">
+		    <el-button @click="editInfo.dialogShow = false">取 消</el-button>
+		    <el-button type="primary" @click="submitForm('ruleForm')">确 定</el-button>
+		  </span>
+	</el-dialog>
+</template>
+<script>
+	import serverModule from "actionurl/serve/agent"
+	export default {
+		data() {
+			return {
+				dialogVisible: true,
+				options: [],
+				selectcity: [],
+				ruleForm: {},
+				keyobj: {
+					value: "areaId",
+					label: "areaName",
+					children: "subAreas"
+				},
+				rules: {
+					agentName: [{
+						required: true,
+						message: '请输入站点名称',
+						trigger: 'blur'
+					}],
+					contact: [{
+						required: true,
+						message: '请输入联系人',
+						trigger: 'blur'
+					}],
+					mobile: [{
+						required: true,
+						message: '请输入电话号码',
+						trigger: 'blur'
+					}],
+					longitude: [{
+						required: true,
+						message: '请输入经度',
+						trigger: 'blur'
+					}],
+					dimension: [{
+						required: true,
+						message: '请输入纬度',
+						trigger: 'blur'
+					}],
+					areaId: [{
+						required: true,
+						message: '请选择活动区域',
+						trigger: 'change'
+					}]
+				}
+			};
+		},
+		props: ["editInfo", "cityData", "submitClick"],
+		created() {
+			this.resetForm();
+		},
+		methods: {
+			handleChange(val) {
+				this.ruleForm.areaId = val[2];
+			},
+			submitForm(formName) {
+				var _that = this;
+				_that.$refs[formName].validate((valid) => {
+					if(valid) {
+						_that.submitClick(_that.ruleForm);
+						
+					} else {
+						console.log('error submit!!');
+						return false;
+					}
+				});
+			},
+			resetForm() {
+				this.ruleForm = {
+					agentName: "",
+					contact: "",
+					mobile: "",
+					areaId: "",
+					longitude: "",
+					dimension: "",
+				}
+				this.selectcity = [];
+			},
+			updateInfo(data) {
+				if(data) {
+					this.ruleForm = data;
+					this.selectcity = [data.proviceId, data.areaId];
+				}
+			}
+		}
+	};
+</script>
+<style>
+	.line {
+		text-align: center;
+	}
+</style>

@@ -1,0 +1,169 @@
+<!-- 常用清单 -->
+<template>
+	<div class="page-layer often-index-page">
+		<header class="header">
+			<div class="search-wrap" ref="header">
+				<div class="s-content">搜索您想要找的食材</div>
+				<span class="edit" @click="editorOften">
+					<span v-if="editorStatus">编辑</span>
+					<span v-else>完成</span>
+				</span>
+			</div>
+		</header>
+		<div class="f-con">
+			<category-nar :categoryData="categoryData" @returnInfo="categoryInfo"></category-nar>
+			<often-catrgory-prod 
+				:categoryProd="categoryProd" 
+				:updateSkuNum="updateSkuNum" 
+				:editorStatus="editorStatus"
+				@delProdClick="delProd"></often-catrgory-prod>
+
+		</div>
+		<footer-nar :active="4"></footer-nar>
+		<cart-suspend v-if="editorStatus"></cart-suspend>
+		<goods-not-data  v-if="categoryProd.length <= 0"><p>暂无任何食材!</p></goods-not-data>
+	</div>
+</template>
+<script>
+	import footerNar from "components/common/footer-nar"
+	import categoryNar from "components/often/category-nar"
+	import oftenCatrgoryProd from "components/often/often-catrgory-prod"
+	import OFTENACTION from "actionurl/often/often"
+	import COMMONACTION from "actionurl/common/common"
+	import cartSuspend from "components/common/cart-suspend"
+	import goodsNotData from "components/common/goods-not-data"
+	export default{
+		data() {
+			return {
+				categoryData : [],
+				categoryProd : [],
+				cartNum : 0,
+				editorStatus : 1,
+			}
+		},
+		components : {
+			categoryNar,
+			oftenCatrgoryProd,
+			footerNar,
+			cartSuspend,
+			goodsNotData
+		},
+		created() {
+			OFTENACTION.getCategoryList(this);
+		},
+		methods : {
+			updateSkuNum(prod) {
+				var skuId = prod.productSkuId,
+					num = prod.num;
+				COMMONACTION.addCartByProd(this, skuId, num);
+			},
+			editorOften() {
+				this.editorStatus = this.editorStatus ? 0 : 1;
+			},
+			delProd() {
+				var data = this.categoryProd;
+				var len = data.length, skuIds = "";
+				for(var i = 0;i < len; i++) {
+					var prods = data[i].collectProductItemBOList;
+					var plen = prods.length;
+					for(var n = 0;n < plen; n++) {
+						if(prods[n].check) {
+							skuIds += prods[n].productSkuId + ","
+						}
+					}
+				}
+				if(skuIds == "") {
+					cJs.message("请勾选食材！");
+					return false;
+				}
+				skuIds = skuIds.substring(0, skuIds.length - 1);
+				OFTENACTION.delOftenProds(this, skuIds);
+				
+			},
+			categoryInfo(info) {
+				var categoryId = info.categoryId;
+				this.categoryProd = [];
+				OFTENACTION.getProdListByCategory(this, categoryId);
+			}
+		}
+	}
+</script>
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.often-index-page{
+		.header{
+			position: fixed;
+			z-index:99;
+			width:100%;
+		}
+		.search-wrap{
+			.pxrem(height, 80);
+			background: #222222;
+			.prem(16, 120, 0, 20);
+			position: relative;
+			padding:@prem;
+			.s-content{
+				.pxrem(height, 58);
+				.pxrem(line-height, 58);
+				.pxrem(text-indent, 58);
+				color:#AAAAAA;
+				.pxrem(font-size, 26);
+				background: rgba(255, 255, 255, 0.17) url(../../images/home_search.png) no-repeat 5px 4px;
+				.prem(40);
+				background-size: auto @prem;
+			}
+			.edit{
+				display: inline-block;
+				position: absolute;
+				.pxrem(right,20);
+				.pxrem(top,20);
+				.pxrem(width, 65);
+				.pxrem(height, 48);
+				.pxrem(font-size, 28);
+				.pxrem(line-height, 48);
+				color:#FFF;
+			}
+			.pattern:after{
+				content: "";
+				position: absolute;
+				.pxrem(left, -25);
+				.pxrem(top, 10);
+				.pxrem(height, 30);
+				width:1px;
+				background: rgba(255, 255, 255, 0.2);
+			}
+		}
+		.f-con{
+			.pxrem(padding-top, 100);
+			.pxrem(padding-bottom, 190);
+		}
+		.cart-info{
+			position: fixed;
+			.pxrem(bottom, 120);
+			.pxrem(left, 20);
+			display: inline-block;
+			.pxrem(width, 90);
+			.pxrem(height, 90);
+			background: url(../../images/market_shoppingcar.png) no-repeat;
+			background-size: cover;
+			border-radius: 50%;
+			a{
+				display: block;
+				width: 100%;
+				height:100%;
+			}
+			.num{
+				position: absolute;
+				display: inline-block;
+				.pxrem(top, -20);
+				.pxrem(right, -20);
+				.pxrem(font-size, 20);
+				background: @m-c;
+				.prem(-4, 10);
+				padding:@prem;
+				color:#FFF;
+				.pxrem(border-radius, 40);
+			}
+		}
+	}
+</style>

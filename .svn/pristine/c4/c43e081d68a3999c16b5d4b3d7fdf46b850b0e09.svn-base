@@ -1,0 +1,59 @@
+<!-- 主页分类 -->
+<template>
+	<div class="category-nar">
+		<ul>
+			<li class="n-item">
+				<i></i>
+				<p class="n-name">肉类</p>
+			</li>
+			<li class="n-item">
+				<i></i>
+				<p class="n-name">蔬菜</p>
+			</li>
+			<li class="n-item">
+				<i></i>
+				<p class="n-name">粮油</p>
+			</li>
+			<li class="n-item">
+				<i></i>
+				<p class="n-name">厨房</p>
+			</li>
+		</ul>
+	</div>
+</template>
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.category-nar{
+		background: #FFF;
+		.prem(30);
+		padding-bottom: @prem;
+		ul:after{
+			content: "";
+			display: block;
+			height:0;
+			overflow: hidden;
+			*zoom: 1;
+			clear: both; 
+  			visibility: hidden;
+  			
+		}
+		.n-item{
+			float:left;
+			display: inline-block;
+			width:25%;
+			text-align: center;
+			i{
+				display: inline-block;
+				.pxrem(width,90);
+				.pxrem(height,90);
+				img{
+					width:100%;
+				}
+			}
+			.n-name{
+				color:@index-c-color;
+				.pxrem(font-size,32);
+			}
+		}
+	}
+</style>

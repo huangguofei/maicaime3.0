@@ -1,0 +1,123 @@
+<!-- 注册 第一步 -->
+<template>
+	<article class="register-form">
+		<section class="from-item">
+			<img src="../../images/login_phone.png" />
+			<input type="tel" name="phone" id="phone" maxlength="11" @focus="scrollView" v-model="mobile" ref="mobile" placeholder="请输入手机号码" />
+		</section>
+		<section class="from-item">
+			<img src="../../images/mine_yuangong_code.png" />
+			<input type="number" name="code" id="code" maxlength=6 v-model="verificationCode" v-focus="isfocus" @focus="scrollView" ref="verificationCode" placeholder="请输入验证码" />
+			<a href="javascript:;" @click="sendcode" class="get-code">{{codeStr}}</a>
+		</section>
+		<section class="from-item" style="position: relative;">
+			<img src="../../images/login_secret.png" />
+			<input type="password" name="psw" id="psw" :disabled="isDisabled" v-model="password" @focus="scrollView" ref="password" placeholder="请输入密码" />
+			<p class="msg" v-if="isDisabled">该手机号之前已经注册过，默认密码相同</p>
+		</section>
+	</article>
+</template>
+
+<script>
+	import server from "actionurl/login/login"
+	const timeNum = 60;
+	export default {
+		data() {
+			return {
+				mobile: "",
+				verificationCode: "",
+				password: "",
+				codeStr: "获取验证码",
+				numTime: "",
+				timer: null,
+				isDisabled: false,
+				isfocus: false
+			}
+		},
+		methods: {
+			sendcode() {
+				if(!this.mobile) {
+					cJs.message("请输入手机号");
+					return;
+				}
+				var _that = this;
+				if(!this.timer) {
+					server.getCode(this, function(data) {
+						if(data.countDown < 60) {
+							if(data.countDown > 0) {
+								_that.numTime = data.countDown;
+							} else {
+								_that.numTime = timeNum;
+							}
+							cJs.message(data.msg);
+							_that.isfocus = true;
+							_that.timer = setInterval(() => {
+								if(_that.numTime > 0) {
+									_that.numTime--;
+									_that.codeStr = _that.numTime + "s";
+								} else {
+									clearInterval(_that.timer);
+									_that.timer = null;
+									_that.numTime = timeNum;
+									_that.codeStr = "重新获取";
+								}
+							}, 1000);
+						} else {
+							cJs.message(data.msg);
+						}
+					});
+				}
+			},
+			formGetFocus(index) {
+				if(index) {
+					this.$refs[index].focus();
+				}
+			},
+			scrollView() {
+				if(cJs.isAndroid()) {
+					this.$emit("scrollView");
+				}
+			}
+		},
+//		directives: {
+//			focus: {
+//				update: function(el, {
+//					value
+//				}) {
+//					if(value) {
+//						el.focus()
+//					}
+//				}
+//			}
+//		}
+	}
+</script>
+
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.register-form {
+		.from-item {
+			position: relative;
+			.get-code {
+				position: absolute;
+				right: 0;
+				top:0;
+				display: inline-block;
+				color: @m-c;
+				text-align: center;
+			}
+		}
+	}
+	
+	.msg {
+		position: absolute;
+		text-align: left;
+		width: 100%;
+		.pxrem(top, -5);
+		.pxrem(left, 55);
+		color: #D7D7D7;
+		background: #fff;
+		.pxrem(height, 60);
+		.pxrem(line-height, 60);
+	}
+</style>

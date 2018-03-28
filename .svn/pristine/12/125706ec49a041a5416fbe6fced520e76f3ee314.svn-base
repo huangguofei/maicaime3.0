@@ -1,0 +1,251 @@
+<template>
+	<article class="order-list">
+		<order-null v-if="orderData.length==0"></order-null>
+		<scroll  v-else
+			:pullingDown="true" 
+			:pullUpLoad="true"
+			 @pullingUp="onPullingUp"
+			 ref="scroll">
+			<section  v-for="(item,key) in orderData" class="padding bk-white s-item">
+				<header class="padding border-bottom" @click="orderDateils(item)">
+					<section>
+						<img src="../../images/Combined Shape.png" class="pull-left" />
+						<h3 class="pull-left">{{item.receiverName}}</h3></section>
+					<p>地址：{{item.receiverAddr}}</p>
+					<p class="arrive-time">{{item.deliveryTimeText}}</p>
+				</header>
+				<section class="shop-list bk-white padding border-bottom" @click="orderDateils(item)">
+					<ul v-if="item.statusId==20">
+						<li v-for="(val,index) in item.supplierInfos" :class="{active:val.statusId==20}">
+							<p class="shop-name pull-left">
+								<i></i>
+								<span>{{val.supplierName}}</span></p>
+							<span class="shop-status pull-right">{{val.statusText}}</span>
+						</li>
+					</ul>
+					<article class="delivery-info" v-if="item.statusId!=20">
+						<section>
+							<p class="pull-left"><img src="../../images/Combined Shape1.png" />{{item.deliverymanName}} {{item.deliverymanMobile}}</p>
+							<span class="delivery-status pull-right">{{item.statusText}}</span>
+						</section>
+						<p class="arrive-time">送达时间：{{item.deliveryTimeText}}</p>
+					</article>
+				</section>
+				<footer class="padding">
+					<article class="">
+						<p class="pull-left">取货号：<span>{{item.articleNumber}}</span>
+						</p>
+						<span v-if="item.statusId==20" class='pull-right footer-btn' @click="sureTo(item)">确认送达</span>
+						<span v-else class='pull-right footer-btn' @click="linkSendMan(item)">联系配送员</span>
+					</article>
+				</footer>
+			</section>
+		</scroll>
+		<select-shop v-show="isShowSelectShop" :orderId="orderId" :shopData="shopData" @offPage="offpage"></select-shop>
+	</article>
+</template>
+
+<script>
+	import selectShop from "components/order/select-shop"
+	import scroll from "components/common/scroll"
+	import orderNull from "components/order/order-null"
+	export default {
+		data() {
+			return {
+				isShowSelectShop: false,
+				shopData: [],
+				orderId:""
+			}
+		},
+		props: ['orderData', 'noShowNum'],
+		created() {
+//			console.log(JSON.stringify(this.orderData))
+		},
+		methods: {
+			orderDateils(item) {
+				window.location.href="/order/detail/" + item.deliveryOrderId;
+				/*this.$router.push({
+					name: "order.detail",
+					params: {
+						id: item.deliveryOrderId
+					}
+				})*/
+			},
+			offpage() {
+				this.isShowSelectShop = false;
+			},
+			sureTo(item) {
+				this.shopData = item.supplierInfos;
+				this.orderId= item.deliveryOrderId;
+				var len = this.shopData.length;
+				if(len > 0) {
+					this.shopData.forEach((index, key) => {
+						var defaultVal = false;
+						if(index.statusId != 20)
+							defaultVal = true;
+						if(len - 1 == key) {
+							this.$set(index, "isSelect", defaultVal);
+						} else {
+							index.isSelect = defaultVal;
+						}
+
+					});
+				}
+				this.isShowSelectShop = true;
+			},linkSendMan(data){
+				window.location.href="tel:"+data.stationMobile;
+			},
+			onPullingUp() {
+				var _that = this;
+				setTimeout(() => {
+					_that.$emit("updateData");
+				}, 500);
+			},
+			pullingUpPage(count) {
+				if(count >= 10) {
+					this.$refs.scroll.forceUpdate();
+				} else {
+					setTimeout(() => {
+						this.$refs.scroll.forceUpdate(true);
+					}, 20);
+				}
+			}
+		},
+		components: {
+			selectShop,
+			scroll,orderNull
+		}
+	}
+</script>
+
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.order-list {
+		height:100%;
+		.border-bottom {
+			border-bottom: 1px solid #eee;
+		}
+		&>section {
+			.pxrem(margin-bottom, 20);
+		}
+		.s-item{
+			.pxrem(margin-top, 26);
+		}
+		.arrive-time {
+			.pxrem(text-indent, 0);
+			.pxrem(margin-left, 56);
+			.pxrem(margin-top, 20);
+			.pxrem(font-size, 20);
+			display: inline-block;
+			.pxrem(padding-left, 20);
+			.pxrem(padding-right, 20);
+			background: #F2F2F2;
+			.pxrem(height, 36);
+			.pxrem(line-height, 36);
+			.pxrem(border-radius, 18);
+			text-align: center;
+			color: #4a4a4a;
+		}
+		header {
+			border: 1px solid #e7e7e7;
+			background: #fafafa;
+			section {
+				.clearfix();
+				h4 {
+					.pxrem(font-size, 36);
+				}
+				img {
+					.pxrem(width, 46);
+					.pxrem(height, 46);
+					.pxrem(margin-right, 10);
+				}
+			}
+			p {
+				.pxrem(text-indent, 56);
+				color: #4a4a4a;
+				.pxrem(font-size, 24);
+			}
+		}
+		.shop-list {
+			ul {
+				li {
+					.clearfix();
+					.pxrem(margin-bottom, 12);
+					p {
+						.pxrem(font-size, 28);
+						i {
+							background: #999;
+							display: inline-block;
+							.pxrem(width, 12);
+							.pxrem(height, 12);
+							.pxrem(border-radius, 6);
+							.pxrem(margin-right, 6);
+						}
+					}
+					.shop-status {
+						.pxrem(font-size, 24);
+						color: #999;
+					}
+				}
+				.active {
+					i {
+						background: @m-c;
+					}
+					.shop-status {
+						color: @m-c;
+					}
+				}
+			}
+			.delivery-info {
+				section {
+					.clearfix();
+					p {
+						.pxrem(font-size, 32);
+						img {
+							.pxrem(width, 46);
+							.pxrem(height, 46);
+							.pxrem(margin-right, 10);
+							vertical-align: middle;
+						}
+					}
+					span {
+						.pxrem(font-size, 24);
+						color: @m-c;
+						display: inline-block;
+						background: #FAE1AD;
+						.pxrem(padding-left, 15);
+						.pxrem(padding-right, 15);
+						/*.pxrem(height, 40);
+						.pxrem(line-height, 40);*/
+					}
+				}
+				.arrive-time {}
+			}
+		}
+		footer {
+			.pxrem(height, 64);
+			.pxrem(line-height, 64);
+			background: #fff;
+			.pxrem(font-size, 28);
+			p {
+				color: #000;
+				span {
+					.pxrem(font-size, 38);
+					color: #000;
+				}
+			}
+			span {
+				color: @m-c;
+				.pxrem(font-size, 32);
+			}
+			.footer-btn {
+				display: inline-block;
+				color: #fff;
+				background: @m-c;
+				.pxrem(padding-left, 24);
+				.pxrem(padding-right, 24);
+				.pxrem(border-radius, 4);
+			}
+		}
+	}
+</style>

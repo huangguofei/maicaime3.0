@@ -1,0 +1,31 @@
+/**
+* author pzh 
+* day    2017-9-21
+* 客户模块接口
+*/
+import https from "../axios/https"
+/*采购商接口*/
+export const purchaserAPI = {
+	/*采购商列表*/
+	purchaserListAPI : (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/purchaser/list", v)),
+	/*采购商 审核*/
+	purchaserAuditAPI : (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/purchaser/check", v)),
+	/*采购商详情*/
+	purchaserDetailAPI : (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/purchaser/detail", v)),
+	/*采购商绑定区域*/
+	bindRegionAPI : (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/purchaser/bindRegion", v)),
+}
+
+/*供应商接口*/
+export const supplierAPI = {
+	/*供应商列表*/
+	supplierListAPI : (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/supplier/list", v)),
+	/*供应商 审核*/
+	supplierAuditAPI : (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/supplier/check", v)),
+	/*供应商详情*/
+	supplierDetailAPI : (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/supplier/detail", v)),
+	/*供应商绑定区域*/
+	bindRegionAPI : (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/region/bindRegion", v)),
+	/*解除供应商与区域的关系*/
+	unBindRegionAPI : (...v) => https.commAjax(cJs.apiDataReturnParams("post", "/region/unBindRegion", v)),
+}

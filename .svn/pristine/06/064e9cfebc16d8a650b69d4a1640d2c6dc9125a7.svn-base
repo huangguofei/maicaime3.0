@@ -1,0 +1,40 @@
+<!-- 食材为空 -->
+<template>
+	<div class="goods-not-data">
+		<i>
+			<img src="../../images/market-good-icon.png" v-if="!icon">
+			<img :src="icon" v-else>
+		</i>
+		<slot></slot>
+	</div>
+</template>
+<script>
+	export default{
+		props : {
+			icon : {
+				type : String,
+				default : ""
+			}
+		}
+	}
+</script>
+<style lang="less" scoped>
+	@import "../../common/less/config.less";
+	.goods-not-data{
+			text-align: center;
+			/*position: absolute;
+			top:50%;
+			left:50%;*/
+			.pxrem(margin-top,120);
+			/*.pxrem(margin-left,-160);*/
+			img{
+				.pxrem(width,248);
+				.pxrem(height,240);
+			}
+			p{
+				.pxrem(margin-top,20);
+				.pxrem(font-size,32);
+				color: @g-f-c;
+			}
+		}
+</style>
